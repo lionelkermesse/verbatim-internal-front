@@ -1,0 +1,31 @@
+{
+  "verbatimMatchingApp": {
+    "matchingVersion": {
+      "home": {
+        "title": "Matching Versions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Matching Version",
+        "createOrEditLabel": "Create or edit a Matching Version",
+        "notFound": "No Matching Versions found"
+      },
+      "created": "A new Matching Version is created with identifier {{ param }}",
+      "updated": "A Matching Version is updated with identifier {{ param }}",
+      "deleted": "A Matching Version is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Matching Version {{ id }}?"
+      },
+      "detail": {
+        "title": "Matching Version"
+      },
+      "id": "Id",
+      "version": "Version",
+      "matchingResult": "Matching Result",
+      "status": "Status",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "validatedBy": "Validated By",
+      "validatedAt": "Validated At",
+      "session": "Session"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "verbatimMatchingApp": {
+    "session": {
+      "home": {
+        "title": "Sessions",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Session",
+        "createOrEditLabel": "Créer ou éditer un Session",
+        "notFound": "Aucun Session trouvé"
+      },
+      "created": "Un nouveau Session a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Session avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Session avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Session {{ id }} ?"
+      },
+      "detail": {
+        "title": "Session"
+      },
+      "id": "Id",
+      "sessionDate": "Session Date",
+      "sessionIdentifier": "Session Identifier",
+      "verbatimFileContent": "Verbatim File Content",
+      "eventFileContent": "Event File Content",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "matchingVersion": "Matching Version"
+    }
+  }
+}
