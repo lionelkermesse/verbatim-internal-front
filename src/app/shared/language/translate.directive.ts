@@ -1,18 +1,19 @@
-import { Directive, ElementRef, OnChanges, OnDestroy, OnInit, inject, input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {Directive, ElementRef, inject, input, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
-import { translationNotFoundMessage } from 'app/config/translation.config';
+import {translationNotFoundMessage} from '@chd-digital-verbatim-front/config/translation.config';
 
 /**
  * A wrapper directive on top of the translation pipe as the inbuilt translation directive from ngx-translate is too verbose and buggy
  */
 @Directive({
-  selector: '[jhiTranslate]',
+  selector: '[chdTranslate]',
+  standalone: true,
 })
 export default class TranslateDirective implements OnChanges, OnInit, OnDestroy {
-  readonly jhiTranslate = input.required<string>();
+  readonly chdTranslate = input.required<string>();
   readonly translateValues = input<Record<string, unknown>>();
 
   private readonly directiveDestroyed = new Subject();
@@ -40,13 +41,13 @@ export default class TranslateDirective implements OnChanges, OnInit, OnDestroy 
 
   private getTranslation(): void {
     this.translateService
-      .get(this.jhiTranslate(), this.translateValues())
+      .get(this.chdTranslate(), this.translateValues())
       .pipe(takeUntil(this.directiveDestroyed))
       .subscribe({
         next: value => {
           this.el.nativeElement.innerHTML = value;
         },
-        error: () => `${translationNotFoundMessage}[${this.jhiTranslate()}]`,
+        error: () => `${translationNotFoundMessage}[${this.chdTranslate()}]`,
       });
   }
 }

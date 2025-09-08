@@ -1,7 +1,6 @@
 {
   "global": {
     "title": "VerbatimMatching",
-    "browsehappy": "Vous utilisez un <strong>ancien</strong> navigateur. Veuillez <a href=\"http://browsehappy.com/?locale=fr\">mettre à jour votre navigateur</a> pour une meilleure expérience.",
     "menu": {
       "home": "Accueil",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
@@ -20,31 +19,7 @@
         "logout": "Déconnexion",
         "register": "Créer un compte"
       },
-      "admin": {
-        "main": "Administration",
-        "userManagement": "Gestion des utilisateurs",
-        "tracker": "Suivi des utilisateurs",
-        "metrics": "Métriques",
-        "health": "Diagnostics",
-        "configuration": "Configuration",
-        "logs": "Logs",
-        "apidocs": "API",
-        "database": "Base de données",
-        "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
-      },
       "language": "Langue"
-    },
-    "form": {
-      "username.label": "Nom d'utilisateur",
-      "username.placeholder": "Votre nom d'utilisateur",
-      "currentpassword.label": "Mot de passe actuel",
-      "currentpassword.placeholder": "Mot de passe actuel",
-      "newpassword.label": "Nouveau mot de passe",
-      "newpassword.placeholder": "Nouveau mot de passe",
-      "confirmpassword.label": "Confirmation du nouveau mot de passe",
-      "confirmpassword.placeholder": "Confirmation du nouveau mot de passe",
-      "email.label": "Email",
-      "email.placeholder": "Votre email"
     },
     "messages": {
       "info": {
@@ -52,37 +27,8 @@
           "prefix": "Si vous voulez vous ",
           "link": "connecter",
           "suffix": ", vous pouvez utiliser les comptes par défaut : <br/> - Administrateur (nom d'utilisateur=\"admin\" et mot de passe =\"admin\") <br/> - Utilisateur (nom d'utilisateur=\"user\" et mot de passe =\"user\")."
-        },
-        "register": {
-          "noaccount": "Vous n'avez pas encore de compte ?",
-          "link": "Créer un compte"
-        }
-      },
-      "error": {
-        "dontmatch": "Le nouveau mot de passe et sa confirmation ne sont pas égaux !"
-      },
-      "validate": {
-        "newpassword": {
-          "required": "Votre mot de passe est requis.",
-          "minlength": "Votre mot de passe doit comporter au moins 4 caractères.",
-          "maxlength": "Votre mot de passe ne doit pas comporter plus de 50 caractères.",
-          "strength": "Robustesse du mot de passe :"
-        },
-        "confirmpassword": {
-          "required": "Votre confirmation du mot de passe est requise.",
-          "minlength": "Votre confirmation du mot de passe doit comporter au moins 4 caractères.",
-          "maxlength": "Votre confirmation du mot de passe ne doit pas comporter plus de 50 caractères."
-        },
-        "email": {
-          "required": "Votre email est requis.",
-          "minlength": "Votre email doit comporter au moins 5 caractères.",
-          "maxlength": "Votre email ne doit pas comporter plus de 50 caractères.",
-          "invalid": "Votre email n'est pas valide."
         }
       }
-    },
-    "field": {
-      "id": "ID"
     },
     "ribbon": {
       "dev": "Développement"

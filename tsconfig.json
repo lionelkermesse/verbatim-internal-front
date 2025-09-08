@@ -25,6 +25,9 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "@chd-digital-verbatim-front/config/*": [
+        "src/app/config/*"
+      ],
       "@chd-digital-verbatim-front/core/*": [
         "src/app/core/*"
       ],

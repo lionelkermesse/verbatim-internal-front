@@ -1,8 +1,8 @@
-import { Injectable, SecurityContext, inject } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { TranslateService } from '@ngx-translate/core';
+import {inject, Injectable, SecurityContext} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
+import {TranslateService} from '@ngx-translate/core';
 
-import { translationNotFoundMessage } from 'app/config/translation.config';
+import {translationNotFoundMessage} from '@chd-digital-verbatim-front/config/translation.config';
 
 export type AlertType = 'success' | 'danger' | 'warning' | 'info';
 
@@ -50,7 +50,7 @@ export class AlertService {
    * @returns  Added alert
    */
   addAlert(alertToAdd: Omit<Alert, 'id'>, extAlerts?: Alert[]): Alert {
-    const alert: Alert = { ...alertToAdd, id: this.alertId++ };
+    const alert: Alert = {...alertToAdd, id: this.alertId++};
 
     if (alert.translationKey) {
       const translatedMessage = this.translateService.instant(alert.translationKey, alert.translationParams);

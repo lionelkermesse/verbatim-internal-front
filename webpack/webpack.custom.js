@@ -1,10 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const { merge } = require('webpack-merge');
-const { hashElement } = require('folder-hash');
+const {merge} = require('webpack-merge');
+const {hashElement} = require('folder-hash');
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -12,10 +12,10 @@ const environment = require('./environment');
 const proxyConfig = require('./proxy.conf');
 
 module.exports = async (config, options, targetOptions) => {
-  const languagesHash = await hashElement(path.resolve(__dirname, '../src/main/webapp/i18n'), {
+  const languagesHash = await hashElement(path.resolve(__dirname, '../src/i18n'), {
     algo: 'md5',
     encoding: 'hex',
-    files: { include: ['*.json'] },
+    files: {include: ['*.json']},
   });
 
   // PLUGINS
@@ -23,7 +23,7 @@ module.exports = async (config, options, targetOptions) => {
     config.plugins.push(
       new WebpackNotifierPlugin({
         title: 'Verbatim Matching',
-        contentImage: path.join(__dirname, 'logo-jhipster.png'),
+        contentImage: path.join(__dirname, '../public/favicon.ico'),
       }),
     );
   }
@@ -31,7 +31,7 @@ module.exports = async (config, options, targetOptions) => {
   // configuring proxy for back end service
   const tls = config.devServer?.server?.type === 'https';
   if (config.devServer) {
-    config.devServer.proxy = proxyConfig({ tls });
+    config.devServer.proxy = proxyConfig({tls});
   }
 
   if (targetOptions.target === 'serve' || config.watch) {
@@ -88,23 +88,11 @@ module.exports = async (config, options, targetOptions) => {
   }
 
   const patterns = [
-    {
-      // https://github.com/swagger-api/swagger-ui/blob/v4.6.1/swagger-ui-dist-package/README.md
-      context: require('swagger-ui-dist').getAbsoluteFSPath(),
-      from: '*.{js,css,html,png}',
-      to: 'swagger-ui/',
-      globOptions: { ignore: ['**/index.html'] },
-    },
-    {
-      from: path.join(path.dirname(require.resolve('axios/package.json')), 'dist/axios.min.js'),
-      to: 'swagger-ui/',
-    },
-    { from: './src/main/webapp/swagger-ui/', to: 'swagger-ui/' },
     // jhipster-needle-add-assets-to-webpack - JHipster will add/remove third-party resources in this array
   ];
 
   if (patterns.length > 0) {
-    config.plugins.push(new CopyWebpackPlugin({ patterns }));
+    config.plugins.push(new CopyWebpackPlugin({patterns}));
   }
 
   config.plugins.push(
@@ -121,8 +109,8 @@ module.exports = async (config, options, targetOptions) => {
     new MergeJsonWebpackPlugin({
       output: {
         groupBy: [
-          { pattern: './src/main/webapp/i18n/fr/*.json', fileName: './i18n/fr.json' },
-          { pattern: './src/main/webapp/i18n/en/*.json', fileName: './i18n/en.json' },
+          {pattern: './src/i18n/fr/*.json', fileName: './i18n/fr.json'},
+          {pattern: './src/i18n/en/*.json', fileName: './i18n/en.json'},
           // jhipster-needle-i18n-language-webpack - JHipster will add/remove languages in this array
         ],
       },
@@ -133,25 +121,25 @@ module.exports = async (config, options, targetOptions) => {
     config,
     targetOptions.configuration === 'instrumenter'
       ? {
-          module: {
-            rules: [
-              {
-                test: /\.(js|ts)$/,
-                use: [
-                  {
-                    loader: 'babel-loader',
-                    options: {
-                      plugins: ['istanbul'],
-                    },
+        module: {
+          rules: [
+            {
+              test: /\.(js|ts)$/,
+              use: [
+                {
+                  loader: 'babel-loader',
+                  options: {
+                    plugins: ['istanbul'],
                   },
-                ],
-                enforce: 'post',
-                include: path.resolve(__dirname, '../src/main/webapp/'),
-                exclude: [/\.(e2e|spec)\.ts$/, /node_modules/, /(ngfactory|ngstyle)\.js/],
-              },
-            ],
-          },
-        }
+                },
+              ],
+              enforce: 'post',
+              include: path.resolve(__dirname, '../src'),
+              exclude: [/\.(e2e|spec)\.ts$/, /node_modules/, /(ngfactory|ngstyle)\.js/],
+            },
+          ],
+        },
+      }
       : {},
     // jhipster-needle-add-webpack-config - JHipster will add custom config
   );

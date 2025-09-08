@@ -1,8 +1,8 @@
-import { NgModule, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { missingTranslationHandler, translatePartialLoader } from 'app/config/translation.config';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
+import {inject, NgModule} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {missingTranslationHandler, translatePartialLoader} from '@chd-digital-verbatim-front/config/translation.config';
+import {StateStorageService} from '@chd-digital-verbatim-front/core/auth/state-storage.service';
 
 @NgModule({
   imports: [

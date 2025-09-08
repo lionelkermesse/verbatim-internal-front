@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class StateStorageService {
   private readonly previousUrlKey = 'previousUrl';
-  private readonly authenticationKey = 'jhi-authenticationToken';
+  private readonly authenticationKey = 'chd-authenticationToken';
   private readonly localeKey = 'locale';
 
   storeUrl(url: string): void {

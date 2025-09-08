@@ -1,9 +1,9 @@
-import { Component, input } from '@angular/core';
+import {Component, input} from '@angular/core';
 import SharedModule from '../shared.module';
-import { IFilterOptions } from './filter.model';
+import {IFilterOptions} from './filter.model';
 
 @Component({
-  selector: 'jhi-filter',
+  selector: 'chd-filter',
   imports: [SharedModule],
   templateUrl: './filter.component.html',
 })

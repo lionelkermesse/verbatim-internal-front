@@ -2,8 +2,8 @@ import { inject, isDevMode } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { map } from 'rxjs/operators';
 
-import { AccountService } from 'app/core/auth/account.service';
-import { LoginService } from 'app/login/login.service';
+import { AccountService } from '@chd-digital-verbatim-front/core/auth/account.service';
+import { LoginService } from '@chd-digital-verbatim-front/feature//login/login.service';
 import { StateStorageService } from './state-storage.service';
 
 export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
@@ -30,6 +30,6 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
       stateStorageService.storeUrl(state.url);
       loginService.login();
       return false;
-    }),
+    })
   );
 };

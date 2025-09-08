@@ -1,9 +1,9 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { AlertService } from 'app/core/util/alert.service';
+import { AlertService } from '@chd-digital-verbatim-front/core/util/alert.service';
 
 @Injectable()
 export class NotificationInterceptor implements HttpInterceptor {
@@ -28,11 +28,11 @@ export class NotificationInterceptor implements HttpInterceptor {
             this.alertService.addAlert({
               type: 'success',
               translationKey: alert,
-              translationParams: { param: alertParams },
+              translationParams: { param: alertParams }
             });
           }
         }
-      }),
+      })
     );
   }
 }

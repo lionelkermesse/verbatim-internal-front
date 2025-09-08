@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
-import TranslateDirective from './translate.directive';
+import {Component} from '@angular/core';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 @Component({
-  imports: [TranslateDirective],
-  template: ` <div jhiTranslate="test"></div> `,
+  imports: [],
+  template: `
+    <div chdTranslate="test"></div> `,
 })
-class TestTranslateDirectiveComponent {}
+class TestTranslateDirectiveComponent {
+}
 
 describe('TranslateDirective Tests', () => {
   let fixture: ComponentFixture<TestTranslateDirectiveComponent>;

@@ -1,6 +1,6 @@
-import { Directive, TemplateRef, ViewContainerRef, computed, effect, inject, input } from '@angular/core';
+import {computed, Directive, effect, inject, input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import { AccountService } from 'app/core/auth/account.service';
+import {AccountService} from '@chd-digital-verbatim-front/core/auth/account.service';
 
 /**
  * @whatItDoes Conditionally includes an HTML element if current user has any
@@ -15,9 +15,10 @@ import { AccountService } from 'app/core/auth/account.service';
  */
 @Directive({
   selector: '[jhiHasAnyAuthority]',
+  standalone: true,
 })
 export default class HasAnyAuthorityDirective {
-  public authorities = input<string | string[]>([], { alias: 'jhiHasAnyAuthority' });
+  public authorities = input<string | string[]>([], {alias: 'jhiHasAnyAuthority'});
 
   private readonly templateRef = inject(TemplateRef<any>);
   private readonly viewContainerRef = inject(ViewContainerRef);

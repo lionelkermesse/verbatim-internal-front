@@ -1,12 +1,12 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { inject, Injectable, Signal, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, ReplaySubject, of } from 'rxjs';
+import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, shareReplay, tap } from 'rxjs/operators';
 
-import { StateStorageService } from 'app/core/auth/state-storage.service';
-import { Account } from 'app/core/auth/account.model';
+import { StateStorageService } from '@chd-digital-verbatim-front/core/auth/state-storage.service';
+import { Account } from '@chd-digital-verbatim-front/core/auth/account.model';
 import { ApplicationConfigService } from '../config/application-config.service';
 
 @Injectable({ providedIn: 'root' })
@@ -59,7 +59,7 @@ export class AccountService {
 
           this.navigateToStoredUrl();
         }),
-        shareReplay(),
+        shareReplay()
       );
     }
     return this.accountCache$.pipe(catchError(() => of(null)));

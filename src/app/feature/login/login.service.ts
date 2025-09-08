@@ -1,10 +1,10 @@
-import { inject, Injectable } from '@angular/core';
-import { Location } from '@angular/common';
+import {inject, Injectable} from '@angular/core';
+import {Location} from '@angular/common';
 
-import { AuthServerProvider } from '../core/auth/auth-session.service';
-import { Logout } from './logout.model';
+import {AuthServerProvider} from '@chd-digital-verbatim-front/core/auth/auth-session.service';
+import {Logout} from './logout.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class LoginService {
   private readonly location = inject(Location);
   private readonly authServerProvider = inject(AuthServerProvider);

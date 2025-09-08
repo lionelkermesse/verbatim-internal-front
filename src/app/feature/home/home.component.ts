@@ -1,13 +1,14 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
-import SharedModule from 'app/shared/shared.module';
-import { LoginService } from 'app/login/login.service';
-import { AccountService } from 'app/core/auth/account.service';
-import { Account } from 'app/core/auth/account.model';
+import SharedModule from '@chd-digital-verbatim-front/shared/shared.module';
+import {LoginService} from '@chd-digital-verbatim-front/feature/login/login.service';
+import {AccountService} from '@chd-digital-verbatim-front/core/auth/account.service';
+import {Account} from '@chd-digital-verbatim-front/core/auth/account.model';
 
 @Component({
-  selector: 'jhi-home',
+  selector: 'chd-home',
+  standalone: true,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   imports: [SharedModule, RouterModule]
