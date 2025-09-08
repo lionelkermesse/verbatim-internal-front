@@ -1,0 +1,40 @@
+.layout {
+  min-height: 100vh;
+}
+
+.header {
+  background: #001529;
+  padding: 0 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  float: left;
+}
+
+.logo img {
+  height: 100%;
+}
+
+.menu {
+  line-height: 64px;
+}
+
+.content {
+  padding: 0 50px;
+  margin-top: 64px;
+}
+
+.inner-content {
+  background: #fff;
+  padding: 24px;
+  min-height: 280px;
+}
+
+.footer {
+  text-align: center;
+}

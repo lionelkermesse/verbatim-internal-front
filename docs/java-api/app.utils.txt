@@ -1,0 +1,272 @@
+@UtilityClass
+public final class TextUtils {
+
+    /**
+     * Normalizes the input string by:
+     * <ul>
+     *   <li>Trimming and normalizing whitespace</li>
+     *   <li>Removing diacritical marks (accents)</li>
+     *   <li>Converting to lowercase</li>
+     *   <li>Removing non-alphanumeric characters (except spaces)</li>
+     *   <li>Collapsing multiple spaces into a single space</li>
+     * </ul>
+     *
+     * @param input the string to normalize
+     * @return the normalized string, or an empty string if input is blank
+     */
+    public static String normalize(final String input) {
+        if (StringUtils.isBlank(input)) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(StringUtils.normalizeSpace(input), Normalizer.Form.NFD);
+        normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+        return normalized.toLowerCase()
+            .replaceAll("[^a-z0-9\\s]", "")
+            .replaceAll("\\s+", " ")
+            .trim();
+    }
+}
+@UtilityClass
+public final class MatchingUtils {
+    private static final JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
+
+    public static boolean isMatch(final String text1, final String text2, final MatchingConfig matchingConfig, final List<MatchingConfig.MatchingRuleStrategy> strategies) {
+        // Direct match is the highest priority
+        if (text1.equals(text2)) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(strategies)) {
+
+            // Check correspondence rules from config
+            if (strategies.contains(MatchingConfig.MatchingRuleStrategy.CORRESPONDANCE)) {
+                for (MatchingRuleDto rule : matchingConfig.getCorrespondences()) {
+                    // Handle exact matches - no normalization, case-sensitive
+                    if (rule.isExactMatch()) {
+                        if ((text1.contains(rule.getVerbatimTerm()) && text2.contains(rule.getEventTerm()))
+                            || (text2.contains(rule.getVerbatimTerm()) && text1.contains(rule.getEventTerm()))) {
+                            return true;
+                        }
+                    }
+                    // Handle approximate matches - with normalization but stricter matching
+                    else if (rule.isApproximateMatch()) {
+                        String normalizedText1 = TextUtils.normalize(text1);
+                        String normalizedText2 = TextUtils.normalize(text2);
+                        String normalizedVerbatimTerm = TextUtils.normalize(rule.getVerbatimTerm());
+                        String normalizedEventTerm = TextUtils.normalize(rule.getEventTerm());
+
+                        // Use more strict matching for approximate - exact normalized match
+                        if ((normalizedText1.equals(normalizedVerbatimTerm) && normalizedText2.equals(normalizedEventTerm))
+                            || (normalizedText2.equals(normalizedVerbatimTerm) && normalizedText1.equals(normalizedEventTerm))) {
+                            return true;
+                        }
+                    }
+                    // Handle similarity matches - with normalization and contains check
+                    else if (rule.isSimilarityMatch()) {
+                        String normalizedVerbatimTerm = TextUtils.normalize(rule.getVerbatimTerm());
+                        String normalizedEventTerm = TextUtils.normalize(rule.getEventTerm());
+                        if ((text1.contains(normalizedVerbatimTerm) && text2.contains(normalizedEventTerm))
+                            || (text2.contains(normalizedVerbatimTerm) && text1.contains(normalizedEventTerm))) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            if (strategies.contains(MatchingConfig.MatchingRuleStrategy.SIMILARITY)) {
+                // Fallback to similarity check
+                double similarity = jaroWinklerSimilarity.apply(text1, text2);
+                return similarity >= matchingConfig.getSimilarityThreshold();
+            }
+
+        }
+
+        return false;
+    }
+}
+@Slf4j
+@UtilityClass
+public final class SpeakerUtils {
+    public static final Pattern SPEAKER_FORMAL_PATTERN = Pattern.compile("^(?<gender>M\\.|Mme)\\s+(?<name>[\\p{L}\\s.-]+?)(?:\\s+\\([A-Z]+\\))?,\\s*(?<function>[\\p{L}\\p{M}\\p{P}\\s]+?)?\\.\\-");
+    public static final Pattern SPEAKER_WITH_PARTY_PATTERN = Pattern.compile("^(?<gender>M\\.?|Mme)\\s+(?<name>[\\p{L}\\s.-]+?)\\s+\\((?<party>[^)]+)\\)\\.-");
+
+    /**
+     * Parses a list of speakers from the provided content string.
+     * Each line is checked against known speaker patterns, and speaker data is extracted and merged.
+     *
+     * @param content The text content to parse for speakers.
+     * @return A list of unique {@link SpeakerDto} objects with merged data.
+     */
+    public static List<SpeakerDto> parseSpeakers(final String content) {
+        if (StringUtils.isBlank(content)) {
+            return Collections.emptyList();
+        }
+
+        List<String> originalLines = new ArrayList<>(Arrays.asList(content.split("\\R")));
+        Map<String, SpeakerDto> speakerMap = new HashMap<>();
+
+        for (final String line : originalLines) {
+            final String trimmedLine = line.trim();
+            final Matcher formalMatcher = SPEAKER_FORMAL_PATTERN.matcher(trimmedLine);
+            SpeakerDto newSpeaker = null;
+            if (formalMatcher.find()) {
+                newSpeaker = parseSpeakerInfo(formalMatcher);
+            } else {
+                final Matcher partyMatcher = SPEAKER_WITH_PARTY_PATTERN.matcher(trimmedLine);
+                if (partyMatcher.find()) {
+                    newSpeaker = parseSpeakerInfo(partyMatcher);
+                }
+            }
+
+            addSpeakerToMap(newSpeaker, speakerMap);
+        }
+
+        return new ArrayList<>(speakerMap.values());
+    }
+
+    /**
+     * Counts the number of non-null and non-blank fields in a {@link SpeakerDto}.
+     *
+     * @param speaker The speaker to check.
+     * @return The count of non-null fields.
+     */
+    private static int countNonNullFields(SpeakerDto speaker) {
+        int count = 0;
+        if (StringUtils.isNotBlank(speaker.getFirstName())) count++;
+        if (StringUtils.isNotBlank(speaker.getLastName())) count++;
+        if (StringUtils.isNotBlank(speaker.getGender())) count++;
+        if (StringUtils.isNotBlank(speaker.getFunction())) count++;
+        if (StringUtils.isNotBlank(speaker.getParty())) count++;
+        return count;
+    }
+
+    /**
+     * Checks if a {@link SpeakerDto} has at least one non-null and non-blank field.
+     *
+     * @param speaker The speaker to check.
+     * @return True if at least one field is non-null, false otherwise.
+     */
+    public static boolean hasNonNullFields(SpeakerDto speaker) {
+        return countNonNullFields(speaker) > 0;
+    }
+
+    /**
+     * Parses a {@link SpeakerDto} from a regex matcher.
+     * Extracts gender, name, function, and party information.
+     *
+     * @param matcher The matcher with named groups for speaker info.
+     * @return A {@link SpeakerDto} with extracted data.
+     */
+    private static SpeakerDto parseSpeakerInfo(final Matcher matcher) {
+        String gender = "Mme".equals(matcher.group("gender")) ? "F" : "M";
+        String fullName = matcher.group("name").trim();
+        String function = null, party = null;
+
+        try {
+            function = matcher.group("function") != null ? matcher.group("function").trim() : null;
+        } catch (Exception e) {
+            // No log required
+        }
+        try {
+            party = matcher.group("party") != null ? matcher.group("party").trim() : null;
+        } catch (Exception e) {
+            // No log required
+        }
+        // Simple logic to split name: last word is last name, rest is first name.
+        // This is a simplification and might not cover all edge cases (e.g., "di Marco").
+        String[] nameParts = fullName.split("\\s+");
+        String lastName = (nameParts.length > 0) ? nameParts[nameParts.length - 1] : "";
+        String firstName = String.join(" ", Arrays.copyOf(nameParts, nameParts.length - 1));
+
+        return SpeakerDto.builder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .gender(gender)
+            .function(function)
+            .party(party)
+            .build();
+    }
+
+    /**
+     * Adds a speaker to a map, merging data if the speaker already exists.
+     * If the new speaker has more information, missing fields in the existing speaker are filled.
+     *
+     * @param newSpeaker The new speaker to add or merge.
+     * @param speakerMap The map of speakers, keyed by full name.
+     */
+    public static void addSpeakerToMap(final SpeakerDto newSpeaker, final Map<String, SpeakerDto> speakerMap) {
+        if (newSpeaker != null) {
+            String key = newSpeaker.getSpeakerFullName();
+            SpeakerDto existing = speakerMap.get(key);
+            if (existing == null || hasNonNullFields(newSpeaker)) {
+                if (existing == null) {
+                    speakerMap.put(key, newSpeaker);
+                } else {
+                    SpeakerMapper.INSTANCE.partialUpdate(existing, newSpeaker);
+                }
+            }
+
+            final var mapper = Mappers.getMapper(SpeakerMapper.class);
+            if (existing != null) {
+                mapper.partialUpdate(existing, newSpeaker);
+            } else {
+                speakerMap.put(newSpeaker.getSpeakerFullName(), newSpeaker);
+            }
+        }
+    }
+
+    /**
+     * Adds a speaker to a list, merging data if a speaker with the same full name already exists.
+     *
+     * @param newSpeaker  The new speaker to add or merge.
+     * @param speakerList The list of speakers to update.
+     */
+    public static void addSpeakerToList(final SpeakerDto newSpeaker, final Collection<SpeakerDto> speakerList) {
+        if (newSpeaker != null) {
+            final Map<String, SpeakerDto> speakerMap = CollectionUtils.emptyIfNull(speakerList).stream().collect(Collectors.toMap(SpeakerDto::getSpeakerFullName, Function.identity()));
+            addSpeakerToMap(newSpeaker, speakerMap);
+        }
+    }
+}
+@UtilityClass
+public final class CsvParserUtils {
+    public static final Character DEFAULT_SEPARATOR = '¬';
+
+    /**
+     * Parses a delimiter-separated file into a list of Java beans of the specified type.
+     * Uses the default separator '¬'.
+     *
+     * @param inputStream the input stream of the CSV file (UTF-8 encoded)
+     * @param clazz       the class type to map each row to
+     * @param <T>         the type of the bean
+     * @return a list of parsed objects of type T
+     * @throws EventParseException if parsing fails
+     */    public static <T> List<T> parse(final InputStream inputStream, final Class<T> clazz) {
+        return parse(inputStream, clazz, null);
+    }
+
+    /**
+     * Parses a delimiter-separated file into a list of Java beans of the specified type.
+     * Allows specifying a custom separator.
+     *
+     * @param inputStream the input stream of the CSV file (UTF-8 encoded)
+     * @param clazz       the class type to map each row to
+     * @param separator   the delimiter character to use (if null, uses default '¬')
+     * @param <T>         the type of the bean
+     * @return a list of parsed objects of type T
+     * @throws EventParseException if parsing fails
+     */    public static <T> List<T> parse(final InputStream inputStream, final Class<T> clazz, final Character separator) {
+        try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+            return new CsvToBeanBuilder<T>(reader)
+                .withType(clazz)
+                .withSeparator(separator != null ? separator : DEFAULT_SEPARATOR)
+                .withIgnoreLeadingWhiteSpace(true)
+                .build()
+                .parse();
+        } catch (Exception e) {
+            // In a real application, use a more specific exception and logging
+            throw new EventParseException("Failed to parse the CSV file", e);
+        }
+    }
+}

@@ -1,0 +1,46 @@
+<h2>File Matching</h2>
+<p>Please upload the verbatim and event files to start the matching process.</p>
+
+<nz-form nzLayout="vertical">
+  <nz-form-item>
+    <nz-form-label>Session Identifier</nz-form-label>
+    <nz-form-control>
+      <input nz-input [(ngModel)]="sessionIdentifier" name="sessionIdentifier" placeholder="e.g. 2020.001">
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Verbatim File</nz-form-label>
+    <nz-form-control>
+      <nz-upload
+        [(nzFileList)]="verbatimFile"
+        [nzBeforeUpload]="(file, list) => beforeUpload(file, list, 'verbatim')"
+      >
+        <button nz-button>
+          <span nz-icon nzType="upload"></span>
+          Select Verbatim File
+        </button>
+      </nz-upload>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Event File</nz-form-label>
+    <nz-form-control>
+      <nz-upload
+        [(nzFileList)]="eventFile"
+        [nzBeforeUpload]="(file, list) => beforeUpload(file, list, 'event')"
+      >
+        <button nz-button>
+          <span nz-icon nzType="upload"></span>
+          Select Event File
+        </button>
+      </nz-upload>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control>
+      <button nz-button nzType="primary" (click)="startMatching()" [disabled]="!sessionIdentifier || verbatimFile.length === 0 || eventFile.length === 0">
+        Start Matching
+      </button>
+    </nz-form-control>
+  </nz-form-item>
+</nz-form>

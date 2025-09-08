@@ -1,0 +1,267 @@
+/**
+ * @author LKE
+ * @created on 28.08.2025
+ */
+@RestController
+@RequestMapping("/api/event")
+@RequiredArgsConstructor
+@Tag(name = "Event Management", description = "Endpoints for managing session events.")
+public class EventResource {
+
+    private final EventParserService eventParserService;
+
+    @PostMapping("/hierarchy")
+    @Operation(summary = "")
+    public ResponseEntity<ResultDto<ParsedEventDto>> hierarchy(
+        @Parameter(description = "The event EVT file to upload for parsing")
+        @RequestParam("file") MultipartFile file) throws IOException {
+
+        final var result = eventParserService.parse(file.getInputStream());
+        return ResponseEntity.ok(ResultDto.<ParsedEventDto>builder()
+            .success(true)
+            .data(result)
+            .message("Event hierarchy parsed successfully.")
+            .build());
+    }
+
+    /**
+     * Parses an uploaded verbatim DOCX file and returns its plain text content directly.
+     * This endpoint is for preview purposes and does not save the file or its content.
+     *
+     * @param file The verbatim DOCX file to parse.
+     * @return A string with the verbatim's parsed text content.
+     */
+    @PostMapping("/parse")
+    @Operation(summary = "Parses an event EVT and returns the content in JSON")
+    public ResponseEntity<ResultDto<ParsedEventDto>> parse(
+        @Parameter(description = "The event EVT file to upload for parsing")
+        @RequestParam("file") MultipartFile file) throws IOException {
+
+        final var result = eventParserService.parse(file.getInputStream(), true);
+        return ResponseEntity.ok(ResultDto.<ParsedEventDto>builder()
+            .success(true)
+            .data(result)
+            .message("Event parsed successfully.")
+            .build());
+    }
+
+}
+/**
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/matching")
+@RequiredArgsConstructor
+public class MatchingResource {
+    private final SessionService sessionService;
+    private final MatchingVersionService matchingVersionService;
+
+    @PostMapping("/{sessionIdentifier}/start")
+    @Operation(summary = "Upload a verbatim Word document for a specific session")
+    public ResponseEntity<ResultDto<MatchingVersionDto>> start(
+        @PathVariable String sessionIdentifier,
+        @RequestParam(value = "verbatim") MultipartFile verbatimFile,
+        @RequestParam(value = "rule", required = false) MultipartFile matchingFile) throws IOException {
+        log.info("Uploading verbatim Word document for a specific session: {}", sessionIdentifier);
+
+        for (ValidationResult validation : new ValidationResult[]{
+            SessionResourceValidator.validateVerbatimFile(verbatimFile),
+            SessionResourceValidator.validateMatchingFile(matchingFile)}) {
+            if (!validation.isValid()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDto.<MatchingVersionDto>builder()
+                        .success(false)
+                        .message(validation.getMessage())
+                        .build());
+            }
+        }
+
+        final var result = matchingVersionService.startMatching(sessionIdentifier, verbatimFile, matchingFile);
+        return ResponseEntity.ok(ResultDto.<MatchingVersionDto>builder()
+            .success(true)
+            .data(result)
+            .message("Verbatim document uploaded successfully.")
+            .build());
+    }
+
+    @PutMapping("/{sessionIdentifier}/update")
+    @Operation(summary = "Update a single intervention's match manually")
+    public ResponseEntity<ResultDto<MatchingVersionDto>> update(
+        @PathVariable String sessionIdentifier, @Valid @RequestBody UpdateMatchRequest request) throws UpdateMatchException {
+        log.info("Updating intervention match for session: {}", sessionIdentifier);
+
+        final var updated = matchingVersionService.updateVersion(sessionIdentifier, request);
+        return ResponseEntity.ok(ResultDto.<MatchingVersionDto>builder()
+            .success(true)
+            .data(updated)
+            .message("Intervention match updated successfully.")
+            .build());
+    }
+    @PostMapping("/{sessionIdentifier}/{version}/validate")
+    @Operation(summary = "Validate and finalize the matching for a session")
+    public ResponseEntity<ResultDto<MatchingVersionDto>> validate(@PathVariable String sessionIdentifier, @PathVariable Integer version) {
+        final var result = matchingVersionService.validateVersion(sessionIdentifier, version);
+        return ResponseEntity.ok(ResultDto.<MatchingVersionDto>builder()
+            .success(true)
+            .data(result)
+            .message("Matching version validated successfully.")
+            .build());
+    }
+
+    @GetMapping("/{sessionIdentifier}")
+    @Operation(summary = "Get matching results for correction")
+    public ResponseEntity<ResultDto<List<MatchingVersionDto>>> getAll(@PathVariable String sessionIdentifier) {
+        log.info("Fetching matching results for session: {}", sessionIdentifier);
+
+        List<MatchingVersionDto> results = matchingVersionService.getAllVersions(sessionIdentifier);
+        return ResponseEntity.ok(ResultDto.<List<MatchingVersionDto>>builder()
+            .success(true)
+            .data(results)
+            .message("Matching results fetched successfully.")
+            .build());
+    }
+
+    @DeleteMapping("/{sessionIdentifier}/{version}")
+    @Operation(summary = "Cancel/remove a specific matching version for a session")
+    public ResponseEntity<ResultDto<Void>> remove(@PathVariable String sessionIdentifier, @PathVariable Integer version) {
+        log.info("Removing matching version {} for session {}", version, sessionIdentifier);
+
+        matchingVersionService.deleteMatchingVersion(sessionIdentifier, version);
+        return ResponseEntity.ok(ResultDto.<Void>builder()
+            .success(true)
+            .message("Matching version removed successfully.")
+            .build());
+    }
+
+    @DeleteMapping("/{sessionIdentifier}/version/latest")
+    @Operation(summary = "Cancel/remove the latest matching version for a session")
+    public ResponseEntity<ResultDto<Void>> removeLatest(@PathVariable String sessionIdentifier) {
+        log.info("Removing latest matching version for session {}", sessionIdentifier);
+
+        matchingVersionService.deleteLatestMatchingVersion(sessionIdentifier);
+        return ResponseEntity.ok(ResultDto.<Void>builder()
+            .success(true)
+            .message("Latest matching version removed successfully.")
+            .build());
+    }
+
+    @GetMapping("/{sessionIdentifier}/{version}/export")
+    @Operation(summary = "Export a matching result for a session and version in JSON, XML, or CSV format")
+    public ResponseEntity<Resource> export(
+        @PathVariable String sessionIdentifier,
+        @PathVariable Integer version,
+        @RequestParam OutputFileFormat format) throws IOException {
+        log.info("Exporting matching result for session {} and version {} to format '{}'", sessionIdentifier, version, format);
+
+        final var filename = String.format("matching_%s_v%d.%s", sessionIdentifier, version, format.name().toLowerCase());
+        final var file = "attachment; filename=" + filename;
+        final var exportedMatchingResult = matchingVersionService.exportMatchingResult(sessionIdentifier, version, format);
+        final var content = exportedMatchingResult.getBytes(StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, file)
+            .header(HttpHeaders.CONTENT_TYPE, switch (format) {
+                case JSON -> MediaType.APPLICATION_JSON_VALUE;
+                case XML -> MediaType.APPLICATION_XML_VALUE;
+                case CSV -> "text/csv";
+            })
+            .body(new ByteArrayResource(content));
+    }
+
+    /*
+        @PostMapping("/{sessionIdentifier}/reconcile")
+        @Operation(summary = "Reconcile verbatim and event files for a session")
+        public ResponseEntity<ResultDto<MatchingResultDto>> reconcile(
+            @PathVariable String sessionIdentifier,
+            @RequestParam(value = "verbatim") MultipartFile verbatimFile,
+            @RequestParam(value = "event") MultipartFile eventFile,
+            @RequestParam(value = "rule", required = false) MultipartFile matchingFile) throws IOException {
+            log.info("Reconciling verbatim and event files for session: {}", sessionIdentifier);
+
+            final var validation = SessionResourceValidator.validateVerbatimFile(matchingFile);
+
+            if (!validation.isValid()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDto.<MatchingResultDto>builder()
+                        .success(false)
+                        .message(validation.getMessage())
+                        .build());
+            }
+
+            final var matchingRules = matchingFile != null ? CsvParserUtils.parse(matchingFile.getInputStream(), MatchingRuleDto.class) : null;
+            final var result = matchingProcessorService.process(sessionIdentifier, verbatimFile.getInputStream(), eventFile.getInputStream(), matchingRules);
+
+            return ResponseEntity.ok(ResultDto.<MatchingResultDto>builder()
+                .success(true)
+                .data(result)
+                .message("Reconciliation completed successfully.")
+                .build());
+        }
+    */
+}
+/**
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/sessions")
+@RequiredArgsConstructor
+public class SessionResource {
+    private final SessionService sessionService;
+
+    @GetMapping
+    @Operation(summary = "List available sessions for processing")
+    public ResponseEntity<ResultDto<List<SessionDto>>> getAllSessions() {
+        final var sessions = sessionService.getAll();
+        return ResponseEntity.ok(ResultDto.<List<SessionDto>>builder()
+            .success(true)
+            .data(sessions)
+            .message("Available sessions fetched successfully.")
+            .build());
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "Create a new session")
+    public ResponseEntity<ResultDto<SessionDto>> createSession(@Valid @RequestBody SessionCreateDto sessionCreateDto) {
+        final var created = sessionService.createSession(sessionCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ResultDto.<SessionDto>builder()
+                .success(true)
+                .data(created)
+                .message("Session created successfully.")
+                .build());
+    }
+}
+/**
+ * @author LKE
+ * @created on 28.08.2025
+ */
+@RestController
+@RequestMapping("/api/verbatim")
+@RequiredArgsConstructor
+@Tag(name = "Verbatim Management", description = "Endpoints for uploading and managing verbatim documents.")
+public class VerbatimResource {
+
+    private final VerbatimParserService verbatimParserService;
+
+    /**
+     * Parses an uploaded verbatim DOCX file and returns its plain text content directly.
+     * This endpoint is for preview purposes and does not save the file or its content.
+     *
+     * @param file The verbatim DOCX file to parse.
+     * @return A string with the verbatim's parsed text content.
+     */
+    @PostMapping("/parse")
+    @Operation(summary = "Parses a verbatim DOCX and returns the content as JSON")
+    public ResponseEntity<ParsedVerbatimDto> parse(
+        @Parameter(description = "The verbatim DOCX file to upload for parsing")
+        @RequestParam("file") MultipartFile file,
+        @Parameter(description = "The session identifier of the verbatim file")
+        @RequestParam("sessionIdentifier") String sessionIdentifier) throws IOException {
+
+        final var parsedVerbatimDto = verbatimParserService.parse(file.getInputStream(), sessionIdentifier);
+        return ResponseEntity.ok().body(parsedVerbatimDto);
+    }
+}

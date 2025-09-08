@@ -1,0 +1,71 @@
+/**
+ * Repository interface for accessing and managing MatchingVersion entities.
+ * <p>
+ * Provides methods to query matching versions by session ID, session identifier, and version number.
+ * Includes custom queries for fetching the latest version, checking existence, and retrieving versions with session details.
+ * </p>
+ *
+ * <ul>
+ *   <li>findLatestVersionBySessionId: Returns the highest version number for a given session ID.</li>
+ *   <li>findTopBySessionIdOrderByVersionDesc: Returns the latest MatchingVersion entity for a session ID.</li>
+ *   <li>findBySessionIdAndVersion: Fetches a MatchingVersion by session ID and version, including session details.</li>
+ *   <li>findBySessionIdentifierAndVersion: Fetches a MatchingVersion by session identifier and version, including session details.</li>
+ *   <li>findBySessionIdentifierOrderByVersionDesc: Lists all MatchingVersions for a session identifier, ordered by version descending.</li>
+ *   <li>existsBySessionIdentifier: Checks if any MatchingVersion exists for a given session identifier.</li>
+ * </ul>
+ *
+ * @author LKE
+ * @created on 02.09.2025
+ */
+@Repository
+public interface MatchingVersionRepository extends JpaRepository<MatchingVersion, Long> {
+    /**
+     * Finds the highest version number for a given session identifier.
+     *
+     * @param sessionIdentifier the identifier of the session
+     * @return an Optional containing the highest version number, or empty if none found
+     */
+    default Integer findLatestVersionNumberBySessionIdentifier(String sessionIdentifier) {
+        return findLatestBySessionIdentifier(sessionIdentifier)
+            .map(MatchingVersion::getVersion)
+            .orElse(0);
+    }
+
+    /**
+     * Fetches a MatchingVersion by session identifier and version, including session details.
+     *
+     * @param sessionIdentifier the unique identifier of the session
+     * @param version           the version number
+     * @return an Optional containing the MatchingVersion, or empty if not found
+     */
+    @Query("SELECT mv FROM MatchingVersion mv JOIN FETCH mv.session WHERE mv.session.sessionIdentifier = :sessionIdentifier AND mv.version = :version")
+    Optional<MatchingVersion> findBySessionIdentifierAndVersion(@Param("sessionIdentifier") String sessionIdentifier, @Param("version") Integer version);
+
+    /**
+     * Lists all MatchingVersions for a session identifier, ordered by version descending.
+     *
+     * @param sessionIdentifier the unique identifier of the session
+     * @return a List of MatchingVersion entities ordered by version descending
+     */
+    @Query("SELECT mv FROM MatchingVersion mv JOIN FETCH mv.session WHERE mv.session.sessionIdentifier = :sessionIdentifier ORDER BY mv.version DESC")
+    List<MatchingVersion> findAllBySessionIdentifier(@Param("sessionIdentifier") String sessionIdentifier);
+
+    /**
+     * Finds the latest MatchingVersion entity for a given session identifier (top 1 by version desc).
+     *
+     * @param sessionIdentifier the identifier of the session
+     * @return an Optional containing the latest MatchingVersion, or empty if none found
+     */
+    @Query("SELECT mv FROM MatchingVersion mv JOIN FETCH mv.session WHERE mv.session.sessionIdentifier = :sessionIdentifier ORDER BY mv.version DESC LIMIT 1")
+    Optional<MatchingVersion> findLatestBySessionIdentifier(@Param("sessionIdentifier") String sessionIdentifier);
+}
+/**
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Repository
+public interface SessionRepository extends JpaRepository<Session, Long> {
+    Optional<Session> findBySessionIdentifier(String sessionIdentifier);
+
+    boolean existsBySessionIdentifier(String sessionIdentifier);
+}

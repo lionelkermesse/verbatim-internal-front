@@ -1,0 +1,34 @@
+<nz-table #innerResultTable [nzData]="items" nzBordered nzSimple [nzFrontPagination]="false">
+  <thead>
+    <tr>
+      <th nzWidth="40%">Verbatim</th>
+      <th>Event</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template ngFor let-data [ngForOf]="innerResultTable.data">
+      <tr [ngClass]="getNzTableRowClass(data)">
+        <td [nzIndentSize]="data.level * 20" [nzShowExpand]="data.inners.length > 0" [(nzExpand)]="data.expand">
+          {{ data.verbatim }}
+        </td>
+        <td>{{ data.title }}</td>
+        <td>{{ data.status }}</td>
+        <td>
+          <div *ngIf="isUnmatched(data)">
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a speaker" [(ngModel)]="selectedSpeaker">
+              <nz-option *ngFor="let speaker of speakers" [nzLabel]="speaker.fullName" [nzValue]="speaker"></nz-option>
+            </nz-select>
+            <button nz-button nzType="primary" [disabled]="!selectedSpeaker" (click)="updateMatch(data)">Update</button>
+          </div>
+        </td>
+      </tr>
+      <tr [nzExpand]="data.expand">
+        <td colspan="4">
+          <app-matching-result-inner [items]="data.inners" [speakers]="speakers"></app-matching-result-inner>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</nz-table>

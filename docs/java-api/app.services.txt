@@ -1,0 +1,1117 @@
+package lu.chd.digital.verbatim.service;
+
+import com.opencsv.CSVWriter;
+import lu.chd.digital.verbatim.service.dto.MatchingResultItemDto;
+import lu.chd.digital.verbatim.service.dto.SpeakerDto;
+import org.springframework.stereotype.Service;
+
+import java.io.StringWriter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+/**
+ * @author LKE
+ * @created on 29.08.2025
+ */
+@Service
+public class CsvExportService {
+
+    public String exportToCsv(List<MatchingResultItemDto> results) {
+        try (StringWriter writer = new StringWriter();
+             CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            // Header
+            csvWriter.writeNext(new String[]{"Intervention Content", "Intervention Line", "Event Title", "Event Speakers", "Status"});
+
+            // Data
+            for (MatchingResultItemDto result : results) {
+                csvWriter.writeNext(new String[]{
+                    result.getVerbatim(),
+                    String.valueOf(result.getLineNumber()),
+                    result.getTitle(),
+                    result.getSpeakers().stream().map(SpeakerDto::getSpeakerFullName).collect(Collectors.joining(" - ")),
+                    result.getStatus().name()
+                });
+            }
+            return writer.toString();
+        } catch (Exception e) {
+            // Handle exception
+            throw new RuntimeException("Failed to export matching results to CSV", e);
+        }
+    }
+}
+@Slf4j
+@Service
+public class EventParserService {
+    @Value("${app.processing.separator:¬}")
+    private Character separator;
+
+    /**
+     * Parses a delimiter-separated event file into a list of EventDTOs.
+     * The file is expected to use '¬' as a separator.
+     *
+     * @param inputStream The input stream of the EVT.TXT file.
+     * @return A list of parsed EventDTO objects.
+     */
+    public ParsedEventDto parse(final InputStream inputStream) {
+        return parse(inputStream, false);
+    }
+
+    /**
+     * Parses a delimiter-separated event file into a list of EventDTOs.
+     * The file is expected to use '¬' as a separator.
+     *
+     * @param inputStream The input stream of the EVT.TXT file.
+     * @return A list of parsed EventDTO objects.
+     */
+    public ParsedEventDto parse(final InputStream inputStream, final boolean flat) {
+        try {
+            final var flatEvents = CsvParserUtils.parse(inputStream, EventDto.class, separator);
+            return flat ? ParsedEventDto.builder().root(flatEvents).build() : buildHierarchy(flatEvents);
+        } catch (Exception e) {
+            // In a real application, use a more specific exception and logging
+            throw new EventParseException("Failed to parse Event CSV file", e);
+        }
+    }
+
+    /**
+     * Builds a hierarchical list of events from a flat list.
+     * The hierarchy is determined by the 'hierarchie' property of the EventDto.
+     * An event with hierarchy 'N' is considered a child of the last processed event with hierarchy 'N-1'.
+     *
+     * @param flatEvents A flat list of EventDto, expected to be sorted by rank.
+     * @return A list of root EventDto objects (hierarchy '1'), with their 'details' lists populated recursively.
+     */
+    private ParsedEventDto buildHierarchy(final List<EventDto> flatEvents) {
+        final var parsedEventDto = new ParsedEventDto();
+
+        if (CollectionUtils.isEmpty(flatEvents)) {
+            return parsedEventDto;
+        }
+
+        // Ensure the list is sorted by rank for correct processing.
+        Collections.sort(flatEvents);
+
+        // This map holds the most recent parent event for each hierarchy level.
+        // Key: Hierarchy level (e.g., 1, 2, 3)
+        // Value: The last EventDto seen at that level.
+        final Map<Integer, EventDto> currentParents = new HashMap<>();
+
+        for (final EventDto event : flatEvents) {
+            // It's safer to handle potential parsing errors for the hierarchy string.
+            int hierarchyLevel;
+            try {
+                hierarchyLevel = Integer.parseInt(event.getHierarchy());
+            } catch (NumberFormatException e) {
+                log.warn("Invalid hierarchy value: '{}', event={}", event.getHierarchy(), event);
+                continue;
+            }
+
+            if (hierarchyLevel == 1) {
+                // This is a top-level event.
+                parsedEventDto.addRootEvent(event);
+                currentParents.put(hierarchyLevel, event);
+            } else {
+                // This is a child event. Its parent is the last event with hierarchy 'level - 1'.
+                EventDto parent = currentParents.get(hierarchyLevel - 1);
+
+                if (parent != null) {
+                    // Add the current event to its parent's details list.
+                    parent.getDetails().add(event);
+                } else {
+                    // This is an orphan event (e.g., hierarchy 3 with no preceding hierarchy 2).
+                    // We'll log this and add it to a separate list for error handling.
+                    log.warn("Orphan event detected: hierarchy={}, event={}", event.getHierarchy(), event);
+                    parsedEventDto.addOrphan(event);
+                }
+
+                // The current event now becomes the potential parent for the next level.
+                currentParents.put(hierarchyLevel, event);
+            }
+        }
+
+        // Return the fully populated ParsedEventDto object.
+        return parsedEventDto.updateMedatadata();
+    }
+}
+/**
+ * Service responsible for matching verbatim text records to event records using configurable strategies.
+ * <p>
+ * The matching process attempts to pair each verbatim with an event based on title similarity or correspondence,
+ * and reports both matched and unmatched records for further processing or review.
+ * </p>
+ * <ul>
+ *     <li>Uses {@link MatchingUtils#isMatch(String, String, MatchingConfig, List)} for matching logic.</li>
+ *     <li>Relies on {@link MatchingConfig} for rule strategies.</li>
+ *     <li>Returns a {@link MatchingResultDto} containing both matched and unmatched results.</li>
+ * </ul>
+ *
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MatchingAlgorithmService {
+    private static final Pattern PARENTHETICAL_PATTERN = Pattern.compile("^\\(([^)]+)\\)");
+    private static final Pattern INNER_EVENT_TEXT_PATTERN = Pattern.compile("^([0-9][0-9.]*?)\\s+(.+)$");
+
+    private final MatchingConfig matchingConfig;
+
+    /**
+     * Executes the matching algorithm, which now includes hierarchical processing of inner events.
+     * <p>
+     * Matches verbatim records to event records using configurable strategies. It processes root events and their details recursively,
+     * builds matched and unmatched result lists, and returns a {@link MatchingResultDto} containing all results.
+     * </p>
+     *
+     * @param parsedVerbatimDto DTO containing verbatim text records to be matched.
+     * @param parsedEventDto    DTO containing event records to be matched against.
+     * @param matchingRules     List of matching rules to use for this run. If null or empty, default config is used.
+     * @return MatchingResultDto containing both matched and unmatched results.
+     */
+    @Transactional
+    public MatchingResultDto runMatching(final ParsedVerbatimDto parsedVerbatimDto, final ParsedEventDto parsedEventDto, final List<MatchingRuleDto> matchingRules) {
+        log.info("Starting matching process for {} verbatim records and {} root event records.",
+            parsedVerbatimDto.verbatims().size(), parsedEventDto.getRoot().size());
+
+        // Use per-run config if matchingRules is provided
+        final MatchingConfig runConfig = CollectionUtils.isNotEmpty(matchingRules)
+            ? matchingConfig.copyWithCorrespondences(matchingRules)
+            : matchingConfig;
+
+        final List<VerbatimTextRecord> verbatimRecords = new ArrayList<>(parsedVerbatimDto.verbatims());
+        final List<EventDto> rootEvents = new ArrayList<>(parsedEventDto.getRoot());
+
+        final Set<VerbatimTextRecord> matchedVerbatims = new HashSet<>();
+        // Initial match of root events to verbatim records
+        for (EventDto rootEvent : rootEvents) {
+            for (VerbatimTextRecord verbatim : verbatimRecords) {
+                if (MatchingUtils.isMatch(verbatim.getTitle(), rootEvent.getTitle(), runConfig,
+                    List.of(MatchingConfig.MatchingRuleStrategy.CORRESPONDANCE, MatchingConfig.MatchingRuleStrategy.SIMILARITY))) {
+
+                    rootEvent.setVerbatim(verbatim);
+                    matchedVerbatims.add(verbatim);
+                    break;
+                }
+            }
+        }
+
+        List<MatchingResultItemDto> matchedResults = new ArrayList<>();
+        List<MatchingResultItemDto> unmatchedResults = new ArrayList<>();
+
+        // Process the entire event hierarchy for matches and convert to the result DTO structure
+        for (EventDto rootEvent : rootEvents) {
+            MatchingResultItemDto resultItem = processRootEvent(rootEvent, rootEvent.getVerbatim());
+            if (rootEvent.getVerbatim() != null) {
+                matchedResults.add(resultItem);
+            } else {
+                unmatchedResults.add(resultItem);
+            }
+        }
+
+        // Handle unmatched verbatim records
+        verbatimRecords.stream()
+            .filter(v -> !matchedVerbatims.contains(v))
+            .forEach(v -> unmatchedResults.add(MatchingResultItemDto.builder()
+//                .id(v.getKey()) TODO: find a logic to set new ID and line number -> loop recursively on all event and inner to get MAX ID and increment by 1
+                .verbatim(v.getText())
+                .lineNumber(v.getLineNumber())
+                .title(v.getTitle())
+                .speakers(getSpeakers(null, v))
+                .status(MatchingStatus.UNMATCHED)
+                .build()));
+
+        log.info("Matching process completed. Matched items: {}, Unmatched items: {}.",
+            matchedResults.size(), unmatchedResults.size());
+
+        return MatchingResultDto.builder()
+            .result(CollectionUtils.collate(matchedResults, unmatchedResults))
+            .build();
+    }
+
+    /**
+     * Recursively processes an event and its details to match inner events and convert the hierarchy
+     * into a nested MatchingResultItemDto structure.
+     * <p>
+     * For each event, if a verbatim is matched and details exist, it attempts to match those details as well.
+     * The method is called recursively for all inner events.
+     * </p>
+     *
+     * @param rootEvent The event to process.
+     * @param verbatim  The verbatim text record matched to this event, or null if unmatched.
+     * @return A MatchingResultItemDto that mirrors the structure of the input event, including inners.
+     */
+    private MatchingResultItemDto processRootEvent(final EventDto rootEvent, final VerbatimTextRecord verbatim) {
+        // 1. If this event has a matched verbatim text and contains details, attempt to match those details.
+        if (verbatim != null && CollectionUtils.isNotEmpty(rootEvent.getDetails())) {
+            matchVerbatimOfEventDetails(rootEvent.getDetails(), verbatim.getText());
+        }
+
+        // 2. Recursively process and convert any inner events (details).
+        List<MatchingResultItemDto> innerInterventions = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(rootEvent.getDetails())) {
+            for (EventDto detail : rootEvent.getDetails()) {
+                innerInterventions.add(processRootEvent(detail, verbatim)); // Recursive call
+            }
+        }
+
+        // 3. Build the final DTO for the current event, including any nested results.
+        return MatchingResultItemDto.builder()
+            .id(rootEvent.getEventId())
+            .title(rootEvent.getTitle())
+            .verbatim(rootEvent.getVerbatim() != null ? rootEvent.getVerbatim().getText() : null)
+            .lineNumber(rootEvent.getRank())
+            .speakers(getSpeakers(rootEvent, rootEvent.getVerbatim()))
+            .status(rootEvent.getVerbatim() != null ? MatchingStatus.AUTOMATICALLY_MATCHED : MatchingStatus.UNMATCHED)
+            .inners(innerInterventions)
+            .build();
+    }
+
+    /**
+     * Attempts to match verbatim text to a list of event details, using title and speaker extraction algorithms.
+     * <p>
+     * For each event detail, tries to extract relevant text from the verbatim and assigns it as a temporary verbatim record.
+     * Recursively processes further details if present.
+     * </p>
+     *
+     * @param events       List of event details to process.
+     * @param verbatimText The verbatim text to match against.
+     */
+    private void matchVerbatimOfEventDetails(final List<EventDto> events, final String verbatimText) {
+        if (StringUtils.isBlank(verbatimText)) {
+            return;
+        }
+
+        final List<String> verbatimLines = Arrays.asList(verbatimText.split("\\R"));
+        final List<String> remainingLines = new ArrayList<>(verbatimLines);
+
+        for (EventDto event : events) {
+            String extractedText = extractEventTextByTitle(event, remainingLines);
+            if (StringUtils.isBlank(extractedText)) {
+                extractedText = extractTextBySpeaker(event, remainingLines);
+            }
+
+            if (StringUtils.isNotBlank(extractedText)) {
+                // Remove extracted lines from remainingLines
+                LinkedList<String> extractedLines = new LinkedList<>(Arrays.asList(extractedText.split("\\R")));
+                remainingLines.removeAll(extractedLines);
+
+                // Remove title
+                extractedLines.pollFirst();
+                extractedText = String.join("\n", extractedLines);
+
+                // Create a temporary verbatim record for the inner event
+                final var speakers = SpeakerUtils.parseSpeakers(extractedText);
+                SpeakerUtils.addSpeakerToList(event.getSpeaker(), speakers);
+                VerbatimTextRecord innerVerbatim = VerbatimTextRecord.builder()
+                    .title(event.getTitle())
+                    .text(extractedText)
+                    .speakers(speakers)
+                    .build();
+                event.setVerbatim(innerVerbatim);
+            }
+            if (CollectionUtils.isNotEmpty(event.getDetails())) {
+                matchVerbatimOfEventDetails(event.getDetails(), String.join("\n", remainingLines));
+            }
+        }
+    }
+
+    /**
+     * Extracts text for an inner event based on speaker name matching.
+     * <p>
+     * Searches verbatim lines for the speaker's full name, then collects lines until another speaker or end is found.
+     * </p>
+     *
+     * @param innerEvent    The event to match by speaker.
+     * @param verbatimLines List of verbatim text lines.
+     * @return Extracted text block for the speaker, or null if not found.
+     */
+    private String extractTextBySpeaker(final EventDto innerEvent, final List<String> verbatimLines) {
+        final String speakerFullName = innerEvent.getSpeakerFullName();
+        if (StringUtils.isBlank(speakerFullName)) {
+            return null;
+        }
+
+        final StringBuilder extracted = new StringBuilder();
+        boolean isExtracting = false;
+
+        for (final String line : verbatimLines) {
+            if (line.contains(speakerFullName)) {
+                if (isExtracting) break; // Stop if we hit another speaker line of the same speaker
+                isExtracting = true;
+                continue; // Don't include the speaker line itself
+            }
+
+            if (isExtracting) {
+                // Check if the line contains another speaker's name, which would end the current text block.
+                if (line.matches(SpeakerUtils.SPEAKER_FORMAL_PATTERN.pattern()) || line.matches(SpeakerUtils.SPEAKER_WITH_PARTY_PATTERN.pattern())) {
+                    break;
+                }
+                extracted.append(line).append(System.lineSeparator());
+            }
+        }
+
+        return extracted.toString().trim();
+    }
+
+    /**
+     * Extracts text for an event based on title matching.
+     * <p>
+     * Searches verbatim lines for a line matching the event's title, then collects lines until another title is found.
+     * </p>
+     *
+     * @param eventDto      The event to match by title.
+     * @param verbatimLines List of verbatim text lines.
+     * @return Extracted text block for the event title, or empty string if not found.
+     */
+    private String extractEventTextByTitle(final EventDto eventDto, final List<String> verbatimLines) {
+        final String normalizedEventTitle = TextUtils.normalize(eventDto.getTitle());
+        final StringBuilder extracted = new StringBuilder();
+        boolean isExtracting = false;
+
+        for (final String line : verbatimLines) {
+            final Matcher matcher = INNER_EVENT_TEXT_PATTERN.matcher(line);
+            if (!isExtracting && matcher.find()) {
+                final String parentheticalText = TextUtils.normalize(matcher.group(2));
+                if (MatchingUtils.isMatch(parentheticalText, normalizedEventTitle,
+                    matchingConfig,
+                    List.of(MatchingConfig.MatchingRuleStrategy.CORRESPONDANCE, MatchingConfig.MatchingRuleStrategy.SIMILARITY))) {
+                    isExtracting = true;
+//                    continue; // Skip the title line
+                }
+            } else if (isExtracting && matcher.find()) {
+                break; // Stop if we hit another title
+            }
+            if (isExtracting) {
+                extracted.append(line).append(System.lineSeparator());
+            }
+        }
+
+        return extracted.toString().trim();
+    }
+
+    /**
+     * Collects speakers from both event and verbatim sources into a set.
+     * <p>
+     * Combines speakers from the event and the verbatim record, ensuring uniqueness by full name.
+     * </p>
+     *
+     * @param event    The event to extract speakers from (may be null).
+     * @param verbatim The verbatim record to extract speakers from (may be null).
+     * @return Set of SpeakerDto objects representing all speakers for the item.
+     */
+    private Set<SpeakerDto> getSpeakers(final EventDto event, final VerbatimTextRecord verbatim) {
+        final Map<String, SpeakerDto> speakerMap = new HashMap<>();
+
+        if (event != null && StringUtils.isNotBlank(event.getSpeakerFullName())) {
+            final var speaker = SpeakerDto.builder()
+                .firstName(event.getSpeakerFirstName())
+                .lastName(event.getSpeakerLastName())
+                .gender(event.getSpeakerGender())
+                .function(event.getSpeakerFunction())
+                .build();
+            speakerMap.put(speaker.getSpeakerFullName(), speaker);
+        }
+
+        if (verbatim != null && CollectionUtils.isNotEmpty(verbatim.getSpeakers())) {
+            verbatim.getSpeakers().stream()
+                .filter(speaker -> StringUtils.isNotBlank(speaker.getSpeakerFullName()))
+                .forEach(newSpeaker -> addSpeakerToMap(newSpeaker, speakerMap));
+        }
+
+        return new HashSet<>(speakerMap.values());
+    }
+}
+/**
+ * Service responsible for orchestrating the matching process between a verbatim document and an event log.
+ * <p>
+ * This service coordinates parsing the input files (verbatim and events) and then
+ * executes the matching algorithm to find correspondences between them.
+ *
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MatchingProcessorService {
+    private final EventParserService eventParserService;
+    private final VerbatimParserService verbatimParserService;
+    private final MatchingAlgorithmService matchingAlgorithmService;
+
+    /**
+     * Processes the matching between verbatim and event content provided as strings.
+     *
+     * @param sessionIdentifier   A unique identifier for the processing session.
+     * @param verbatimFileContent The content of the verbatim file as a String.
+     * @param eventFileContent    The content of the event file as a String.
+     * @param matchingRules       A varargs array of rules to guide the matching process.
+     * @return A {@link MatchingResultDto} containing the results of the matching, or {@code null} if an error occurs.
+     * @see #process(String, InputStream, InputStream, List)
+     */
+    public MatchingResultDto process(final String sessionIdentifier, final String verbatimFileContent, final String eventFileContent, final MatchingRuleDto... matchingRules) {
+        return process(sessionIdentifier, verbatimFileContent.getBytes(StandardCharsets.UTF_8), eventFileContent.getBytes(StandardCharsets.UTF_8), matchingRules);
+    }
+
+    /**
+     * Processes the matching between verbatim and event content provided as byte arrays.
+     *
+     * @param sessionIdentifier   A unique identifier for the processing session.
+     * @param verbatimFileContent The content of the verbatim file as a byte array.
+     * @param eventFileContent    The content of the event file as a byte array.
+     * @param matchingRules       A varargs array of rules to guide the matching process.
+     * @return A {@link MatchingResultDto} containing the results of the matching, or {@code null} if an error occurs.
+     * @see #process(String, InputStream, InputStream, List)
+     */
+    public MatchingResultDto process(final String sessionIdentifier, final byte[] verbatimFileContent, final byte[] eventFileContent, final MatchingRuleDto... matchingRules) {
+        return process(sessionIdentifier, new ByteArrayInputStream(verbatimFileContent), new ByteArrayInputStream(eventFileContent), matchingRules);
+    }
+
+    /**
+     * Processes the matching between verbatim and event content provided as InputStreams.
+     *
+     * @param sessionIdentifier   A unique identifier for the processing session.
+     * @param verbatimFileContent An InputStream for the verbatim file content.
+     * @param eventFileContent    An InputStream for the event file content.
+     * @param matchingRules       A varargs array of rules to guide the matching process.
+     * @return A {@link MatchingResultDto} containing the results of the matching, or {@code null} if an error occurs.
+     * @see #process(String, InputStream, InputStream, List)
+     */
+    public MatchingResultDto process(final String sessionIdentifier, final InputStream verbatimFileContent, final InputStream eventFileContent, final MatchingRuleDto... matchingRules) {
+        final var rules = matchingRules != null ? Arrays.asList(matchingRules) : new ArrayList<MatchingRuleDto>();
+        return process(sessionIdentifier, verbatimFileContent, eventFileContent, rules);
+    }
+
+    /**
+     * Processes the matching between verbatim and event content provided as strings.
+     *
+     * @param sessionIdentifier   A unique identifier for the processing session.
+     * @param verbatimFileContent The content of the verbatim file as a String.
+     * @param eventFileContent    The content of the event file as a String.
+     * @param matchingRules       A list of rules to guide the matching process.
+     * @return A {@link MatchingResultDto} containing the results of the matching, or {@code null} if an error occurs.
+     * @see #process(String, InputStream, InputStream, List)
+     */
+    public MatchingResultDto process(final String sessionIdentifier, final String verbatimFileContent, final String eventFileContent, final List<MatchingRuleDto> matchingRules) {
+        return process(sessionIdentifier, verbatimFileContent.getBytes(StandardCharsets.UTF_8), eventFileContent.getBytes(StandardCharsets.UTF_8), matchingRules);
+    }
+
+    /**
+     * Processes the matching between verbatim and event content provided as byte arrays.
+     *
+     * @param sessionIdentifier   A unique identifier for the processing session.
+     * @param verbatimFileContent The content of the verbatim file as a byte array.
+     * @param eventFileContent    The content of the event file as a byte array.
+     * @param matchingRules       A list of rules to guide the matching process.
+     * @return A {@link MatchingResultDto} containing the results of the matching, or {@code null} if an error occurs.
+     * @see #process(String, InputStream, InputStream, List)
+     */
+    public MatchingResultDto process(final String sessionIdentifier, final byte[] verbatimFileContent, final byte[] eventFileContent, final List<MatchingRuleDto> matchingRules) {
+        return process(sessionIdentifier, new ByteArrayInputStream(verbatimFileContent), new ByteArrayInputStream(eventFileContent), matchingRules);
+    }
+
+    /**
+     * Core processing method that orchestrates the parsing and matching of verbatim and event data.
+     *
+     * @param sessionIdentifier   A unique identifier for the processing session.
+     * @param verbatimFileContent An InputStream for the verbatim file content.
+     * @param eventFileContent    An InputStream for the event file content.
+     * @param matchingRules       A list of rules to guide the matching process.
+     * @return A {@link MatchingResultDto} containing the results of the matching, or {@code null} if an error occurs during processing.
+     */
+    public MatchingResultDto process(final String sessionIdentifier, final InputStream verbatimFileContent, final InputStream eventFileContent, final List<MatchingRuleDto> matchingRules) {
+        log.info("Processing sessionIdentifier={}", sessionIdentifier);
+        try {
+            // 1. Parse Verbatim from a byte array stored in the session
+            log.info("Parsing verbatim file for sessionIdentifier={}", sessionIdentifier);
+            final InputStream verbatimStream = new ByteArrayInputStream(verbatimFileContent.readAllBytes());
+            final ParsedVerbatimDto parsedDoc = verbatimParserService.parse(verbatimStream, sessionIdentifier);
+
+            // 2. Parse Events from a byte array
+            log.info("Parsing event file for sessionIdentifier={}", sessionIdentifier);
+            final InputStream eventStream = new ByteArrayInputStream(eventFileContent.readAllBytes());
+            final ParsedEventDto parsedEvt = eventParserService.parse(eventStream);
+
+            // 3. Run matching
+            log.info("Running matching for sessionIdentifier={}", sessionIdentifier);
+            return matchingAlgorithmService.runMatching(parsedDoc, parsedEvt, matchingRules);
+        } catch (Exception e) {
+            log.error("Error processing session {}: {}", sessionIdentifier, e.getMessage(), e);
+        }
+        return null;
+    }
+}
+/**
+ * Service for managing matching versions of a session.
+ * <p>
+ * This service handles the creation of new matching versions, including
+ * versioning logic, serialization of matching results, and audit logging.
+ * </p>
+ *
+ * @author LKE
+ * @created on 02.09.2025
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MatchingVersionService {
+    @Qualifier("xmlMapper")
+    private final XmlMapper xmlMapper;
+    private final ObjectMapper objectMapper;
+    private final MatchingVersionMapper matchingVersionMapper;
+    private final SessionRepository sessionRepository;
+    private final MatchingVersionRepository matchingVersionRepository;
+    private final MatchingProcessorService matchingProcessorService;
+    private final VideoInternalRestClient videoInternalRestClient;
+
+    /**
+     * Retrieves all matching results (versions) for a given session.
+     *
+     * @param sessionIdentifier The session identifier.
+     * @return List of MatchingVersionDto for the session.
+     */
+    @Transactional(readOnly = true)
+    public List<MatchingVersionDto> getAllVersions(final String sessionIdentifier) {
+        log.debug("Getting all matching versions for session: {}", sessionIdentifier);
+
+        final List<MatchingVersion> matchingVersionList = matchingVersionRepository.findAllBySessionIdentifier(sessionIdentifier);
+
+        return matchingVersionList.stream().map(matchingVersionMapper::toDto).toList();
+    }
+
+    public Optional<MatchingVersionDto> getVersion(final String sessionIdentifier, final Integer version) {
+        log.debug("Getting matching version with ID: {}", version);
+        return matchingVersionRepository.findBySessionIdentifierAndVersion(sessionIdentifier, version)
+            .map(matchingVersionMapper::toDto);
+    }
+
+    public Optional<MatchingVersionDto> getLatestVersion(final String sessionIdentifier) {
+        log.debug("Getting latest matching version for session Identifier: {}", sessionIdentifier);
+        final var latestVersion = matchingVersionRepository.findLatestBySessionIdentifier(sessionIdentifier);
+        return latestVersion.map(matchingVersionMapper::toDto);
+    }
+
+
+    /**
+     * Handles the upload of the verbatim file. It saves the file to the database,
+     * updates the session status, and triggers the asynchronous processing job.
+     *
+     * @param sessionIdentifier The ID of the session.
+     * @param verbatimFile      The DOCX verbatim file.
+     * @param matchingRuleFile  The CSV matching rule file.
+     * @return SessionDto with updated session details.
+     * @throws IOException If there's an error reading the file.
+     */
+    @Transactional
+    public MatchingVersionDto startMatching(final String sessionIdentifier, final MultipartFile verbatimFile, final MultipartFile matchingRuleFile) throws IOException {
+        log.info("Starting matching process for sessionIdentifier={}", sessionIdentifier);
+
+        // 1. Fetch session
+        sessionRepository.findBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Session not found: %s".formatted(sessionIdentifier)));
+
+        // 2. Parse matching rules
+        List<MatchingRuleDto> matchingRules = new ArrayList<>();
+        if (matchingRuleFile != null) {
+            matchingRules = CsvParserUtils.parse(matchingRuleFile.getInputStream(), MatchingRuleDto.class, null);
+        }
+
+        // 3. Read files
+        final var verbatimFileContent = verbatimFile.getBytes();
+        final var eventFileContent = videoInternalRestClient.getSessionTaggingData(sessionIdentifier).readAllBytes();
+
+        // 4. Create a new matching version
+        var latestVersion = MatchingVersionDto.builder()
+            .sessionIdentifier(sessionIdentifier)
+            .status(VersionStatus.PROCESSING)
+            .build();
+
+        try {
+            // 5. Save a matching version
+            latestVersion = createNewVersion(latestVersion);
+
+            // 6. Run matching
+            final MatchingResultDto result = matchingProcessorService.process(sessionIdentifier, verbatimFileContent, eventFileContent, matchingRules);
+
+            // 7. Update the version status and save the matching version
+            latestVersion.setMatchingResult(result);
+            latestVersion.setStatus(VersionStatus.AWAITING_CORRECTION);
+
+            // Save the updated matching version entity to the repository
+            final var updatedLatestVersion = matchingVersionRepository.save(matchingVersionMapper.toEntity(latestVersion));
+
+            log.info("Matching process completed for sessionIdentifier={}, version={}", sessionIdentifier, latestVersion.getVersion());
+
+            return matchingVersionMapper.toDto(updatedLatestVersion);
+        } catch (Exception e) {
+            log.error("Error processing session {}: {}", sessionIdentifier, e.getMessage(), e);
+
+            latestVersion.setStatus(VersionStatus.ERROR);
+            matchingVersionRepository.save(matchingVersionMapper.toEntity(latestVersion));
+
+            throw e;
+        }
+
+    }
+
+    /**
+     * Creates a new matching version for the given session and matching result.
+     * <p>
+     * The method determines the next version number, serializes the matching result
+     * to JSON, sets the creator if available, persists the new version, and logs
+     * the operation.
+     * </p>
+     *
+     * @param versionDto the matching result to be saved as a snapshot
+     * @return the newly created MatchingVersion entity
+     * @throws JsonProcessingException if serialization of the matching result fails
+     */
+    public MatchingVersionDto createNewVersion(final MatchingVersionDto versionDto) throws JsonProcessingException {
+        log.debug("Creating new matching version for session ID: {}", versionDto.getSessionIdentifier());
+        final var user = SecurityUtils.getCurrentUserLogin().orElse("system");
+
+        // Determine the next version number
+        final Integer lastVersion = matchingVersionRepository.findLatestVersionNumberBySessionIdentifier(versionDto.getSessionIdentifier());
+
+        final MatchingVersion newVersion = matchingVersionMapper.toEntity(versionDto.copy());
+        newVersion.setId(null);
+        newVersion.setVersion(lastVersion + 1);
+        newVersion.setCreatedBy(user);
+
+        final var savedVersion = matchingVersionRepository.save(newVersion);
+        log.info("Created matching version {} for session {} (ID: {})", savedVersion.getVersion(), savedVersion.getSession().getSessionIdentifier(), savedVersion.getSession().getId());
+
+        return matchingVersionMapper.toDto(savedVersion);
+    }
+
+    /**
+     * Updates a matching result item in a specific matching version for a session.
+     *
+     * @param sessionIdentifier The session identifier.
+     * @param request           The update request containing changes.
+     * @return Updated SessionDto.
+     * @throws UpdateMatchException If there is an error updating the match.
+     */
+    @Transactional
+    public MatchingVersionDto updateVersion(final String sessionIdentifier, final UpdateMatchRequest request) throws UpdateMatchException {
+        // 1. Fetch session
+        sessionRepository.findBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Session not found: " + sessionIdentifier));
+
+        // 2. Fetch MatchingVersion by session and version
+        MatchingVersion matchingVersion = matchingVersionRepository.findBySessionIdentifierAndVersion(sessionIdentifier, request.getVersion())
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier + ", version: " + request.getVersion()));
+
+        // 3. Deserialize MatchingResultDto
+        MatchingVersionDto matchingVersionDto = matchingVersionMapper.toDto(matchingVersion);
+
+        // 4. Find MatchingResultItemDto by id (recursive)
+        Long interventionId = request.getId();
+        MatchingResultItemDto item = findItemByIdRecursive(matchingVersionDto.getMatchingResult().getResult(), interventionId);
+        if (item == null) {
+            throw new ResourceNotFoundException("Intervention not found in matching results: " + interventionId);
+        }
+
+        // 5. Update fields
+        updateMatchingResultItemFromRequest(request, item);
+
+        // 6. Create and save a new MatchingVersion
+        try {
+            return createNewVersion(matchingVersionDto);
+        } catch (JsonProcessingException e) {
+            throw new UpdateMatchException("Error creating new matching version: " + e.getMessage(), e);
+        }
+
+    }
+
+    @Transactional
+    public MatchingVersionDto validateVersion(final String sessionIdentifier, final Integer version) {
+        log.info("Validating matching version {} for session {}", version, sessionIdentifier);
+        final var user = SecurityUtils.getCurrentUserLogin();
+
+        // 1. Fetch the latest matching version by session and version
+        final var matchingVersion = getVersion(sessionIdentifier, version)
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier));
+
+        // 2. Check if there are unmatched interventions
+        if (hasUnmatched(matchingVersion.getMatchingResult().getResult())) {
+            throw new IllegalStateException("Cannot validate a session with unmatched interventions.");
+        }
+
+        // 3. Update status
+        final MatchingVersion entity = matchingVersionMapper.toEntity(matchingVersion);
+        entity.setStatus(VersionStatus.VALIDATED);
+        user.ifPresent(entity::setValidatedBy);
+
+        return matchingVersionMapper.toDto(matchingVersionRepository.save(entity));
+    }
+
+    public void deleteLatestMatchingVersion(final String sessionIdentifier) {
+        log.info("delete latest matching version for session {}", sessionIdentifier);
+
+        final var matchingVersion = matchingVersionRepository.findLatestBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Latest matching version not found for session: " + sessionIdentifier));
+
+        matchingVersionRepository.delete(matchingVersion);
+        log.info("Latest matching version {} for session {} deleted", matchingVersion.getVersion(), sessionIdentifier);
+    }
+
+    @Transactional
+    public void deleteMatchingVersion(final String sessionIdentifier, final Integer version) {
+        log.debug("Deleting matching version {} for session {}", version, sessionIdentifier);
+
+        sessionRepository.findBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Session not found: " + sessionIdentifier));
+
+        final var matchingVersion = matchingVersionRepository.findBySessionIdentifierAndVersion(sessionIdentifier, version)
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier + ", version: " + version));
+
+        matchingVersionRepository.delete(matchingVersion);
+
+        log.info("Deleted matching version {} for session {}", version, sessionIdentifier);
+    }
+
+    public String exportMatchingResult(final String sessionIdentifier, final Integer version, final OutputFileFormat format) throws java.io.IOException {
+        log.debug("Exporting matching result for session {} and version {}", sessionIdentifier, version);
+        final MatchingVersionDto resultForVersion = getVersion(sessionIdentifier, version)
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier + ", version: " + version));
+        return switch (format) {
+            case XML -> xmlMapper.writeValueAsString(resultForVersion);
+            case JSON -> objectMapper.writeValueAsString(resultForVersion);
+            case CSV -> {
+                final var writer = new StringWriter();
+                final var csvWriter = new CSVWriter(writer, CsvParserUtils.DEFAULT_SEPARATOR, ICSVWriter.DEFAULT_QUOTE_CHARACTER, ICSVWriter.DEFAULT_ESCAPE_CHARACTER, ICSVWriter.DEFAULT_LINE_END);                // Write CSV header
+                csvWriter.writeNext(new String[]{"id", "verbatim", "lineNumber", "title", "status", "speakers"});
+                for (final MatchingResultItemDto item : resultForVersion.getMatchingResult().getResult()) {
+                    writeItemAndInnersToCsv(item, csvWriter);
+                }
+                csvWriter.close();
+                yield writer.toString();
+            }
+        };
+    }
+
+    /**
+     * Recursively searches for a MatchingResultItemDto by id in a list and all nested innerInterventions.
+     *
+     * @param items List of MatchingResultItemDto to search.
+     * @param id    The id to find.
+     * @return The found MatchingResultItemDto or null if not found.
+     */
+    private MatchingResultItemDto findItemByIdRecursive(List<MatchingResultItemDto> items, Long id) {
+        if (items == null) return null;
+        for (MatchingResultItemDto item : items) {
+            if (id.equals(item.getId())) {
+                return item;
+            }
+            MatchingResultItemDto found = findItemByIdRecursive(item.getInners(), id);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    private void updateMatchingResultItemFromRequest(final UpdateMatchRequest request, final MatchingResultItemDto item) {
+        item.setStatus(MatchingStatus.MANUALLY_MATCHED);
+        if (request.getTitle() != null) {
+            item.setTitle(request.getTitle());
+        }
+
+        if (request.getVerbatim() != null) {
+            item.setVerbatim(request.getVerbatim());
+        }
+
+        if (request.getSpeakers() != null) {
+            item.setSpeakers(new HashSet<>(request.getSpeakers()));
+        }
+    }
+
+    private boolean hasUnmatched(final List<MatchingResultItemDto> items) {
+        for (final MatchingResultItemDto item : items) {
+            if (item.getStatus() == MatchingStatus.UNMATCHED || item.getStatus() == MatchingStatus.MATCHING_CONFLICT) {
+                return true;
+            }
+            if (item.getInners() != null && hasUnmatched(item.getInners())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Recursively writes MatchingResultItemDto and its inners to CSV
+    private void writeItemAndInnersToCsv(final MatchingResultItemDto item, final CSVWriter csvWriter) {
+        csvWriter.writeNext(new String[]{
+            Objects.toString(item.getId(), ""),
+            Objects.toString(item.getVerbatim(), ""),
+            Objects.toString(item.getLineNumber(), ""),
+            Objects.toString(item.getTitle(), ""),
+            Objects.toString(item.getStatus(), ""),
+            SpeakerMapper.INSTANCE.toString(item.getSpeakers())
+        });
+        if (CollectionUtils.isNotEmpty(item.getInners())) {
+            for (MatchingResultItemDto inner : item.getInners()) {
+                writeItemAndInnersToCsv(inner, csvWriter);
+            }
+        }
+    }
+
+}
+/**
+ * Service class for managing sessions and matching versions.
+ * Handles session creation, file uploads, matching processing, validation, and version management.
+ * Uses repositories and mappers for persistence and DTO conversion.
+ *
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SessionService {
+    private final SessionMapper sessionMapper;
+    private final SessionRepository sessionRepository;
+    private final MatchingVersionService matchingVersionService;
+
+    /**
+     * Retrieves a list of sessions that are available for processing or correction.
+     *
+     * @return List of SessionDto for available sessions.
+     */
+    @Transactional(readOnly = true)
+    public List<SessionDto> getAll() {
+        return sessionRepository.findAll()
+            .stream()
+            .map(sessionMapper::toDto)
+            .toList();
+    }
+
+    /**
+     * Creates a new session with the given details.
+     *
+     * @param sessionDto The session creation DTO.
+     * @return The created SessionDto.
+     */
+    @Transactional
+    public SessionDto createSession(final SessionCreateDto sessionDto) {
+        if (sessionRepository.existsBySessionIdentifier(sessionDto.getSessionIdentifier())) {
+            throw new IllegalArgumentException("Session with identifier '" + sessionDto.getSessionIdentifier() + "' already exists.");
+        }
+        Session session = new Session();
+        session.setSessionIdentifier(sessionDto.getSessionIdentifier());
+        return sessionMapper.toDto(sessionRepository.save(session));
+    }
+
+}
+/**
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Service
+public class VerbatimCsvWriterService {
+
+    private static final String HEADER = "fmnc¬uddt¬udid¬dqid¬udil¬udtx";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    @Value("${app.processing.separator:¬}")
+    private Character separator;
+
+    /**
+     * Writes a list of VerbatimTextRecord objects to a CSV formatted string.
+     *
+     * @param records The list of verbatims to write.
+     * @return A string containing the data in the desired TXT format.
+     */
+    public String writeToCsv(List<VerbatimTextRecord> records) {
+        try (var stringWriter = new StringWriter()) {
+            // Write the header manually to match the exact format
+            stringWriter.write(HEADER);
+            stringWriter.write(System.lineSeparator());
+
+            // Use a CSVWriter to handle the data rows correctly
+            try (CSVWriter csvWriter = new CSVWriter(stringWriter,
+                separator,
+                CSVWriter.NO_QUOTE_CHARACTER, // No quotes around fields
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                System.lineSeparator())) {
+
+                for (VerbatimTextRecord record : records) {
+                    csvWriter.writeNext(new String[]{
+                        record.getType(),
+                        DATE_FORMATTER.format(record.getDate()),
+                        record.getKey(),
+                        record.getQueueId(),
+                        record.getTitle(),
+                        record.getText()
+                    });
+                }
+            }
+            return stringWriter.toString();
+        } catch (IOException e) {
+            throw new VerbatimCsvWriteException("Failed to write Verbatim verbatims to CSV string", e);
+        }
+    }
+}
+/**
+ * Service for parsing Word documents (.docx) and extracting non-blank paragraph texts.
+ *
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Service
+public class VerbatimParserService {
+    // Regex to identify the start of a new agenda item (e.g., "1.", "2.", "10.")
+    // This is now used to clean the title, not to identify the item.
+    private static final Pattern AGENDA_ITEM_PATTERN = Pattern.compile("^(\\d+)\\.\\s+(.*)");
+    // A set of common style IDs for top-level headings in Word. i.eg: "Titre2" is common in French versions of Word.
+    private static final Set<String> AGENDA_HEADING_STYLE_IDS = Set.of("Heading2", "Titre2");
+    private static final Pattern SESSION_START_PATTERN = Pattern.compile("La séance publique est ouverte à (\\d{2}\\.\\d{2}) heures");
+    private static final Pattern SESSION_END_PATTERN = Pattern.compile("La séance publique est levée à (\\d{2}\\.\\d{2}) heures");
+    private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .appendPattern("EEEE d MMMM yyyy")
+        .toFormatter(Locale.FRENCH);
+    // regex to identify a speaker line, e.g., "M. Fernand Etgen, Président.-" or "Mme Martine Hansen.-"
+
+    public ParsedVerbatimDto parse(InputStream inputStream, String sessionIdentifier) throws IOException {
+        List<VerbatimTextRecord> records = new ArrayList<>();
+        LocalDate sessionDate = null;
+        LocalTime startTime = null;
+        LocalTime endTime = null;
+
+        try (XWPFDocument document = new XWPFDocument(inputStream)) {
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
+            StringBuilder currentContent = new StringBuilder();
+            String currentTitle = "";
+            int itemCounter = 0;
+            boolean contentStarted = false;
+
+            for (int i = 0; i < paragraphs.size(); i++) {
+                XWPFParagraph paragraph = paragraphs.get(i);
+                String rawText = paragraph.getText();
+                // Normalizes text by replacing various Unicode whitespace characters with regular spaces and cleaning up the text for consistent pattern matching.
+                String text = StringUtils.normalizeSpace(rawText);
+
+                if (text.isEmpty()) continue;
+
+                // 1. Find Session Date (usually the second non-empty line)
+                if (sessionDate == null && i < 5) {
+                    try {
+                        sessionDate = LocalDate.parse(text, DATE_FORMATTER);
+                    } catch (Exception e) {
+                        // Ignore parsing errors, continue searching
+                    }
+                }
+
+                // 2. Find Session Start Time and skip the "Sommaire"
+                if (!contentStarted) {
+                    Matcher startMatcher = SESSION_START_PATTERN.matcher(text);
+                    if (startMatcher.find()) {
+                        startTime = LocalTime.parse(startMatcher.group(1).replace('.', ':'));
+                        contentStarted = true;
+                    }
+                    continue; // Skip everything before the session starts
+                }
+
+                // 4. Find Session End Time and do not include the line in the content
+                Matcher endMatcher = SESSION_END_PATTERN.matcher(text);
+                if (endMatcher.find()) {
+                    endTime = LocalTime.parse(endMatcher.group(1).replace('.', ':'));
+                    continue; // Skip this line from being added to any intervention
+                }
+
+                // 3. Find Interventions (Agenda Items)
+                boolean isAgendaItem = paragraph.getStyleID() != null && AGENDA_HEADING_STYLE_IDS.contains(paragraph.getStyleID());
+
+                if (isAgendaItem) {
+                    if (itemCounter > 0 && !currentContent.isEmpty()) {
+                        records.add(createRecord(sessionIdentifier, itemCounter, currentTitle, currentContent.toString(), sessionDate));
+                    }
+                    itemCounter++;
+
+                    // The heading text is the title. Try to strip a leading number if it exists.
+                    Matcher titleMatcher = AGENDA_ITEM_PATTERN.matcher(text);
+                    if (titleMatcher.matches()) {
+                        currentTitle = titleMatcher.group(2).trim();
+                    } else {
+                        currentTitle = text;
+                    }
+
+                    currentContent = new StringBuilder();
+                    // DO NOT add the title line to the content
+                } else if (itemCounter > 0) {
+                    // Append the original, non-normalized text to preserve formatting
+                    currentContent.append(rawText).append(System.lineSeparator());
+                }
+            }
+
+            // Add the last processed item
+            if (itemCounter > 0 && !currentContent.isEmpty()) {
+                records.add(createRecord(sessionIdentifier, itemCounter, currentTitle, currentContent.toString(), sessionDate));
+            }
+        }
+        return new ParsedVerbatimDto(sessionDate, startTime, endTime, records);
+    }
+
+    private VerbatimTextRecord createRecord(final String sessionIdentifier, final int itemNumber, final String title, final String content, final LocalDate sessionDate) {
+        String[] parts = sessionIdentifier.split("\\.");
+        String year = parts.length > 0 ? parts[0] : "0000";
+        String sessionNum = parts.length > 1 ? parts[1] : "000";
+        String fmnc = title.toLowerCase().contains("débat") ? "DEBAT" : "AUTRE";
+        String udid = String.format("C-%s-O-%s-%04d", year, sessionNum, itemNumber);
+        LocalDateTime uddt = sessionDate != null ? sessionDate.atStartOfDay() : LocalDate.of(1970, 1, 1).atStartOfDay();
+        List<SpeakerDto> speakers = SpeakerUtils.parseSpeakers(content);
+
+        return VerbatimTextRecord.builder()
+            .type(fmnc)
+            .date(uddt)
+            .key(udid)
+            .title(title)
+            .text(content)
+            .speakers(speakers)
+            .lineNumber(itemNumber)
+            .build();
+    }
+
+}
+/**
+ * @author LKE
+ * @created on 27.08.2025
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class VideoInternalRestClient {
+    //    @Value("${external.video-service.url}")
+//    private String videoServiceUrl;
+//    private final RestTemplate restTemplate;
+    private final EventParserService eventParserService;
+
+    public List<String> getAvailableSessions() {
+        // MOCK: In a real app, this would call the external API.
+        return List.of("2020.001", "2020.002", "2020.003", "2020.004", "2020.005");
+    }
+
+    /**
+     * Fetches the event data as a raw string for a given session identifier.
+     * In a real-world scenario, this would make an HTTP GET request.
+     * Here, we simulate it by returning a hardcoded sample for demonstration.
+     *
+     * @param sessionIdentifier The identifier like "2020.002".
+     * @return The raw, delimiter-separated content of the event file.
+     */
+    public InputStream getSessionTaggingData(final String sessionIdentifier) {
+        // In a real implementation:
+        // String url = videoServiceUrl + "/events/" + sessionIdentifier;
+        // return restTemplate.getForObject(url, String.class);
+        try {
+            final ClassPathResource eventResource = new ClassPathResource("data/%s.EVT.TXT".formatted(sessionIdentifier));
+            return eventResource.getInputStream();
+        } catch (IOException e) {
+            log.error("No tagging data found for session " + sessionIdentifier, e);
+            throw new ResourceNotFoundException("No tagging data found for session " + sessionIdentifier);
+        }
+    }
+}

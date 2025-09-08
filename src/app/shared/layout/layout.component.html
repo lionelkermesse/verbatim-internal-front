@@ -1,0 +1,21 @@
+<nz-layout class="layout">
+  <nz-header class="header">
+    <div class="logo">
+      <a href="/">
+                <img src="/assets/logo.svg" alt="chd.lu">
+      </a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="horizontal" class="menu">
+      <li nz-menu-item nzSelected>Matching</li>
+      <li nz-menu-item>Referential</li>
+    </ul>
+  </nz-header>
+  <nz-content class="content">
+    <div class="inner-content">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+  <nz-footer class="footer">
+    chd.lu ©2025 Implemented by SFEIR
+  </nz-footer>
+</nz-layout>

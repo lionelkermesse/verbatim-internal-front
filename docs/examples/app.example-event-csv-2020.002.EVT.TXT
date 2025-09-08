@@ -1,0 +1,10 @@
+date_seance¬debut_seance¬fin_seance¬numero_seance¬cut_debut¬cut_fin¬event_id¬rang¬debut_event_ms¬hierarchie¬titre_evt¬type_evt¬nom¬prenom¬sexe¬intitulemasculin
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158504¬7¬961836¬1¬Débat sur la politique générale  sur l'état de la nation¬Débat sur la politique générale sur l'état de la nation¬(n/a)¬(n/a)¬(n/a)¬(n/a).
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158505¬8¬970013¬2¬Débat¬Discussion générale¬(n/a)¬(n/a)¬(n/a)¬(n/a).
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158506¬9¬982866¬3¬Discours du groupe politique CSV¬Discours¬Hansen¬Martine¬F¬Député
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158507¬10¬2063718¬4¬Dépôt de la motion 1¬Dépôt de la motion 1¬Hansen¬Martine¬F¬Député
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158508¬11¬2394514¬4¬Interruption¬Interruption¬Bettel¬Xavier¬M¬Premier Ministre, Ministre d'Etat
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158509¬12¬2406612¬4¬Interruption¬Interruption¬Bettel¬Xavier¬M¬Premier Ministre, Ministre d'Etat
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158510¬13¬2417244¬4¬Interruption¬Interruption¬(n/a)¬(n/a)¬(n/a)¬(n/a).
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158511¬14¬4768745¬4¬Interruption¬Interruption¬(n/a)¬(n/a)¬(n/a)¬(n/a).
+14/10/2020 13:30:00¬14/10/2020 13:29:06¬14/10/2020 19:30:14¬2¬1701¬21613033¬158552¬64¬21581257¬1¬Clôture de la séance publique¬Clôture de la séance publique¬(n/a)¬(n/a)¬(n/a)¬(n/a).

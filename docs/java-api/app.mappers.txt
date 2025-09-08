@@ -1,0 +1,181 @@
+package lu.chd.digital.verbatim.service.mapper;
+
+import org.mapstruct.BeanMapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Contract for a generic dto to entity mapper.
+ *
+ * @param <D> DTO type parameter.
+ * @param <E> Entity type parameter.
+ *
+ * @author LKE
+ * @created on 27.08.2025
+ */
+public interface EntityMapper<D, E> {
+    E toEntity(D dto);
+
+    D toDto(E entity);
+
+    List<E> toEntity(List<D> dtoList);
+
+    List<D> toDto(List<E> entityList);
+
+    default Set<D> toDtoSet(List<E> entityList) {
+        return entityList.stream().map(this::toDto).collect(Collectors.toSet());
+    }
+
+    default List<E> toEntityList(Set<D> dtoSet) {
+        return dtoSet.stream().map(this::toEntity).toList();
+    }
+
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdate(@MappingTarget E entity, D dto);
+
+    @Named("partialUpdateDto")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdateDto(@MappingTarget D target, D source);
+
+    @Named("partialUpdateEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdateEntity(@MappingTarget E target, E source);
+}
+
+@Slf4j
+@Mapper(componentModel = "spring")
+public abstract class MatchingVersionMapper {
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    @Lazy
+    private SessionRepository sessionRepository;
+
+    @Mapping(target = "session", source = "sessionIdentifier", qualifiedByName = "sessionIdentifierToSession")
+    @Mapping(target = "matchingResult", source = "matchingResult", qualifiedByName = "matchingResultDtoToJson")
+    public abstract MatchingVersion toEntity(final MatchingVersionDto matchingVersionDto);
+
+    /**
+     * Converts a MatchingVersion entity to a MatchingVersionDto.
+     * Deserializes the matchingResult JSON string to MatchingResultDto.
+     *
+     * @param matchingVersion the MatchingVersion entity
+     * @return the corresponding MatchingVersionDto
+     */
+    @Mapping(target = "sessionIdentifier", source = "session.sessionIdentifier")
+    @Mapping(target = "matchingResult", source = "matchingResult", qualifiedByName = "jsonToMatchingResultDto")
+    public abstract MatchingVersionDto toDto(final MatchingVersion matchingVersion);
+
+    /**
+     * Deserializes a JSON string to a MatchingResultDto.
+     *
+     * @param json the JSON string representing a MatchingResultDto
+     * @return the deserialized MatchingResultDto
+     */
+    @SneakyThrows
+    @Named("jsonToMatchingResultDto")
+    public MatchingResultDto jsonToMatchingResultDto(final String json) {
+        return objectMapper.readValue(json, MatchingResultDto.class);
+    }
+
+    @SneakyThrows
+    @Named("matchingResultDtoToJson")
+    protected String matchingResultDtoToJson(final MatchingResultDto matchingResultDto) {
+        return objectMapper.writeValueAsString(matchingResultDto);
+    }
+
+    @Named("sessionIdentifierToSession")
+    protected Session sessionIdentifierToSession(final String sessionIdentifierToSession) {
+        return sessionRepository.findBySessionIdentifier(sessionIdentifierToSession)
+            .orElseThrow(() -> new IllegalArgumentException("Session not found: " + sessionIdentifierToSession));
+    }
+}
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    unmappedSourcePolicy = ReportingPolicy.IGNORE
+)
+public abstract class SessionMapper implements EntityMapper<SessionDto, Session> {
+    @Autowired
+    private MatchingVersionService matchingVersionService;
+
+    public SessionDto toDto(final Session session) {
+        final var builder = SessionDto.builder()
+            .id(session.getId())
+            .sessionIdentifier(session.getSessionIdentifier())
+            .sessionDate(session.getSessionDate());
+
+        final var latestVersionOpt = matchingVersionService.getLatestVersion(session.getSessionIdentifier());
+
+        latestVersionOpt.ifPresent(version -> builder
+            .lastProcessedAt(version.getCreatedAt())
+            .status(version.getStatus())
+            .latestVersion(version.getVersion())
+            .matchingResult(version.getMatchingResult()));
+
+        return builder.build();
+    }
+}
+@Mapper
+public interface SpeakerMapper {
+    SpeakerMapper INSTANCE = Mappers.getMapper(SpeakerMapper.class);
+
+    default void partialUpdate(@MappingTarget SpeakerDto existing, SpeakerDto speaker) {
+        if (StringUtils.isBlank(existing.getFirstName()) && StringUtils.isNotBlank(speaker.getFirstName())) {
+            existing.setFirstName(speaker.getFirstName());
+        }
+        if (StringUtils.isBlank(existing.getLastName()) && StringUtils.isNotBlank(speaker.getLastName())) {
+            existing.setLastName(speaker.getLastName());
+        }
+        if (StringUtils.isBlank(existing.getGender()) && StringUtils.isNotBlank(speaker.getGender())) {
+            existing.setGender(speaker.getGender());
+        }
+        if (StringUtils.isBlank(existing.getFunction()) && StringUtils.isNotBlank(speaker.getFunction())) {
+            existing.setFunction(speaker.getFunction());
+        }
+        if (StringUtils.isBlank(existing.getParty()) && StringUtils.isNotBlank(speaker.getParty())) {
+            existing.setParty(speaker.getParty());
+        }
+    }
+
+    default String toString(final Collection<SpeakerDto> speakers) {
+        return toString(speakers.toArray(new SpeakerDto[0]));
+    }
+
+    default String toString(final SpeakerDto... speakers) {
+        if (speakers == null) return "";
+
+        return Stream.of(speakers)
+            .filter(Objects::nonNull)
+            .filter(speaker -> StringUtils.isNotBlank(speaker.getSpeakerFullName()))
+            .map(speaker -> {
+                StringBuilder sb = new StringBuilder();
+                if (StringUtils.isNotBlank(speaker.getGender())) {
+                    sb.append("M".equals(speaker.getGender()) ? "M." : "Mme");
+                    sb.append(" ");
+                }
+                if (StringUtils.isNotBlank(speaker.getFirstName())) {
+                    sb.append(speaker.getFirstName()).append(" ");
+                }
+                if (StringUtils.isNotBlank(speaker.getLastName())) {
+                    sb.append(speaker.getLastName());
+                }
+                if (StringUtils.isNotBlank(speaker.getFunction())) {
+                    sb.append(", ").append(speaker.getFunction());
+                }
+                if (StringUtils.isNotBlank(speaker.getParty())) {
+                    sb.append(" (").append(speaker.getParty()).append(")");
+                }
+                return sb.toString().trim();
+            })
+            .reduce((a, b) -> a + ";" + b)
+            .orElse("");
+    }
+}

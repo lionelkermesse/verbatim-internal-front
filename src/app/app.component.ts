@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {NzButtonModule} from 'ng-zorro-antd/button';
+import {LayoutComponent} from './shared/layout/layout.component';
 import {registerLocaleData} from '@angular/common';
 import fr from '@angular/common/locales/fr';
 import {environment} from '../environments/environment';
@@ -10,7 +10,7 @@ import {fontAwesomeIcons} from '@chd-digital-verbatim-front/config/font-awesome-
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NzButtonModule],
+  imports: [LayoutComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
