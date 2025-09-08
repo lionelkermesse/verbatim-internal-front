@@ -22,7 +22,19 @@
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@chd-digital-verbatim-front/core/*": [
+        "src/app/core/*"
+      ],
+      "@chd-digital-verbatim-front/feature/*": [
+        "src/app/feature/*"
+      ],
+      "@chd-digital-verbatim-front/shared/*": [
+        "src/app/shared/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
