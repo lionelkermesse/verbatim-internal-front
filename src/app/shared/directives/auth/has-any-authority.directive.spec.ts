@@ -1,18 +1,20 @@
 jest.mock('app/core/auth/account.service');
 
-import { Component, ElementRef, WritableSignal, signal, viewChild } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, ElementRef, signal, viewChild, WritableSignal} from '@angular/core';
+import {provideHttpClient} from '@angular/common/http';
+import {TestBed, waitForAsync} from '@angular/core/testing';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { AccountService } from 'app/core/auth/account.service';
-import { Account } from 'app/core/auth/account.model';
+import {AccountService} from '@chd-digital-verbatim-front/core/auth/account.service';
+import {Account} from '@chd-digital-verbatim-front/core/auth/account.model';
 
 import HasAnyAuthorityDirective from './has-any-authority.directive';
 
 @Component({
   imports: [HasAnyAuthorityDirective],
-  template: ` <div *jhiHasAnyAuthority="'ROLE_ADMIN'" #content></div> `,
+  standalone: true,
+  template: `
+    <div *chdHasAnyAuthority="'ROLE_ADMIN'" #content></div> `,
 })
 class TestHasAnyAuthorityDirectiveComponent {
   content = viewChild<ElementRef>('content');
@@ -31,11 +33,11 @@ describe('HasAnyAuthorityDirective tests', () => {
 
   beforeEach(() => {
     mockAccountService = TestBed.inject(AccountService);
-    currentAccount = signal<Account | null>({ activated: true, authorities: [] } as any);
+    currentAccount = signal<Account | null>({activated: true, authorities: []} as any);
     mockAccountService.trackCurrentAccount = jest.fn(() => currentAccount);
   });
 
-  describe('set jhiHasAnyAuthority', () => {
+  describe('set chdHasAnyAuthority', () => {
     it('should show restricted content to user if user has required role', () => {
       // GIVEN
       mockAccountService.hasAnyAuthority = jest.fn(() => true);
@@ -86,7 +88,7 @@ describe('HasAnyAuthorityDirective tests', () => {
       expect(comp.content()).toBeUndefined();
 
       // WHEN
-      currentAccount.set({ activated: true, authorities: ['foo'] } as any);
+      currentAccount.set({activated: true, authorities: ['foo']} as any);
       fixture.detectChanges();
 
       // THEN

@@ -12,7 +12,7 @@ const environment = require('./environment');
 const proxyConfig = require('./proxy.conf');
 
 module.exports = async (config, options, targetOptions) => {
-  const languagesHash = await hashElement(path.resolve(__dirname, '../src/i18n'), {
+  const languagesHash = await hashElement(path.resolve(__dirname, '../src/assets/i18n'), {
     algo: 'md5',
     encoding: 'hex',
     files: {include: ['*.json']},
@@ -109,8 +109,8 @@ module.exports = async (config, options, targetOptions) => {
     new MergeJsonWebpackPlugin({
       output: {
         groupBy: [
-          {pattern: './src/i18n/fr/*.json', fileName: './i18n/fr.json'},
-          {pattern: './src/i18n/en/*.json', fileName: './i18n/en.json'},
+          {pattern: './src/assets/i18n/fr/*.json', fileName: './i18n/fr.json'},
+          {pattern: './src/assets/i18n/en/*.json', fileName: './i18n/en.json'},
           // jhipster-needle-i18n-language-webpack - JHipster will add/remove languages in this array
         ],
       },
