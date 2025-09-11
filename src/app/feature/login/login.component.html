@@ -1,32 +1,24 @@
-<!-- Final version of the login page, fully aligned with chd.lu design system and brand guidelines. This is the definitive version. -->
-<div class="login-page">
-  <div class="login-container">
-    <header class="login-header">
-      <img src="assets/chd-logo.svg" alt="Chambre des Députés" class="logo" />
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-header">
+      <img ngSrc="/chd-logo.svg" alt="Chambre des Députés Logo" class="logo" width="317" height="50">
       <h1>{{ 'login.title' | translate }}</h1>
-    </header>
+    </div>
 
-    <main>
-      <nz-card [nzBordered]="false">
-        <div *ngIf="isInitializing(); else formContent" class="loading-container">
-          <nz-spin nzSize="large" [nzTip]="'login.initializing' | translate"></nz-spin>
-        </div>
+    <nz-card [nzBordered]="false">
+      <div *ngIf="isInitializing(); else formContent" class="loading-spinner">
+        <nz-spin nzSize="large" [nzTip]="'login.initializing' | translate"></nz-spin>
+      </div>
 
-        <ng-template #formContent>
+      <ng-template #formContent>
+        <div class="login-form">
           <nz-alert
             *ngIf="loginError"
             nzType="error"
             nzShowIcon
             [nzMessage]="loginError"
             class="error-alert"
-          >
-            <ng-template #description>
-              <p>{{ 'login.error.description' | translate }}</p>
-              <button nz-button nzType="link" (click)="onRetryLogin()">
-                {{ 'login.error.retry' | translate }}
-              </button>
-            </ng-template>
-          </nz-alert>
+          />
 
           <button
             nz-button
@@ -37,19 +29,15 @@
             (click)="onLoginClick()"
             class="login-button"
           >
-            <span *ngIf="!isLoading()" nz-icon nzType="login"></span>
+            <i *ngIf="!isLoading()" nz-icon nzType="login" nzTheme="outline"></i>
             {{ 'login.button.text' | translate }}
           </button>
-        </ng-template>
-      </nz-card>
-    </main>
+        </div>
+      </ng-template>
+    </nz-card>
 
-    <footer class="login-footer">
-      <span>{{ 'login.footer.copyright' | translate }}</span>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">{{ 'login.footer.help' | translate }}</a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">{{ 'login.footer.contact' | translate }}</a>
-    </footer>
+    <div class="login-footer">
+      <p>{{ 'login.footer.copyright' | translate }}</p>
+    </div>
   </div>
 </div>

@@ -5,10 +5,14 @@ export const routes: Routes = [
   // Default redirect
   {
     path: '',
-    redirectTo: '/sessions',
+    redirectTo: '/login',
     pathMatch: 'full'
   },
-
+  {
+    path: '',
+    loadComponent: () => import('./feature/layouts/navbar/navbar.component').then(m => m.NavbarComponent),
+    outlet: 'navbar',
+  },
   // Authentication routes
   {
     path: 'login',

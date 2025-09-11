@@ -1,0 +1,36 @@
+@import 'src/assets/scss/vendor.scss';
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: $layout-header-height;
+  background-color: $layout-header-background;
+  border-bottom: 1px solid $border-color-split;
+  box-shadow: $box-shadow-base;
+}
+
+.navbar-logo {
+  .logo {
+    height: 32px;
+    vertical-align: middle;
+  }
+}
+
+.navbar-actions {
+  .language-selector {
+    width: 80px;
+
+    .ant-select-selection-item {
+      font-weight: 500;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+}
