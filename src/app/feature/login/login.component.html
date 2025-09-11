@@ -1,111 +1,55 @@
-<nz-layout class="login-layout">
-  <nz-content class="login-content">
-    <div class="login-container">
-      <!-- Chamber of Deputies Header -->
-      <div class="login-header">
-<!--        <img-->
-<!--          src="/public/chd-logo.svg"-->
-<!--          alt="Chambre des Députés"-->
-<!--          class="chamber-logo"-->
-<!--          onError="this.src='/public/chd-logo-symbol.svg'"-->
-<!--        />-->
-        <img
-          src="/public/chd-logo.svg"
-          alt="Chambre des Députés"
-          class="chamber-logo"
-        />
-        <h1 nz-typography class="login-title">
-          {{ 'login.title' | translate }}
-        </h1>
-        <p nz-typography nzType="secondary" class="login-subtitle">
-          {{ 'login.subtitle' | translate }}
-        </p>
-      </div>
+<!-- Final version of the login page, fully aligned with chd.lu design system and brand guidelines. This is the definitive version. -->
+<div class="login-page">
+  <div class="login-container">
+    <header class="login-header">
+      <img src="assets/chd-logo.svg" alt="Chambre des Députés" class="logo" />
+      <h1>{{ 'login.title' | translate }}</h1>
+    </header>
 
-      <!-- Login Card -->
-      <nz-card
-        class="login-card"
-        [nzBordered]="true"
-        [nzHoverable]="false"
-      >
-        <!-- Loading State -->
-        <div *ngIf="isInitializing()" class="loading-container">
-          <nz-spin
-            nzSize="large"
-            [nzTip]="'login.initializing' | translate"
-          >
-          </nz-spin>
+    <main>
+      <nz-card [nzBordered]="false">
+        <div *ngIf="isInitializing(); else formContent" class="loading-container">
+          <nz-spin nzSize="large" [nzTip]="'login.initializing' | translate"></nz-spin>
         </div>
 
-        <!-- Login Form -->
-        <div *ngIf="!isInitializing()" class="login-form">
-          <!-- Error Alert -->
+        <ng-template #formContent>
           <nz-alert
             *ngIf="loginError"
             nzType="error"
-            nzCloseable
+            nzShowIcon
             [nzMessage]="loginError"
-            [nzDescription]="'login.error.description' | translate"
-            class="login-error"
+            class="error-alert"
           >
-            <ng-template #nzDescription>
+            <ng-template #description>
               <p>{{ 'login.error.description' | translate }}</p>
-              <button
-                nz-button
-                nzType="link"
-                nzSize="small"
-                (click)="onRetryLogin()"
-              >
+              <button nz-button nzType="link" (click)="onRetryLogin()">
                 {{ 'login.error.retry' | translate }}
               </button>
             </ng-template>
           </nz-alert>
 
-          <!-- Login Button -->
-          <div class="login-button-container">
-            <button
-              nz-button
-              nzType="primary"
-              nzSize="large"
-              nzBlock
-              [nzLoading]="isLoading()"
-              [disabled]="isLoading() || !!loginError"
-              (click)="onLoginClick()"
-              class="login-button"
-            >
-              <span nz-icon nzType="login" nzTheme="outline"></span>
-              {{ 'login.button.text' | translate }}
-            </button>
-          </div>
-
-          <!-- Additional Information -->
-          <div class="login-info">
-            <nz-alert
-              nzType="info"
-              nzShowIcon
-              [nzMessage]="'login.info.message' | translate"
-              [nzDescription]="'login.info.description' | translate"
-              class="info-alert"
-            ></nz-alert>
-          </div>
-        </div>
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            nzBlock
+            [nzLoading]="isLoading()"
+            (click)="onLoginClick()"
+            class="login-button"
+          >
+            <span *ngIf="!isLoading()" nz-icon nzType="login"></span>
+            {{ 'login.button.text' | translate }}
+          </button>
+        </ng-template>
       </nz-card>
+    </main>
 
-      <!-- Footer -->
-      <div class="login-footer">
-        <p nz-typography nzType="secondary">
-          {{ 'login.footer.copyright' | translate }}
-        </p>
-        <div class="footer-links">
-          <a nz-typography nzType="secondary" href="#" target="_blank">
-            {{ 'login.footer.help' | translate }}
-          </a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a nz-typography nzType="secondary" href="#" target="_blank">
-            {{ 'login.footer.contact' | translate }}
-          </a>
-        </div>
-      </div>
-    </div>
-  </nz-content>
-</nz-layout>
+    <footer class="login-footer">
+      <span>{{ 'login.footer.copyright' | translate }}</span>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a href="#">{{ 'login.footer.help' | translate }}</a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a href="#">{{ 'login.footer.contact' | translate }}</a>
+    </footer>
+  </div>
+</div>
