@@ -34,6 +34,9 @@ module.exports = async (config, options, targetOptions) => {
     config.devServer.proxy = proxyConfig({tls});
   }
 
+  // BrowserSyncPlugin temporarily disabled due to missing dependency
+  // TODO: Re-enable after installing browser-sync
+  /*
   if (targetOptions.target === 'serve' || config.watch) {
     config.plugins.push(
       new BrowserSyncPlugin(
@@ -60,14 +63,12 @@ module.exports = async (config, options, targetOptions) => {
               heartbeatTimeout: 60000,
             },
           },
-          /*
           ghostMode: { // uncomment this part to disable BrowserSync ghostMode; https://github.com/jhipster/generator-jhipster/issues/11116
             clicks: false,
             location: false,
             forms: false,
             scroll: false,
           },
-          */
         },
         {
           reload: targetOptions.target === 'build', // enabled for build --watch
@@ -75,6 +76,7 @@ module.exports = async (config, options, targetOptions) => {
       ),
     );
   }
+  */
 
   if (config.mode === 'production') {
     config.plugins.push(

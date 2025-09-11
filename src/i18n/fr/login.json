@@ -1,15 +1,34 @@
 {
+  "title": "Système de Correspondance Verbatim",
+  "subtitle": "Chambre des Députés - Luxembourg",
+  "button": {
+    "text": "Se connecter via SSO"
+  },
+  "initializing": "Initialisation de l'authentification...",
+  "error": {
+    "description": "Impossible de s'authentifier. Veuillez contacter votre administrateur système si le problème persiste.",
+    "retry": "Réessayer"
+  },
+  "info": {
+    "message": "Accès Sécurisé Requis",
+    "description": "Cette application nécessite une authentification via le système d'authentification unique (SSO) de votre organisation."
+  },
+  "footer": {
+    "copyright": "© 2025 Chambre des Députés - Tous droits réservés",
+    "help": "Aide",
+    "contact": "Support Technique"
+  },
   "login": {
-    "title": "Authentification",
+    "title": "Se connecter",
     "form": {
       "password": "Mot de passe",
       "password.placeholder": "Votre mot de passe",
-      "rememberme": "Garder la session ouverte",
-      "button": "Connexion"
+      "rememberme": "Se souvenir de moi",
+      "button": "Se connecter"
     },
     "messages": {
       "error": {
-        "authentication": "<strong>Erreur d'authentification !</strong> Veuillez vérifier vos identifiants de connexion."
+        "authentication": "<strong>Échec de la connexion !</strong> Veuillez vérifier vos identifiants et réessayer."
       }
     },
     "password": {

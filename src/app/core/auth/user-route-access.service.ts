@@ -3,14 +3,14 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 import { map } from 'rxjs/operators';
 
 import { AccountService } from '@chd-digital-verbatim-front/core/auth/account.service';
-import { LoginService } from '@chd-digital-verbatim-front/feature//login/login.service';
+import { OidcAuthService } from '@chd-digital-verbatim-front/core/auth/oidc-auth.service';
 import { StateStorageService } from './state-storage.service';
 
 export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const accountService = inject(AccountService);
   const router = inject(Router);
   const stateStorageService = inject(StateStorageService);
-  const loginService = inject(LoginService);
+  const oidcAuthService = inject(OidcAuthService);
   return accountService.identity().pipe(
     map(account => {
       if (account) {
@@ -28,7 +28,7 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
       }
 
       stateStorageService.storeUrl(state.url);
-      loginService.login();
+      oidcAuthService.login();
       return false;
     })
   );

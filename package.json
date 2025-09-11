@@ -30,6 +30,8 @@
     "@ngx-translate/core": "16.0.4",
     "@ngx-translate/http-loader": "16.0.1",
     "@types/jest": "29.5.14",
+    "@types/node": "^24.3.1",
+    "angular-oauth2-oidc": "^17.0.2",
     "dayjs": "^1.11.18",
     "ng-zorro-antd": "^18.2.1",
     "rxjs": "~7.8.0",
@@ -65,7 +67,7 @@
     "prettier": "^3.6.2",
     "typescript": "~5.5.2",
     "typescript-eslint": "8.16.0",
-    "webpack": "5.92.1",
+    "webpack": "5.94.0",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-merge": "^6.0.1",
     "webpack-notifier": "^1.15.0"
