@@ -1,18 +1,17 @@
-import {Component, inject} from '@angular/core';
-import {NzButtonModule} from 'ng-zorro-antd/button';
-import {registerLocaleData} from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
-import {environment} from '../environments/environment';
-import {ApplicationConfigService} from '@chd-digital-verbatim-front/core/config/application-config.service';
-import {FaIconLibrary} from '@fortawesome/angular-fontawesome';
-import {fontAwesomeIcons} from '@chd-digital-verbatim-front/config/font-awesome-icons';
+import { environment } from '../environments/environment';
+import { ApplicationConfigService } from '@chd-digital-verbatim-front/core/config/application-config.service';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { fontAwesomeIcons } from '@chd-digital-verbatim-front/config/font-awesome-icons';
+import MainComponent from '@chd-digital-verbatim-front/feature/layouts/main/main.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NzButtonModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  imports: [MainComponent],
+  template: '<chd-main />',
 })
 export class AppComponent {
   private readonly applicationConfigService = inject(ApplicationConfigService);

@@ -4,6 +4,7 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 @Component({
   imports: [],
+  standalone: true,
   template: `
     <div chdTranslate="test"></div> `,
 })

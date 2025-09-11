@@ -4,6 +4,7 @@ import dayjs from 'dayjs/esm';
 
 @Pipe({
   name: 'formatMediumDate',
+  standalone: true
 })
 export default class FormatMediumDatePipe implements PipeTransform {
   transform(day: dayjs.Dayjs | null | undefined): string {

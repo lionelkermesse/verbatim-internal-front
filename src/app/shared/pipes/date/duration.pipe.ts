@@ -4,6 +4,7 @@ import dayjs from 'dayjs/esm';
 
 @Pipe({
   name: 'duration',
+  standalone: true
 })
 export default class DurationPipe implements PipeTransform {
   transform(value: any): string {

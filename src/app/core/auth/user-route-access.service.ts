@@ -28,7 +28,7 @@ export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapsh
       }
 
       stateStorageService.storeUrl(state.url);
-      oidcAuthService.login();
+      router.navigate(['/login']);
       return false;
     })
   );

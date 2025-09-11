@@ -12,7 +12,7 @@ const environment = require('./environment');
 const proxyConfig = require('./proxy.conf');
 
 module.exports = async (config, options, targetOptions) => {
-  const languagesHash = await hashElement(path.resolve(__dirname, '../src/i18n'), {
+  const languagesHash = await hashElement(path.resolve(__dirname, '../src/assets/i18n'), {
     algo: 'md5',
     encoding: 'hex',
     files: {include: ['*.json']},
@@ -35,8 +35,6 @@ module.exports = async (config, options, targetOptions) => {
   }
 
   // BrowserSyncPlugin temporarily disabled due to missing dependency
-  // TODO: Re-enable after installing browser-sync
-  /*
   if (targetOptions.target === 'serve' || config.watch) {
     config.plugins.push(
       new BrowserSyncPlugin(
@@ -76,7 +74,6 @@ module.exports = async (config, options, targetOptions) => {
       ),
     );
   }
-  */
 
   if (config.mode === 'production') {
     config.plugins.push(
@@ -89,9 +86,7 @@ module.exports = async (config, options, targetOptions) => {
     );
   }
 
-  const patterns = [
-    // jhipster-needle-add-assets-to-webpack - JHipster will add/remove third-party resources in this array
-  ];
+  const patterns = [];
 
   if (patterns.length > 0) {
     config.plugins.push(new CopyWebpackPlugin({patterns}));
@@ -105,15 +100,13 @@ module.exports = async (config, options, targetOptions) => {
       // The root URL for API calls, ending with a '/' - for example: `"https://www.jhipster.tech:8081/myservice/"`.
       // If this URL is left empty (""), then it will be relative to the current context.
       // If you use an API server, in `prod` mode, you will need to enable CORS
-      // (see the `jhipster.cors` common JHipster property in the `application-*.yml` configurations)
       SERVER_API_URL: JSON.stringify(environment.SERVER_API_URL),
     }),
     new MergeJsonWebpackPlugin({
       output: {
         groupBy: [
-          {pattern: './src/i18n/fr/*.json', fileName: './i18n/fr.json'},
-          {pattern: './src/i18n/en/*.json', fileName: './i18n/en.json'},
-          // jhipster-needle-i18n-language-webpack - JHipster will add/remove languages in this array
+          {pattern: './src/assets/i18n/fr/*.json', fileName: './i18n/fr.json'},
+          {pattern: './src/assets/i18n/en/*.json', fileName: './i18n/en.json'},
         ],
       },
     }),

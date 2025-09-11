@@ -8,17 +8,17 @@ import {AccountService} from '@chd-digital-verbatim-front/core/auth/account.serv
  *
  * @howToUse
  * ```
- *     <some-element *jhiHasAnyAuthority="'ROLE_ADMIN'">...</some-element>
+ *     <some-element *chdHasAnyAuthority="'ROLE_ADMIN'">...</some-element>
  *
- *     <some-element *jhiHasAnyAuthority="['ROLE_ADMIN', 'ROLE_USER']">...</some-element>
+ *     <some-element *chdHasAnyAuthority="['ROLE_ADMIN', 'ROLE_USER']">...</some-element>
  * ```
  */
 @Directive({
-  selector: '[jhiHasAnyAuthority]',
+  selector: '[chdHasAnyAuthority]',
   standalone: true,
 })
 export default class HasAnyAuthorityDirective {
-  public authorities = input<string | string[]>([], {alias: 'jhiHasAnyAuthority'});
+  public authorities = input<string | string[]>([], {alias: 'chdHasAnyAuthority'});
 
   private readonly templateRef = inject(TemplateRef<any>);
   private readonly viewContainerRef = inject(ViewContainerRef);

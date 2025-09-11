@@ -4,6 +4,7 @@ import {IFilterOptions} from './filter.model';
 
 @Component({
   selector: 'chd-filter',
+  standalone: true,
   imports: [SharedModule],
   templateUrl: './filter.component.html',
 })

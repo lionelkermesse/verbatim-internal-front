@@ -1,0 +1,252 @@
+/* after changing this file run 'npm run webapp:build' */
+
+/***************************
+put Sass variables here:
+eg $input-color: red;
+****************************/
+
+@import "ng-zorro-antd/ng-zorro-antd.variable.min.css";
+
+:root {
+  --chd-primary-color: #305a8f;
+  --chd-secondary-color: #d58b0c;
+  --chd-tertiary-color: #1fcce356;
+
+  --chd-text-color: rgba(0, 0, 0, 0.85);
+  --chd-text-color-secondary: rgba(0, 0, 0, 0.65);
+  --chd-text-color-tertiary: rgba(0, 0, 0, 0.45);
+  --chd-border-color-base: #d9d9d9;
+  --chd-border-color-split: #f0f0f0;
+  --chd-background-color-light: #f0f2f5; // Page background
+  --chd-component-background: #ffffff; // Card, modal background
+  --chd-border-radius-base: 8px;
+  --chd-box-shadow-base: 0 2px 8px #bfbfbf; //rgba(0, 0, 0, 0.06); // Softer shadow for individual cards
+  --chd-box-shadow-card: 0 4px 24px rgba(48, 90, 143, 0.18), 0 1.5px 8px rgba(0, 0, 0, 0.10);
+  --chd-error-color: #ff4d4f;
+  --chd-error-color-hover: #c53929;
+  --chd-no-color: #f0260f;
+  --chd-yes-color: #3b9b0c;
+  --chd-maybe-color: var(--chd-primary-color);
+  --chd-heading-color: rgba(0, 0, 0, 0.85);
+  --chd-header-height: 64px;
+  --chd-footer-height: 60px;
+  --chd-warning-color: #faad14;
+
+  &.theme-dark {
+    --chd-text-color: rgba(255, 255, 255, 0.85);
+    --chd-text-color-secondary: rgba(255, 255, 255, 0.65);
+    --chd-text-color-tertiary: rgba(255, 255, 255, 0.45);
+    --chd-border-color-base: #434343;
+    --chd-border-color-split: #303030;
+    --chd-background-color-light: #141414;
+    --chd-component-background: #1f1f1f;
+    --chd-box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --chd-box-shadow-card: 0 4px 8px rgba(48, 90, 143, 0.18), 0 1.5px 8px rgba(0, 0, 0, 0.10);
+  }
+}
+
+:host {
+  display: block;
+  font-size: var(--base-font-size, 14px);
+}
+
+// Utility classes (ensure these don't conflict with global utilities if you have them)
+.mt-2 {
+  margin-top: 0.5rem !important;
+}
+
+.mt-6 {
+  margin-top: 1.5rem !important;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mr-1 {
+  margin-right: 0.25rem !important;
+}
+
+.mr-2 {
+  margin-right: 0.5rem !important;
+}
+
+.ml-2 {
+  margin-left: 0.5rem !important;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-gray-500 {
+  color: var(--chd-text-color-tertiary);
+}
+
+// Adjusted to use CSS var
+.dark\:text-gray-100 {
+  :host-context(.theme-dark) & {
+    color: #f3f4f6;
+  }
+}
+
+.dark\:text-gray-400 {
+  :host-context(.theme-dark) & {
+    color: #9ca3af;
+  }
+}
+
+.dark\:bg-gray-900 {
+  :host-context(.theme-dark) & {
+    background-color: #111827;
+  }
+}
+
+.dark\:bg-gray-800 {
+  :host-context(.theme-dark) & {
+    background-color: #1f2937;
+  }
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+// Consider using var(--chd-text-color)
+.text-gray-700 {
+  color: #374151;
+}
+
+// Consider using var(--chd-text-color)
+.dark\:text-gray-300 {
+  :host-context(.theme-dark) & {
+    color: #d1d5db;
+  }
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+// Theme application on body (from register.component.scss for consistency)
+body.theme-light {
+  /* Default variables are light */
+}
+
+body.theme-dark {
+  /* Dark theme variables are applied via :root.theme-dark */
+}
+
+body.theme-system {
+  @media (prefers-color-scheme: dark) {
+    --chd-text-color: rgba(255, 255, 255, 0.85);
+    --chd-text-color-secondary: rgba(255, 255, 255, 0.65);
+    --chd-text-color-tertiary: rgba(255, 255, 255, 0.45);
+    --chd-border-color-base: #434343;
+    --chd-border-color-split: #303030;
+    --chd-background-color-light: #141414;
+    --chd-component-background: #1f1f1f;
+    --chd-box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+
+::ng-deep .ant-layout-content {
+  height: 100vh;
+}
+
+
+// Tab Styling (similar to register's step header if applicable, or keep distinct)
+::ng-deep .ant-tabs-nav {
+  margin-bottom: 24px !important;
+  background-color: var(--chd-component-background); // Card-like background for tab bar
+  padding: 8px 24px 0; // Add padding to tab bar area
+  border-radius: var(--chd-border-radius-base) var(--chd-border-radius-base) 0 0; // Rounded top corners
+  box-shadow: var(--chd-box-shadow-base);
+}
+
+::ng-deep .ant-tabs-nav-wrap {
+  padding-left: 0;
+}
+
+::ng-deep .ant-tabs-tab {
+  font-size: 1rem;
+  padding: 14px 20px !important;
+  margin: 0 16px 0 0 !important;
+  color: var(--chd-text-color-secondary);
+  transition: color 0.3s ease;
+
+  .tab-header {
+    // Class added in HTML for flex alignment
+    display: flex;
+    align-items: center;
+  }
+
+  .tab-icon {
+    font-size: 1.1em; // Make icon slightly larger
+    margin-right: 8px !important;
+    color: var(--chd-text-color-tertiary);
+    transition: color 0.3s ease;
+  }
+
+  .tab-title {
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  &.ant-tabs-tab-active {
+    color: var(--chd-primary-color);
+
+    .tab-title {
+      font-weight: 600;
+    }
+
+    .tab-icon {
+      // Use i.anticon if FontAwesome not used
+      color: var(--chd-primary-color);
+    }
+  }
+}
+
+::ng-deep .ant-tabs-ink-bar {
+  background-color: var(--chd-primary-color) !important;
+  height: 3px !important;
+}
