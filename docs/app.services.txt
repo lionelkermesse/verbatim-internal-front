@@ -1,0 +1,821 @@
+package lu.chd.digital.verbatim.service;
+
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MatchingAlgorithmServiceImpl implements MatchingAlgorithmService {
+    private static final Pattern PARENTHETICAL_PATTERN = Pattern.compile("^\\(([^)]+)\\)");
+    private static final Pattern INNER_EVENT_TEXT_PATTERN = Pattern.compile("^([0-9][0-9.]*?)\\s+(.+)$");
+
+    private ReferentialContentDto runConfig;
+    private final MatchingConfig matchingConfig;
+    private final ReferentialFileService referentialFileService;
+
+    @PostConstruct
+    protected void init() {
+        runConfig = matchingConfig.getMatchingReferential();
+    }
+
+
+    @Override
+    @Transactional
+    public MatchingResultDto runMatching(final ParsedVerbatimDto parsedVerbatimDto, final ParsedEventDto parsedEventDto) {
+        log.info("Starting matching process for {} verbatim records and {} root event records.",
+            parsedVerbatimDto.verbatims().size(), parsedEventDto.getRoot().size());
+
+        final ReferentialFileDto latestReferentialFile = referentialFileService.getLatestVersion();
+        this.runConfig = latestReferentialFile != null && latestReferentialFile.getRefContent() != null
+            ? latestReferentialFile.getRefContent()
+            : matchingConfig.getMatchingReferential();
+
+        final List<VerbatimTextRecord> verbatimRecords = new ArrayList<>(parsedVerbatimDto.verbatims());
+        final List<EventDto> rootEvents = new ArrayList<>(parsedEventDto.getRoot());
+
+        final Set<VerbatimTextRecord> matchedVerbatims = new HashSet<>();
+        // Initial match of root events to verbatim records
+        for (EventDto rootEvent : rootEvents) {
+            for (VerbatimTextRecord verbatim : verbatimRecords) {
+                if (MatchingUtil.isMatch(verbatim.getTitle(), rootEvent.getTitle(), runConfig)) {
+                    rootEvent.setVerbatim(verbatim);
+                    matchedVerbatims.add(verbatim);
+                    break;
+                }
+            }
+        }
+
+        List<MatchingResultItemDto> matchedResults = new ArrayList<>();
+        List<MatchingResultItemDto> unmatchedResults = new ArrayList<>();
+
+        // Process the entire event hierarchy for matches and convert to the result DTO structure
+        for (EventDto rootEvent : rootEvents) {
+            MatchingResultItemDto resultItem = processRootEvent(rootEvent, rootEvent.getVerbatim());
+            if (rootEvent.getVerbatim() != null) {
+                matchedResults.add(resultItem);
+            } else {
+                unmatchedResults.add(resultItem);
+            }
+        }
+
+        // Handle unmatched verbatim records
+        verbatimRecords.stream()
+            .filter(v -> !matchedVerbatims.contains(v))
+            .forEach(v -> unmatchedResults.add(MatchingResultItemDto.builder()
+//                .id(v.getKey()) TODO: find a logic to set new ID and line number -> loop recursively on all event and inner to get MAX ID and increment by 1
+                .verbatim(v.getText())
+                .lineNumber(v.getLineNumber())
+                .title(v.getTitle())
+                .speakers(getSpeakers(null, v))
+                .status(MatchingStatus.UNMATCHED)
+                .build()));
+
+        log.info("Matching process completed. Matched items: {}, Unmatched items: {}.",
+            matchedResults.size(), unmatchedResults.size());
+
+        return MatchingResultDto.builder()
+            .result(CollectionUtils.collate(matchedResults, unmatchedResults))
+            .build();
+    }
+
+    /**
+     * Recursively processes an event and its details to match inner events and convert the hierarchy
+     * into a nested MatchingResultItemDto structure.
+     * <p>
+     * For each event, if a verbatim is matched and details exist, it attempts to match those details as well.
+     * The method is called recursively for all inner events.
+     * </p>
+     *
+     * @param rootEvent The event to process.
+     * @param verbatim  The verbatim text record matched to this event, or null if unmatched.
+     * @return A MatchingResultItemDto that mirrors the structure of the input event, including inners.
+     */
+    private MatchingResultItemDto processRootEvent(final EventDto rootEvent, final VerbatimTextRecord verbatim) {
+        // 1. If this event has a matched verbatim text and contains details, attempt to match those details.
+        if (verbatim != null && CollectionUtils.isNotEmpty(rootEvent.getDetails())) {
+            matchVerbatimOfEventDetails(rootEvent.getDetails(), verbatim.getText());
+        }
+
+        // 2. Recursively process and convert any inner events (details).
+        List<MatchingResultItemDto> innerInterventions = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(rootEvent.getDetails())) {
+            for (EventDto detail : rootEvent.getDetails()) {
+                innerInterventions.add(processRootEvent(detail, verbatim)); // Recursive call
+            }
+        }
+
+        // 3. Build the final DTO for the current event, including any nested results.
+        return MatchingResultItemDto.builder()
+            .id(rootEvent.getEventId())
+            .title(rootEvent.getTitle())
+            .verbatim(rootEvent.getVerbatim() != null ? rootEvent.getVerbatim().getText() : null)
+            .lineNumber(rootEvent.getRank())
+            .speakers(getSpeakers(rootEvent, rootEvent.getVerbatim()))
+            .status(rootEvent.getVerbatim() != null ? MatchingStatus.AUTOMATICALLY_MATCHED : MatchingStatus.UNMATCHED)
+            .inners(innerInterventions)
+            .build();
+    }
+
+    /**
+     * Attempts to match verbatim text to a list of event details, using title and speaker extraction algorithms.
+     * <p>
+     * For each event detail, tries to extract relevant text from the verbatim and assigns it as a temporary verbatim record.
+     * Recursively processes further details if present.
+     * </p>
+     *
+     * @param events       List of event details to process.
+     * @param verbatimText The verbatim text to match against.
+     */
+    private void matchVerbatimOfEventDetails(final List<EventDto> events, final String verbatimText) {
+        if (StringUtils.isBlank(verbatimText)) {
+            return;
+        }
+
+        final List<String> verbatimLines = Arrays.asList(verbatimText.split("\\R"));
+        final List<String> remainingLines = new ArrayList<>(verbatimLines);
+
+        for (EventDto event : events) {
+            String extractedText = extractEventTextByTitle(event, remainingLines);
+            if (StringUtils.isBlank(extractedText)) {
+                extractedText = extractTextBySpeaker(event, remainingLines);
+            }
+
+            if (StringUtils.isNotBlank(extractedText)) {
+                // Remove extracted lines from remainingLines
+                LinkedList<String> extractedLines = new LinkedList<>(Arrays.asList(extractedText.split("\\R")));
+                remainingLines.removeAll(extractedLines);
+
+                // Remove title
+                extractedLines.pollFirst();
+                extractedText = String.join("\n", extractedLines);
+
+                // Create a temporary verbatim record for the inner event
+                final var speakers = SpeakerUtil.parseSpeakers(extractedText);
+                SpeakerUtil.addSpeakerToList(event.getSpeaker(), speakers);
+                VerbatimTextRecord innerVerbatim = VerbatimTextRecord.builder()
+                    .title(event.getTitle())
+                    .text(extractedText)
+                    .speakers(speakers)
+                    .build();
+                event.setVerbatim(innerVerbatim);
+            }
+            if (CollectionUtils.isNotEmpty(event.getDetails())) {
+                matchVerbatimOfEventDetails(event.getDetails(), String.join("\n", remainingLines));
+            }
+        }
+    }
+
+    /**
+     * Extracts text for an inner event based on speaker name matching.
+     * <p>
+     * Searches verbatim lines for the speaker's full name, then collects lines until another speaker or end is found.
+     * </p>
+     *
+     * @param innerEvent    The event to match by speaker.
+     * @param verbatimLines List of verbatim text lines.
+     * @return Extracted text block for the speaker, or null if not found.
+     */
+    private String extractTextBySpeaker(final EventDto innerEvent, final List<String> verbatimLines) {
+        final String speakerFullName = innerEvent.getSpeakerFullName();
+        if (StringUtils.isBlank(speakerFullName)) {
+            return null;
+        }
+
+        final StringBuilder extracted = new StringBuilder();
+        boolean isExtracting = false;
+
+        for (final String line : verbatimLines) {
+            if (line.contains(speakerFullName)) {
+                if (isExtracting) break; // Stop if we hit another speaker line of the same speaker
+                isExtracting = true;
+                continue; // Don't include the speaker line itself
+            }
+
+            if (isExtracting) {
+                // Check if the line contains another speaker's name, which would end the current text block.
+                if (line.matches(SpeakerUtil.SPEAKER_FORMAL_PATTERN.pattern()) || line.matches(SpeakerUtil.SPEAKER_WITH_PARTY_PATTERN.pattern())) {
+                    break;
+                }
+                extracted.append(line).append(System.lineSeparator());
+            }
+        }
+
+        return extracted.toString().trim();
+    }
+
+    /**
+     * Extracts text for an event based on title matching.
+     * <p>
+     * Searches verbatim lines for a line matching the event's title, then collects lines until another title is found.
+     * </p>
+     *
+     * @param eventDto      The event to match by title.
+     * @param verbatimLines List of verbatim text lines.
+     * @return Extracted text block for the event title, or empty string if not found.
+     */
+    private String extractEventTextByTitle(final EventDto eventDto, final List<String> verbatimLines) {
+        final String normalizedEventTitle = TextUtils.normalize(eventDto.getTitle());
+        final StringBuilder extracted = new StringBuilder();
+        boolean isExtracting = false;
+
+        for (final String line : verbatimLines) {
+            final Matcher matcher = INNER_EVENT_TEXT_PATTERN.matcher(line);
+            if (!isExtracting && matcher.find()) {
+                final String innerText = TextUtils.normalize(matcher.group(2));
+                if (MatchingUtil.isMatch(innerText, normalizedEventTitle, this.runConfig)) {
+                    isExtracting = true;
+//                    continue; // Skip the title line
+                }
+            } else if (isExtracting && matcher.find()) {
+                break; // Stop if we hit another title
+            }
+            if (isExtracting) {
+                extracted.append(line).append(System.lineSeparator());
+            }
+        }
+
+        return extracted.toString().trim();
+    }
+
+    /**
+     * Collects speakers from both event and verbatim sources into a set.
+     * <p>
+     * Combines speakers from the event and the verbatim record, ensuring uniqueness by full name.
+     * </p>
+     *
+     * @param event    The event to extract speakers from (may be null).
+     * @param verbatim The verbatim record to extract speakers from (may be null).
+     * @return Set of SpeakerDto objects representing all speakers for the item.
+     */
+    private Set<SpeakerDto> getSpeakers(final EventDto event, final VerbatimTextRecord verbatim) {
+        final Map<String, SpeakerDto> speakerMap = new HashMap<>();
+
+        if (event != null && StringUtils.isNotBlank(event.getSpeakerFullName())) {
+            final var speaker = SpeakerDto.builder()
+                .firstName(event.getSpeakerFirstName())
+                .lastName(event.getSpeakerLastName())
+                .gender(event.getSpeakerGender())
+                .function(event.getSpeakerFunction())
+                .build();
+            speakerMap.put(speaker.getSpeakerFullName(), speaker);
+        }
+
+        if (verbatim != null && CollectionUtils.isNotEmpty(verbatim.getSpeakers())) {
+            verbatim.getSpeakers().stream()
+                .filter(speaker -> StringUtils.isNotBlank(speaker.getSpeakerFullName()))
+                .forEach(newSpeaker -> addSpeakerToMap(newSpeaker, speakerMap));
+        }
+
+        return new HashSet<>(speakerMap.values());
+    }
+}
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MatchingProcessorServiceImpl implements MatchingProcessorService {
+    private final MatchingAlgorithmService matchingAlgorithmService;
+
+    @Override
+    public MatchingResultDto process(final String sessionIdentifier, final String verbatimFileContent, final String eventFileContent) {
+        return process(sessionIdentifier, 
+            verbatimFileContent.getBytes(StandardCharsets.UTF_8), 
+            eventFileContent.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public MatchingResultDto process(final String sessionIdentifier, final byte[] verbatimFileContent, final byte[] eventFileContent) {
+        return process(sessionIdentifier, 
+            new ByteArrayInputStream(verbatimFileContent), 
+            new ByteArrayInputStream(eventFileContent));
+    }
+
+    @Override
+    public MatchingResultDto process(final String sessionIdentifier, final InputStream verbatimFileContent, final InputStream eventFileContent) {
+        log.info("Processing sessionIdentifier={}", sessionIdentifier);
+        try {
+            // 1. Parse Verbatim from the input stream
+            log.info("Parsing verbatim file for sessionIdentifier={}", sessionIdentifier);
+            final InputStream verbatimStream = new ByteArrayInputStream(verbatimFileContent.readAllBytes());
+            final ParsedVerbatimDto parsedDoc = VerbatimParserHelper.parse(verbatimStream, sessionIdentifier);
+
+            // 2. Parse Events from the input stream
+            log.info("Parsing event file for sessionIdentifier={}", sessionIdentifier);
+            final InputStream eventStream = new ByteArrayInputStream(eventFileContent.readAllBytes());
+            final ParsedEventDto parsedEvt = EventParserHelper.parse(eventStream);
+
+            // 3. Run matching algorithm
+            log.info("Running matching for sessionIdentifier={}", sessionIdentifier);
+            return matchingAlgorithmService.runMatching(parsedDoc, parsedEvt);
+        } catch (Exception e) {
+            log.error("Error processing session {}: {}", sessionIdentifier, e.getMessage(), e);
+            return null;
+        }
+    }
+}
+
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MatchingVersionServiceImpl implements MatchingVersionService {
+    @Qualifier("xmlMapper")
+    private final XmlMapper xmlMapper;
+    private final ObjectMapper objectMapper;
+    private final MatchingVersionMapper matchingVersionMapper;
+    private final SessionRepository sessionRepository;
+    private final MatchingVersionRepository matchingVersionRepository;
+    private final MatchingProcessorService matchingProcessorService;
+    private final ReferentialFileService referentialFileService;
+    private final VideoInternalRestClient videoInternalRestClient;
+
+    @Override
+    public List<MatchingVersionDto> getAllVersions(final String sessionIdentifier) {
+        log.debug("Getting all matching versions for session: {}", sessionIdentifier);
+
+        final List<MatchingVersion> matchingVersionList = matchingVersionRepository.findAllBySessionIdentifier(sessionIdentifier);
+
+        return matchingVersionList.stream().map(matchingVersionMapper::toDto).toList();
+    }
+
+    @Override
+    public Optional<MatchingVersionDto> getVersion(final String sessionIdentifier, final Integer version) {
+        log.debug("Getting matching version with ID: {}", version);
+        return matchingVersionRepository.findBySessionIdentifierAndVersion(sessionIdentifier, version)
+            .map(matchingVersionMapper::toDto);
+    }
+
+    @Override
+    public Optional<MatchingVersionDto> getLatestVersion(final String sessionIdentifier) {
+        log.debug("Getting latest matching version for session Identifier: {}", sessionIdentifier);
+        final var latestVersion = matchingVersionRepository.findLatestBySessionIdentifier(sessionIdentifier);
+        return latestVersion.map(matchingVersionMapper::toDto);
+    }
+
+    @Override
+    public MatchingVersionDto startMatching(final String sessionIdentifier, final MultipartFile verbatimFile) throws IOException {
+        log.info("Starting matching process for sessionIdentifier={}", sessionIdentifier);
+
+        // 1. Fetch session
+        sessionRepository.findBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Session not found: %s".formatted(sessionIdentifier)));
+
+        // 2. Read files
+        final var verbatimFileContent = verbatimFile.getBytes();
+        final var eventFileContent = videoInternalRestClient.getSessionTaggingData(sessionIdentifier).readAllBytes();
+
+        // 4. Create a new matching version
+        var latestVersion = MatchingVersionDto.builder()
+            .sessionIdentifier(sessionIdentifier)
+            .status(VersionStatus.PROCESSING)
+            .build();
+
+        try {
+            // 5. Save a matching version
+            latestVersion = createNewVersion(latestVersion);
+
+            // 6. Run matching
+            final MatchingResultDto result = matchingProcessorService.process(sessionIdentifier, verbatimFileContent, eventFileContent);
+
+            // 7. Update the version status and save the matching version
+            latestVersion.setMatchingResult(result);
+            latestVersion.setStatus(VersionStatus.AWAITING_CORRECTION);
+
+            // Save the updated matching version entity to the repository
+            final var updatedLatestVersion = matchingVersionRepository.save(matchingVersionMapper.toEntity(latestVersion));
+
+            log.info("Matching process completed for sessionIdentifier={}, version={}", sessionIdentifier, latestVersion.getVersion());
+
+            return matchingVersionMapper.toDto(updatedLatestVersion);
+        } catch (Exception e) {
+            log.error("Error processing session {}: {}", sessionIdentifier, e.getMessage(), e);
+
+            latestVersion.setStatus(VersionStatus.ERROR);
+            matchingVersionRepository.save(matchingVersionMapper.toEntity(latestVersion));
+
+            throw e;
+        }
+
+    }
+
+    @Override
+    public MatchingVersionDto createNewVersion(final MatchingVersionDto versionDto) throws JsonProcessingException {
+        log.debug("Creating new matching version for session ID: {}", versionDto.getSessionIdentifier());
+        final var user = SecurityUtils.getCurrentUserLogin().orElse("system");
+
+        // Determine the next version number
+        final Integer lastVersion = matchingVersionRepository.findLatestVersionNumberBySessionIdentifier(versionDto.getSessionIdentifier());
+
+        final MatchingVersion newVersion = matchingVersionMapper.toEntity(versionDto.copy());
+        newVersion.setId(null);
+        newVersion.setVersion(lastVersion + 1);
+        newVersion.setCreatedBy(user);
+
+        final var savedVersion = matchingVersionRepository.save(newVersion);
+        log.info("Created matching version {} for session {} (ID: {})", savedVersion.getVersion(), savedVersion.getSession().getSessionIdentifier(), savedVersion.getSession().getId());
+
+        return matchingVersionMapper.toDto(savedVersion);
+    }
+
+    @Override
+    public MatchingVersionDto updateVersion(final String sessionIdentifier, final UpdateMatchRequest request) throws UpdateMatchException {
+        // 1. Fetch session
+        sessionRepository.findBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Session not found: " + sessionIdentifier));
+
+        // 2. Fetch MatchingVersion by session and version
+        MatchingVersion matchingVersion = matchingVersionRepository.findBySessionIdentifierAndVersion(sessionIdentifier, request.getVersion())
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier + ", version: " + request.getVersion()));
+
+        // 3. Deserialize MatchingResultDto
+        MatchingVersionDto matchingVersionDto = matchingVersionMapper.toDto(matchingVersion);
+
+        // 4. Find MatchingResultItemDto by id (recursive)
+        Long interventionId = request.getId();
+        MatchingResultItemDto item = findItemByIdRecursive(matchingVersionDto.getMatchingResult().getResult(), interventionId);
+        if (item == null) {
+            throw new ResourceNotFoundException("Intervention not found in matching results: " + interventionId);
+        }
+
+        // 5. Update fields
+        updateMatchingResultItemFromRequest(request, item);
+
+        // 6. Create and save a new MatchingVersion
+        try {
+            return createNewVersion(matchingVersionDto);
+        } catch (JsonProcessingException e) {
+            throw new UpdateMatchException("Error creating new matching version: " + e.getMessage(), e);
+        }
+
+    }
+
+    @Override
+    public MatchingVersionDto validateVersion(final String sessionIdentifier, final Integer version) {
+        log.info("Validating matching version {} for session {}", version, sessionIdentifier);
+        final var user = SecurityUtils.getCurrentUserLogin();
+
+        // 1. Fetch the latest matching version by session and version
+        final var matchingVersion = getVersion(sessionIdentifier, version)
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier));
+
+        // 2. Check if there are unmatched interventions
+        if (hasUnmatched(matchingVersion.getMatchingResult().getResult())) {
+            throw new IllegalStateException("Cannot validate a session with unmatched interventions.");
+        }
+
+        // 3. Update status
+        final MatchingVersion entity = matchingVersionMapper.toEntity(matchingVersion);
+        entity.setStatus(VersionStatus.VALIDATED);
+        entity.setValidatedAt(LocalDateTime.now());
+        user.ifPresent(entity::setValidatedBy);
+
+        return matchingVersionMapper.toDto(matchingVersionRepository.save(entity));
+    }
+
+    @Override
+    public void deleteLatestMatchingVersion(final String sessionIdentifier) {
+        log.info("delete latest matching version for session {}", sessionIdentifier);
+
+        final var matchingVersion = matchingVersionRepository.findLatestBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Latest matching version not found for session: " + sessionIdentifier));
+
+        matchingVersionRepository.delete(matchingVersion);
+        log.info("Latest matching version {} for session {} deleted", matchingVersion.getVersion(), sessionIdentifier);
+    }
+
+    @Override
+    public void deleteMatchingVersion(final String sessionIdentifier, final Integer version) {
+        log.debug("Deleting matching version {} for session {}", version, sessionIdentifier);
+
+        sessionRepository.findBySessionIdentifier(sessionIdentifier)
+            .orElseThrow(() -> new ResourceNotFoundException("Session not found: " + sessionIdentifier));
+
+        final var matchingVersion = matchingVersionRepository.findBySessionIdentifierAndVersion(sessionIdentifier, version)
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier + ", version: " + version));
+
+        matchingVersionRepository.delete(matchingVersion);
+
+        log.info("Deleted matching version {} for session {}", version, sessionIdentifier);
+    }
+
+    @Override
+    public String exportMatchingResult(final String sessionIdentifier, final Integer version, final FileContentType format) throws java.io.IOException {
+        log.debug("Exporting matching result for session {} and version {}", sessionIdentifier, version);
+        final MatchingVersionDto resultForVersion = getVersion(sessionIdentifier, version)
+            .orElseThrow(() -> new ResourceNotFoundException("Matching version not found for session: " + sessionIdentifier + ", version: " + version));
+        return switch (format) {
+            case XML -> xmlMapper.writeValueAsString(resultForVersion);
+            case JSON -> objectMapper.writeValueAsString(resultForVersion);
+            case CSV -> {
+                final var writer = new StringWriter();
+                final var csvWriter = new CSVWriter(writer, CsvParserUtil.DEFAULT_SEPARATOR, ICSVWriter.DEFAULT_QUOTE_CHARACTER, ICSVWriter.DEFAULT_ESCAPE_CHARACTER, ICSVWriter.DEFAULT_LINE_END);                // Write CSV header
+                csvWriter.writeNext(new String[]{"id", "verbatim", "lineNumber", "title", "status", "speakers"});
+                for (final MatchingResultItemDto item : resultForVersion.getMatchingResult().getResult()) {
+                    writeItemAndInnersToCsv(item, csvWriter);
+                }
+                csvWriter.close();
+                yield writer.toString();
+            }
+        };
+    }
+
+    /**
+     * Recursively searches for a MatchingResultItemDto by id in a list and all nested innerInterventions.
+     *
+     * @param items List of MatchingResultItemDto to search.
+     * @param id    The id to find.
+     * @return The found MatchingResultItemDto or null if not found.
+     */
+    private MatchingResultItemDto findItemByIdRecursive(List<MatchingResultItemDto> items, Long id) {
+        if (items == null) return null;
+        for (MatchingResultItemDto item : items) {
+            if (id.equals(item.getId())) {
+                return item;
+            }
+            MatchingResultItemDto found = findItemByIdRecursive(item.getInners(), id);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    private void updateMatchingResultItemFromRequest(final UpdateMatchRequest request, final MatchingResultItemDto item) {
+        item.setStatus(MatchingStatus.MANUALLY_MATCHED);
+        if (request.getTitle() != null) {
+            item.setTitle(request.getTitle());
+        }
+
+        if (request.getVerbatim() != null) {
+            item.setVerbatim(request.getVerbatim());
+        }
+
+        if (request.getSpeakers() != null) {
+            item.setSpeakers(new HashSet<>(request.getSpeakers()));
+        }
+    }
+
+    private boolean hasUnmatched(final List<MatchingResultItemDto> items) {
+        for (final MatchingResultItemDto item : items) {
+            if (item.getStatus() == MatchingStatus.UNMATCHED || item.getStatus() == MatchingStatus.MATCHING_CONFLICT) {
+                return true;
+            }
+            if (item.getInners() != null && hasUnmatched(item.getInners())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Recursively writes MatchingResultItemDto and its inners to CSV
+    private void writeItemAndInnersToCsv(final MatchingResultItemDto item, final CSVWriter csvWriter) {
+        csvWriter.writeNext(new String[]{
+            Objects.toString(item.getId(), ""),
+            Objects.toString(item.getVerbatim(), ""),
+            Objects.toString(item.getLineNumber(), ""),
+            Objects.toString(item.getTitle(), ""),
+            Objects.toString(item.getStatus(), ""),
+            SpeakerMapper.INSTANCE.toString(item.getSpeakers())
+        });
+        if (CollectionUtils.isNotEmpty(item.getInners())) {
+            for (MatchingResultItemDto inner : item.getInners()) {
+                writeItemAndInnersToCsv(inner, csvWriter);
+            }
+        }
+    }
+
+}
+
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ReferentialFileServiceImpl implements ReferentialFileService {
+
+    private static final List<String> ALLOWED_CONTENT_TYPES = List.of(
+        MediaType.APPLICATION_XML_VALUE,
+        MediaType.TEXT_XML_VALUE,
+        MediaType.APPLICATION_JSON_VALUE,
+        "application/x-json"
+    );
+
+    private final ReferentialFileRepository referentialFileRepository;
+    private final ReferentialFileMapper referentialFileMapper;
+    private final FileContentUtil fileContentUtil;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ReferentialFileDto uploadFile(final MultipartFile file, final String username) throws IOException {
+        // Validate file
+        validateFile(file);
+
+        // Determine content type and parse content
+        String contentType = determineContentType(file);
+        byte[] fileContent = file.getBytes();
+
+        // Parse and validate content
+        ReferentialContentDto contentDto = fileContentUtil.parseContent(fileContent, contentType);
+
+        // Get the original filename and base name
+        String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+
+        // Check if this is a new version of an existing file
+        Optional<ReferentialFile> existingLatest = referentialFileRepository.findLatestVersion();
+        AtomicInteger newVersionNumber = new AtomicInteger(1);
+
+        // This is a new version
+        existingLatest.ifPresent(existing -> newVersionNumber.set(existing.getVersionNumber() + 1));
+
+        // Create and save the referential file
+        ReferentialFile referentialFile = new ReferentialFile();
+        referentialFile.setName(generateUniqueName(originalFilename));
+        referentialFile.setVersionNumber(newVersionNumber.get());
+        referentialFile.setOriginalFilename(originalFilename);
+        referentialFile.setDescription("Referential file: " + originalFilename);
+        referentialFile.setContentType(contentType);
+        referentialFile.setSize(file.getSize());
+        referentialFile.setContent(new String(fileContent, StandardCharsets.UTF_8));
+        referentialFile.setActive(true);
+        referentialFile.setCreatedBy(username);
+
+        ReferentialFile savedFile = referentialFileRepository.save(referentialFile);
+        log.info("Uploaded new referential file: {} (ID: {})", originalFilename, savedFile.getId());
+
+        return toDtoWithUrls(savedFile);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Resource downloadFile(Long id) {
+        ReferentialFile file = getActiveFile(id);
+        return new ByteArrayResource(file.getContent().getBytes(StandardCharsets.UTF_8)) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename();
+            }
+        };
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReferentialFileDto getFileMetadata(Long id) {
+        ReferentialFile file = getActiveFile(id);
+        ReferentialFileDto dto = referentialFileMapper.toDto(file);
+        return addDownloadUrl(dto, file.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReferentialFileDto> getAllFiles() {
+        return referentialFileRepository.findByDeletedAtIsNull().stream()
+            .map(referentialFileMapper::toDto)
+            .toList();
+    }
+
+    @Override
+    public ReferentialFileDto getLatestVersion() {
+        return referentialFileRepository.findLatestVersion()
+            .map(referentialFileMapper::toDto)
+            .orElseThrow(() -> new EntityNotFoundException("No referential file found"));
+    }
+
+    @Override
+    @Transactional
+    public void deleteFile(Long id) {
+        ReferentialFile file = getActiveFile(id);
+        file.setDeletedAt(LocalDateTime.now());
+        referentialFileRepository.save(file);
+        log.info("Marked referential file as deleted: {} (ID: {})", file.getName(), file.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReferentialContentDto getFileContent(Long id) throws IOException {
+        ReferentialFile file = getActiveFile(id);
+        return fileContentUtil.parseContent(file.getContent().getBytes(StandardCharsets.UTF_8), file.getContentType());
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return referentialFileRepository.existsByNameAndDeletedAtIsNull(name);
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File cannot be empty");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException("Invalid file type. Only XML and JSON files are allowed.");
+        }
+    }
+
+    private boolean isSupportedContentType(String contentType) {
+        return contentType != null && ALLOWED_CONTENT_TYPES.stream()
+            .anyMatch(allowed -> allowed.equalsIgnoreCase(contentType));
+    }
+
+    private String determineContentType(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || contentType.equals(MediaType.APPLICATION_OCTET_STREAM_VALUE)) {
+            // Try to determine from file extension
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            if (extension != null) {
+                String ext = extension.toLowerCase();
+                if (ext.equals("xml")) {
+                    return MediaType.APPLICATION_XML_VALUE;
+                } else if (ext.equals("json")) {
+                    return MediaType.APPLICATION_JSON_VALUE;
+                }
+            }
+            return MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+        return contentType;
+    }
+
+    private String generateUniqueName(String originalFilename) {
+        String baseName = FilenameUtils.getBaseName(originalFilename)
+            .replaceAll("[^a-zA-Z0-9.-]", "_");
+        String extension = FilenameUtils.getExtension(originalFilename);
+
+        String name = baseName;
+        if (extension != null && !extension.isEmpty()) {
+            name += "." + extension.toLowerCase();
+        }
+
+        // If name is unique, return it
+        if (!referentialFileRepository.existsByNameAndDeletedAtIsNull(name)) {
+            return name;
+        }
+
+        // Otherwise, append a UUID
+        String uniqueSuffix = "_" + UUID.randomUUID().toString().substring(0, 8);
+        if (extension != null && !extension.isEmpty()) {
+            return baseName + uniqueSuffix + "." + extension.toLowerCase();
+        }
+        return baseName + uniqueSuffix;
+    }
+
+    private ReferentialFile getActiveFile(final Long id) {
+        return referentialFileRepository.findByIdAndDeletedAtIsNull(id)
+            .orElseThrow(() -> new EntityNotFoundException("Referential file not found with id: " + id));
+    }
+
+    private ReferentialFileDto toDtoWithUrls(ReferentialFile file) {
+        ReferentialFileDto dto = referentialFileMapper.toDto(file);
+        return addDownloadUrl(dto, file.getId());
+    }
+
+    private ReferentialFileDto addDownloadUrl(ReferentialFileDto dto, Long fileId) {
+        String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/api/v1/referential/files/")
+            .path(fileId.toString())
+            .path("/download")
+            .toUriString();
+        dto.setDownloadUrl(downloadUrl);
+        return dto;
+    }
+
+}
+
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SessionServiceImpl implements SessionService {
+    private final SessionMapper sessionMapper;
+    private final SessionRepository sessionRepository;
+    private final MatchingVersionService matchingVersionService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SessionDto> getAll() {
+        log.debug("Retrieving all sessions");
+        return sessionRepository.findAll()
+            .stream()
+            .map(sessionMapper::toDto)
+            .toList();
+    }
+
+    @Override
+    @Transactional
+    public SessionDto createSession(final SessionCreateDto sessionDto) {
+        log.info("Creating new session with identifier: {}", sessionDto.getSessionIdentifier());
+        
+        if (sessionRepository.existsBySessionIdentifier(sessionDto.getSessionIdentifier())) {
+            throw new IllegalArgumentException("Session with identifier '" + 
+                sessionDto.getSessionIdentifier() + "' already exists.");
+        }
+        
+        Session session = new Session();
+        session.setSessionIdentifier(sessionDto.getSessionIdentifier());
+        
+        Session savedSession = sessionRepository.save(session);
+        log.debug("Created session with ID: {}", savedSession.getId());
+        
+        return sessionMapper.toDto(savedSession);
+    }
+}
+
+
+

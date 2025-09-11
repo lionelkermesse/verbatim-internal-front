@@ -1,0 +1,77 @@
+package lu.chamber.verbatim.internal.repository;
+
+
+@Repository
+public interface MatchingVersionRepository extends JpaRepository<MatchingVersion, Long> {
+    /**
+     * Finds the highest version number for a given session identifier.
+     *
+     * @param sessionIdentifier the identifier of the session
+     * @return an Optional containing the highest version number, or empty if none found
+     */
+    default Integer findLatestVersionNumberBySessionIdentifier(String sessionIdentifier) {
+        return findLatestBySessionIdentifier(sessionIdentifier)
+            .map(MatchingVersion::getVersion)
+            .orElse(0);
+    }
+
+    /**
+     * Fetches a MatchingVersion by session identifier and version, including session details.
+     *
+     * @param sessionIdentifier the unique identifier of the session
+     * @param version           the version number
+     * @return an Optional containing the MatchingVersion, or empty if not found
+     */
+    @Query("SELECT mv FROM MatchingVersion mv JOIN FETCH mv.session WHERE mv.session.sessionIdentifier = :sessionIdentifier AND mv.version = :version")
+    Optional<MatchingVersion> findBySessionIdentifierAndVersion(@Param("sessionIdentifier") String sessionIdentifier, @Param("version") Integer version);
+
+    /**
+     * Lists all MatchingVersions for a session identifier, ordered by version descending.
+     *
+     * @param sessionIdentifier the unique identifier of the session
+     * @return a List of MatchingVersion entities ordered by version descending
+     */
+    @Query("SELECT mv FROM MatchingVersion mv JOIN FETCH mv.session WHERE mv.session.sessionIdentifier = :sessionIdentifier ORDER BY mv.version DESC")
+    List<MatchingVersion> findAllBySessionIdentifier(@Param("sessionIdentifier") String sessionIdentifier);
+
+    /**
+     * Finds the latest MatchingVersion entity for a given session identifier (top 1 by version desc).
+     *
+     * @param sessionIdentifier the identifier of the session
+     * @return an Optional containing the latest MatchingVersion, or empty if none found
+     */
+    @Query("SELECT mv FROM MatchingVersion mv JOIN FETCH mv.session WHERE mv.session.sessionIdentifier = :sessionIdentifier ORDER BY mv.version DESC LIMIT 1")
+    Optional<MatchingVersion> findLatestBySessionIdentifier(@Param("sessionIdentifier") String sessionIdentifier);
+}
+
+
+@Repository
+public interface ReferentialFileRepository extends JpaRepository<ReferentialFile, Long> {
+
+    Optional<ReferentialFile> findByIdAndDeletedAtIsNull(Long id);
+
+    boolean existsByNameAndDeletedAtIsNull(String name);
+
+    List<ReferentialFile> findByDeletedAtIsNull();
+
+    @Query("SELECT f FROM ReferentialFile f WHERE f.id = :id AND (f.deletedAt IS NULL OR :includeDeleted = true)")
+    Optional<ReferentialFile> findById(Long id, boolean includeDeleted);
+
+    @Query("SELECT f FROM ReferentialFile f WHERE f.name = :name AND f.versionNumber = :versionNumber AND f.deletedAt IS NULL")
+    Optional<ReferentialFile> findByNameAndVersionNumber(
+        @Param("name") String name,
+        @Param("versionNumber") int versionNumber
+    );
+
+    @Query("SELECT f FROM ReferentialFile f WHERE f.deletedAt IS NULL AND f.active = true ORDER BY f.versionNumber DESC LIMIT 1")
+    Optional<ReferentialFile> findLatestVersion();
+}
+
+
+
+@Repository
+public interface SessionRepository extends JpaRepository<Session, Long> {
+    Optional<Session> findBySessionIdentifier(String sessionIdentifier);
+
+    boolean existsBySessionIdentifier(String sessionIdentifier);
+}

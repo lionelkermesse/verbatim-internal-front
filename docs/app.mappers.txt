@@ -1,0 +1,193 @@
+package lu.chd.digital.verbatim.service.mapper;
+
+@Mapper(componentModel = "spring")
+public class DateMapper {
+
+    /**
+     * Converts a {@link LocalDateTime} to an {@link Instant} assuming UTC.
+     *
+     * @param localDateTime the local date time to convert.
+     * @return the corresponding {@link Instant}.
+     */
+    public Instant map(LocalDateTime localDateTime) {
+        return localDateTime == null ? null : localDateTime.toInstant(ZoneOffset.UTC);
+    }
+
+    /**
+     * Converts an {@link Instant} to a {@link LocalDateTime} in UTC.
+     * @param instant the instant to convert.
+     * @return the corresponding {@link LocalDateTime}.
+     */
+    public LocalDateTime map(Instant instant) {
+        return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+}
+
+/**
+ * Contract for a generic dto to entity mapper.
+ *
+ * @param <D> DTO type parameter.
+ * @param <E> Entity type parameter.
+ *
+ * @author LKE
+ * @created on 27.08.2025
+ */
+public interface EntityMapper<D, E> {
+    E toEntity(D dto);
+
+    D toDto(E entity);
+
+    List<E> toEntity(List<D> dtoList);
+
+    List<D> toDto(List<E> entityList);
+
+    default Set<D> toDtoSet(List<E> entityList) {
+        return entityList.stream().map(this::toDto).collect(Collectors.toSet());
+    }
+
+    default List<E> toEntityList(Set<D> dtoSet) {
+        return dtoSet.stream().map(this::toEntity).toList();
+    }
+
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdate(@MappingTarget E entity, D dto);
+
+    @Named("partialUpdateDto")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdateDto(@MappingTarget D target, D source);
+
+    @Named("partialUpdateEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void partialUpdateEntity(@MappingTarget E target, E source);
+}
+
+@Mapper(componentModel = "spring")
+public class DateMapper {
+
+    /**
+     * Converts a {@link LocalDateTime} to an {@link Instant} assuming UTC.
+     *
+     * @param localDateTime the local date time to convert.
+     * @return the corresponding {@link Instant}.
+     */
+    public Instant map(LocalDateTime localDateTime) {
+        return localDateTime == null ? null : localDateTime.toInstant(ZoneOffset.UTC);
+    }
+
+    /**
+     * Converts an {@link Instant} to a {@link LocalDateTime} in UTC.
+     * @param instant the instant to convert.
+     * @return the corresponding {@link LocalDateTime}.
+     */
+    public LocalDateTime map(Instant instant) {
+        return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+}
+
+
+@Mapper(componentModel = "spring",
+    uses = {DateMapper.class},
+    imports = {StandardCharsets.class, DateMapper.class},
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public abstract class ReferentialFileMapper implements EntityMapper<ReferentialFileDto, ReferentialFile> {
+    @Autowired
+    private FileContentUtil fileContentUtil;
+
+    @Mapping(target = "downloadUrl", ignore = true)
+    @Mapping(target = "refContent", source = "entity", qualifiedByName = "toReferentialContent")
+    public abstract ReferentialFileDto toDto(ReferentialFile entity);
+
+    @SneakyThrows
+    @Named("toReferentialContent")
+    protected ReferentialContentDto toReferentialContent(final ReferentialFile entity) {
+        return fileContentUtil.parseContent(entity.getContent().getBytes(StandardCharsets.UTF_8), entity.getContentType());
+    }
+}
+
+
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    unmappedSourcePolicy = ReportingPolicy.IGNORE
+)
+public abstract class SessionMapper implements EntityMapper<SessionDto, Session> {
+    @Autowired
+    private MatchingVersionService matchingVersionService;
+
+    public SessionDto toDto(final Session session) {
+        final var builder = SessionDto.builder()
+            .id(session.getId())
+            .sessionIdentifier(session.getSessionIdentifier())
+            .sessionDate(session.getSessionDate());
+
+        final var latestVersionOpt = matchingVersionService.getLatestVersion(session.getSessionIdentifier());
+
+        latestVersionOpt.ifPresent(version -> builder
+            .lastProcessedAt(version.getCreatedAt())
+            .status(version.getStatus())
+            .latestVersion(version.getVersion())
+            .matchingResult(version.getMatchingResult()));
+
+        return builder.build();
+    }
+}
+
+
+@Mapper
+public interface SpeakerMapper {
+    SpeakerMapper INSTANCE = Mappers.getMapper(SpeakerMapper.class);
+
+    default void partialUpdate(@MappingTarget SpeakerDto existing, SpeakerDto speaker) {
+        if (StringUtils.isBlank(existing.getFirstName()) && StringUtils.isNotBlank(speaker.getFirstName())) {
+            existing.setFirstName(speaker.getFirstName());
+        }
+        if (StringUtils.isBlank(existing.getLastName()) && StringUtils.isNotBlank(speaker.getLastName())) {
+            existing.setLastName(speaker.getLastName());
+        }
+        if (StringUtils.isBlank(existing.getGender()) && StringUtils.isNotBlank(speaker.getGender())) {
+            existing.setGender(speaker.getGender());
+        }
+        if (StringUtils.isBlank(existing.getFunction()) && StringUtils.isNotBlank(speaker.getFunction())) {
+            existing.setFunction(speaker.getFunction());
+        }
+        if (StringUtils.isBlank(existing.getParty()) && StringUtils.isNotBlank(speaker.getParty())) {
+            existing.setParty(speaker.getParty());
+        }
+    }
+
+    default String toString(final Collection<SpeakerDto> speakers) {
+        return toString(speakers.toArray(new SpeakerDto[0]));
+    }
+
+    default String toString(final SpeakerDto... speakers) {
+        if (speakers == null) return "";
+
+        return Stream.of(speakers)
+            .filter(Objects::nonNull)
+            .filter(speaker -> StringUtils.isNotBlank(speaker.getSpeakerFullName()))
+            .map(speaker -> {
+                StringBuilder sb = new StringBuilder();
+                if (StringUtils.isNotBlank(speaker.getGender())) {
+                    sb.append("M".equals(speaker.getGender()) ? "M." : "Mme");
+                    sb.append(" ");
+                }
+                if (StringUtils.isNotBlank(speaker.getFirstName())) {
+                    sb.append(speaker.getFirstName()).append(" ");
+                }
+                if (StringUtils.isNotBlank(speaker.getLastName())) {
+                    sb.append(speaker.getLastName());
+                }
+                if (StringUtils.isNotBlank(speaker.getFunction())) {
+                    sb.append(", ").append(speaker.getFunction());
+                }
+                if (StringUtils.isNotBlank(speaker.getParty())) {
+                    sb.append(" (").append(speaker.getParty()).append(")");
+                }
+                return sb.toString().trim();
+            })
+            .reduce((a, b) -> a + ";" + b)
+            .orElse("");
+    }
+}

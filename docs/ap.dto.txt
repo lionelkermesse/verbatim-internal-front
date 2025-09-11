@@ -1,0 +1,619 @@
+package lu.chamber.verbatim.internal.service.dto;
+
+
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CorrespondenceDto {
+    @NotBlank(message = "Verbatim term is required")
+    @JsonProperty("verbatim_term")
+    @CsvBindByName(column = "verbatim_term")
+    private String verbatimTerm;
+
+    @NotBlank(message = "Event term is required")
+    @JsonProperty("event_term")
+    @CsvBindByName(column = "event_term")
+    private String eventTerm;
+
+    @NotBlank(message = "Type is required")
+    @JsonProperty("type")
+    @JsonSerialize(using = MatchingRuleTypeJsonConfig.Serializer.class)
+    @JsonDeserialize(using = MatchingRuleTypeJsonConfig.Deserializer.class)
+    @CsvCustomBindByName(column = "type", converter = MatchingRuleTypeConverter.class)
+    private MatchingRuleType type;
+
+    /**
+     * Checks if this rule represents an exact match.
+     * @return true if the rule type is EXACT
+     */
+    @JsonIgnore
+    public boolean isExactMatch() {
+        return type == MatchingRuleType.EXACT;
+    }
+
+    /**
+     * Checks if this rule represents an approximate match.
+     * @return true if the rule type is APPROXIMATE
+     */
+    @JsonIgnore
+    public boolean isApproximateMatch() {
+        return type == MatchingRuleType.APPROXIMATE;
+    }
+}
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class EventDto implements Comparable<EventDto> {
+    // Note: This ID is for the database entity, it won't be in the CSV file.
+    private Long id;
+
+    @CsvBindByName(column = "date_seance", required = true)
+    @CsvDate("dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime sessionDate;
+
+    @CsvBindByName(column = "debut_seance", required = true)
+    @CsvDate("dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime sessionStart;
+
+    @CsvBindByName(column = "fin_seance", required = true)
+    @CsvDate("dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime sessionEnd;
+
+    @CsvBindByName(column = "numero_seance", required = true)
+    private int sessionNumber;
+
+    @CsvBindByName(column = "cut_debut")
+    private String cutStart;
+
+    @CsvBindByName(column = "cut_fin")
+    private String cutEnd;
+
+    @CsvBindByName(column = "event_id")
+    private Long eventId;
+
+    @CsvBindByName(column = "rang")
+    private int rank;
+
+    @CsvBindByName(column = "debut_event_ms")
+    private long debutEventMs;
+
+    @CsvBindByName(column = "hierarchie")
+    private String hierarchy;
+
+    @CsvBindByName(column = "titre_evt")
+    private String title;
+
+    @CsvBindByName(column = "type_evt")
+    private String eventType;
+
+    @JsonIgnore
+    @CsvBindByName(column = "nom")
+    private String speakerLastName;
+
+    @JsonIgnore
+    @CsvBindByName(column = "prenom")
+    private String speakerFirstName;
+
+    @JsonIgnore
+    @CsvBindByName(column = "sexe")
+    private String speakerGender;
+
+    @JsonIgnore
+    @CsvBindByName(column = "intitulemasculin")
+    private String speakerFunction;
+
+    @CsvIgnore
+    @Builder.Default
+    private List<EventDto> details = new ArrayList<>();
+
+    @CsvIgnore
+    private VerbatimTextRecord verbatim;
+
+    public SpeakerDto getSpeaker() {
+        if (StringUtils.isBlank(getSpeakerFullName())) {
+            return null;
+        }
+        return SpeakerDto.builder()
+            .firstName(speakerFirstName)
+            .lastName(speakerLastName)
+            .gender(speakerGender)
+            .function(speakerFunction)
+            .build();
+    }
+
+    @JsonIgnore
+    public String getSpeakerFullName() {
+        String speakerName = StringUtils.defaultIfBlank(speakerFirstName, "") + " " + StringUtils.defaultIfBlank(speakerLastName, "");
+        speakerName = StringUtils.normalizeSpace(speakerName.trim());
+        return "na na".equalsIgnoreCase(TextUtils.normalize(speakerName)) ? "" : speakerName;
+    }
+
+    @Override
+    public int compareTo(@NotNull EventDto o) {
+        return Integer.compare(this.rank, o.rank);
+    }
+}
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class MatchingResultDto {
+    @Builder.Default
+    private List<MatchingResultItemDto> result = new ArrayList<>();
+    @Builder.Default
+    private Set<SpeakerDto> speakers = new HashSet<>();
+
+    /**
+     * Recursively collects all items with status AUTOMATICALLY_MATCHED or MANUALLY_MATCHED from the result tree.
+     */
+    @JsonIgnore
+    public List<MatchingResultItemDto> getMatched() {
+        List<MatchingResultItemDto> matchedItems = new ArrayList<>();
+        collectByStatus(result, matchedItems, MatchingStatus.AUTOMATICALLY_MATCHED, MatchingStatus.MANUALLY_MATCHED);
+        return matchedItems;
+    }
+
+    /**
+     * Recursively collects all items with status UNMATCHED or MATCHING_CONFLICT from the result tree.
+     */
+    @JsonIgnore
+    public List<MatchingResultItemDto> getUnMatched() {
+        final List<MatchingResultItemDto> unmatchedItems = new ArrayList<>();
+        collectByStatus(result, unmatchedItems, MatchingStatus.UNMATCHED, MatchingStatus.MATCHING_CONFLICT);
+        return unmatchedItems;
+    }
+
+    public Set<SpeakerDto> getSpeakers() {
+        if (speakers.isEmpty()) {
+            this.speakers = result.stream()
+                .map(MatchingResultItemDto::getSpeakers)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+        }
+
+        return speakers;
+    }
+
+    /**
+     * Helper method to recursively collect items by status.
+     */
+    private void collectByStatus(final List<MatchingResultItemDto> source, final List<MatchingResultItemDto> target, final MatchingStatus... statuses) {
+        if (source == null) return;
+        for (MatchingResultItemDto item : source) {
+            for (MatchingStatus status : statuses) {
+                if (item.getStatus() == status) {
+                    target.add(item);
+                    break;
+                }
+            }
+            collectByStatus(item.getInners(), target, statuses);
+        }
+    }
+}
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MatchingResultItemDto implements Comparable<MatchingResultItemDto> {
+    private Long id;
+    private String verbatim;
+    private Integer lineNumber;
+    private String title;
+    @Builder.Default
+    private List<MatchingResultItemDto> inners = new ArrayList<>();
+    @Builder.Default
+    private Set<SpeakerDto> speakers = new HashSet<>();
+    @Builder.Default
+    private MatchingStatus status = MatchingStatus.UNMATCHED;
+
+    public Set<SpeakerDto> getSpeakers() {
+        final Set<SpeakerDto> allSpeakers = new HashSet<>(speakers);
+        inners.stream()
+            .map(MatchingResultItemDto::getSpeakers)
+            .flatMap(Collection::stream)
+            .forEach(speaker -> SpeakerUtil.addSpeakerToList(speaker, allSpeakers));
+        return allSpeakers;
+    }
+
+    public MatchingResultItemDto addSpeaker(final SpeakerDto newSpeaker) {
+        if (newSpeaker != null && StringUtils.isNotBlank(newSpeaker.getSpeakerFullName())) {
+            final var speakerMap = speakers.stream().collect(Collectors.toMap(SpeakerDto::getSpeakerFullName, Function.identity()));
+            final var existingSpeaker = speakerMap.get(newSpeaker.getSpeakerFullName());
+            final var mapper = Mappers.getMapper(SpeakerMapper.class);
+            if (existingSpeaker != null) {
+                mapper.partialUpdate(existingSpeaker, newSpeaker);
+            } else {
+                speakerMap.put(newSpeaker.getSpeakerFullName(), newSpeaker);
+            }
+            this.speakers = new HashSet<>(speakerMap.values());
+        }
+        return this;
+    }
+
+    @Override
+    public int compareTo(@NotNull MatchingResultItemDto o) {
+        // If ranks are equal, compare by ID with null safety
+        if (this.id == null && o.getId() == null) {
+            return 0;
+        }
+        if (this.id == null) {
+            return -1; // null comes first
+        }
+        if (o.getId() == null) {
+            return 1; // non-null comes after null
+        }
+
+        return this.id.compareTo(o.getId());
+    }
+}
+
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class MatchingVersionDto {
+    private Long id;
+    private String sessionIdentifier;
+    private Integer version;
+    private MatchingResultDto matchingResult;
+    private VersionStatus status;
+    private String createdBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'HH:mm:ss.SSSX", timezone = "UTC")
+    private Instant createdAt;
+    private String validatedBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime validatedAt;
+
+    @JsonIgnore
+    public MatchingVersionDto copy() {
+        final var copy = new MatchingVersionDto();
+        BeanUtils.copyProperties(this, copy);
+        return copy;
+    }
+}
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ParsedEventDto {
+    /**
+     * The date of the session, extracted from the document.
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate sessionDate;
+
+    /**
+     * The start time of the session, extracted from the document.
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    private LocalTime sessionStartTime;
+
+    /**
+     * The end time of the session, extracted from the document.
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    private LocalTime sessionEndTime;
+
+    /**
+     * The root events in the hierarchy, typically top-level verbatims.
+     */
+    @Builder.Default
+    private List<EventDto> root = new ArrayList<>();
+
+    /**
+     * Events that could not be attached to the main hierarchy.
+     */
+    @Builder.Default
+    private List<EventDto> orphans = new ArrayList<>();
+
+    public ParsedEventDto addRootEvent(EventDto eventDto) {
+        root.add(eventDto);
+        return this;
+    }
+
+    public ParsedEventDto addOrphan(EventDto eventDto) {
+        orphans.add(eventDto);
+        return this;
+    }
+
+    @JsonIgnore
+    public ParsedEventDto updateMedatadata() {
+        // If there are root events, extract session metadata from the first and last root events.
+        if (CollectionUtils.isNotEmpty(root)) {
+            EventDto first = root.get(0);
+            EventDto last = root.get(root.size() - 1);
+
+            // Set session date if available
+            if (first.getSessionDate() != null) {
+                setSessionDate(first.getSessionDate().toLocalDate());
+            }
+
+            // Set session start time if available
+            if (first.getSessionStart() != null) {
+                setSessionStartTime(first.getSessionStart().toLocalTime());
+            }
+
+            // Set session end time if available
+            if (last.getSessionEnd() != null) {
+                setSessionEndTime(last.getSessionEnd().toLocalTime());
+            }
+        }
+
+        return this;
+    }
+}
+
+
+
+
+public record ParsedVerbatimDto(
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    LocalDate sessionDate,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    LocalTime sessionStartTime,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    LocalTime sessionEndTime,
+    List<VerbatimTextRecord> verbatims
+) { }
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReferentialContentDto {
+
+    @NotNull(message = "Similarity threshold is required")
+    @DecimalMin(value = "0.0", message = "Similarity threshold must be between 0 and 1")
+    @DecimalMax(value = "1.0", message = "Similarity threshold must be between 0 and 1")
+    @JsonProperty("similarityThreshold")
+    private Double similarityThreshold;
+
+    @Builder.Default
+    @NotNull(message = "Correspondences list is required")
+    @Valid
+    private List<CorrespondenceDto> correspondences = new ArrayList<>();
+}
+
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ReferentialFileDto {
+    private Long id;
+
+    @NotBlank(message = "Name is required")
+    private String name;
+
+    @NotNull(message = "Version number is required")
+    private Integer versionNumber;
+
+    @NotBlank(message = "Original filename is required")
+    @JsonProperty("originalFilename")
+    private String originalFilename;
+
+    @NotBlank(message = "Description is required")
+    private String description;
+
+    @NotBlank(message = "Content type is required")
+    private String contentType;
+
+    @NotNull(message = "File size is required")
+    private Long size;
+
+    @Builder.Default
+    private boolean active = true;
+    private String createdBy;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime updatedAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime deletedAt;
+
+    // For file download
+    @JsonIgnore
+    private String downloadUrl;
+
+    // For content preview
+    @JsonProperty("rawContent")
+    private String content;
+
+    @JsonProperty("rules")
+    private ReferentialContentDto refContent;
+
+    @JsonProperty("isActive")
+    public boolean isActive() {
+        return active;
+    }
+}
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResultDto<T> {
+    /** Indicates if the request was successful */
+    private boolean success;
+    /** Optional status or error code */
+    private String code;
+    /** Human-readable message (error, info, etc.) */
+    private String message;
+    /** The actual payload (can be any type) */
+    private T data;
+    /** List of error details, if any */
+    private List<String> errors;
+    /** Timestamp of the response */
+    @Builder.Default
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
+    private Instant timestamp = Instant.now();
+}
+
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SessionCreateDto {
+    private String sessionIdentifier;
+}
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SessionDto {
+    private Long id;
+    private String sessionIdentifier;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate sessionDate;
+    private VersionStatus status;
+    private Integer latestVersion;
+    private MatchingResultDto matchingResult;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'HH:mm:ss.SSSX", timezone = "UTC")
+    private Instant lastProcessedAt;
+}
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SpeakerDto implements Comparable<SpeakerDto> {
+    private String firstName;
+    private String lastName;
+    private String gender;
+    private String function;
+    private String party;
+
+    @JsonIgnore
+    public String getSpeakerFullName() {
+        final String speakerName = StringUtils.trimToEmpty(StringUtils.defaultIfBlank(firstName, "") + " " + StringUtils.defaultIfBlank(lastName, ""));
+        return StringUtils.normalizeSpace(speakerName.trim());
+    }
+
+    @Override
+    public int compareTo(@NotNull SpeakerDto o) {
+        int lastNameComparison = String.valueOf(this.lastName).compareToIgnoreCase(String.valueOf(o.lastName));
+        if (lastNameComparison != 0) {
+            return lastNameComparison;
+        }
+        return String.valueOf(this.firstName).compareToIgnoreCase(String.valueOf(o.firstName));
+    }
+
+}
+
+
+
+@Data
+public class UpdateMatchRequest {
+    @NotNull
+    private Long id;
+    @NotNull
+    private Integer version;
+    private String title;
+    private String verbatim;
+    private MatchingStatus status;
+    private List<SpeakerDto> speakers;
+}
+
+
+
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class VerbatimTextRecord {
+    /**
+     * The functional code or type of the record (e.g., AUTRE, DEBAT, INTERVENTION, etc.).
+     */
+    @CsvBindByName(column = "fmnc")
+    private String type;
+
+    /**
+     * The date/time string as extracted from the source.
+     */
+    @CsvBindByName(column = "uddt")
+    @CsvDate("dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss.SSS")
+    private LocalDateTime date;
+
+    /**
+     * The unique document or record identifier.
+     */
+    @CsvBindByName(column = "udid")
+    private String key;
+
+    /**
+     * The document queue or sequence identifier.
+     */
+    @CsvBindByName(column = "dqid")
+    private String queueId;
+
+    /**
+     * The title or logical identifier or label for the record.
+     */
+    @CsvBindByName(column = "udil")
+    private String title;
+
+    /**
+     * The raw or processed text content of the record.
+     */
+    @CsvBindByName(column = "udtx")
+    private String text;
+
+    /**
+     * This field is for internal logic and should not be written to the CSV.
+     * It represents the starting line number in the original document.
+     */
+    @CsvIgnore
+    private int lineNumber;
+
+    /**
+     * A list of speakers identified within this verbatim record.
+     */
+    @CsvIgnore
+    @Builder.Default
+    private List<SpeakerDto> speakers = new ArrayList<>();
+
+}
+

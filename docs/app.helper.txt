@@ -1,0 +1,289 @@
+package lu.chamber.verbatim.internal.service.helpers;
+
+/**
+ * @author LKE
+ * @created on 29.08.2025
+ */
+@Slf4j
+@UtilityClass
+public final class CsvExportHelper {
+
+    public static String exportToCsv(List<MatchingResultItemDto> results) {
+        try (StringWriter writer = new StringWriter();
+             CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            // Header
+            csvWriter.writeNext(new String[]{"Intervention Content", "Intervention Line", "Event Title", "Event Speakers", "Status"});
+
+            // Data
+            for (MatchingResultItemDto result : results) {
+                csvWriter.writeNext(new String[]{
+                    result.getVerbatim(),
+                    String.valueOf(result.getLineNumber()),
+                    result.getTitle(),
+                    result.getSpeakers().stream().map(SpeakerDto::getSpeakerFullName).collect(Collectors.joining(" - ")),
+                    result.getStatus().name()
+                });
+            }
+            return writer.toString();
+        } catch (Exception e) {
+            // Handle exception
+            throw new RuntimeException("Failed to export matching results to CSV", e);
+        }
+    }
+}
+@Slf4j
+@UtilityClass
+public final class EventParserHelper {
+
+    /**
+     * Parses a delimiter-separated event file into a list of EventDTOs.
+     * The file is expected to use '¬' as a separator.
+     *
+     * @param inputStream The input stream of the EVT.TXT file.
+     * @return A list of parsed EventDTO objects.
+     */
+    public static ParsedEventDto parse(final InputStream inputStream) {
+        return parse(inputStream, false);
+    }
+
+    /**
+     * Parses a delimiter-separated event file into a list of EventDTOs.
+     * The file is expected to use '¬' as a separator.
+     *
+     * @param inputStream The input stream of the EVT.TXT file.
+     * @return A list of parsed EventDTO objects.
+     */
+    public static ParsedEventDto parse(final InputStream inputStream, final boolean flat) {
+        try {
+            final var flatEvents = CsvParserUtil.parse(inputStream, EventDto.class, CsvParserUtil.DEFAULT_SEPARATOR);
+            return flat ? ParsedEventDto.builder().root(flatEvents).build() : buildHierarchy(flatEvents);
+        } catch (Exception e) {
+            // In a real application, use a more specific exception and logging
+            throw new EventParseException("Failed to parse Event CSV file", e);
+        }
+    }
+
+    /**
+     * Builds a hierarchical list of events from a flat list.
+     * The hierarchy is determined by the 'hierarchie' property of the EventDto.
+     * An event with hierarchy 'N' is considered a child of the last processed event with hierarchy 'N-1'.
+     *
+     * @param flatEvents A flat list of EventDto, expected to be sorted by rank.
+     * @return A list of root EventDto objects (hierarchy '1'), with their 'details' lists populated recursively.
+     */
+    private static ParsedEventDto buildHierarchy(final List<EventDto> flatEvents) {
+        final var parsedEventDto = new ParsedEventDto();
+
+        if (CollectionUtils.isEmpty(flatEvents)) {
+            return parsedEventDto;
+        }
+
+        // Ensure the list is sorted by rank for correct processing.
+        Collections.sort(flatEvents);
+
+        // This map holds the most recent parent event for each hierarchy level.
+        // Key: Hierarchy level (e.g., 1, 2, 3)
+        // Value: The last EventDto seen at that level.
+        final Map<Integer, EventDto> currentParents = new HashMap<>();
+
+        for (final EventDto event : flatEvents) {
+            // It's safer to handle potential parsing errors for the hierarchy string.
+            int hierarchyLevel;
+            try {
+                hierarchyLevel = Integer.parseInt(event.getHierarchy());
+            } catch (NumberFormatException e) {
+                log.warn("Invalid hierarchy value: '{}', event={}", event.getHierarchy(), event);
+                continue;
+            }
+
+            if (hierarchyLevel == 1) {
+                // This is a top-level event.
+                parsedEventDto.addRootEvent(event);
+                currentParents.put(hierarchyLevel, event);
+            } else {
+                // This is a child event. Its parent is the last event with hierarchy 'level - 1'.
+                EventDto parent = currentParents.get(hierarchyLevel - 1);
+
+                if (parent != null) {
+                    // Add the current event to its parent's details list.
+                    parent.getDetails().add(event);
+                } else {
+                    // This is an orphan event (e.g., hierarchy 3 with no preceding hierarchy 2).
+                    // We'll log this and add it to a separate list for error handling.
+                    log.warn("Orphan event detected: hierarchy={}, event={}", event.getHierarchy(), event);
+                    parsedEventDto.addOrphan(event);
+                }
+
+                // The current event now becomes the potential parent for the next level.
+                currentParents.put(hierarchyLevel, event);
+            }
+        }
+
+        // Return the fully populated ParsedEventDto object.
+        return parsedEventDto.updateMedatadata();
+    }
+}
+
+@Slf4j
+@UtilityClass
+public class VerbatimCsvWriterHelper {
+
+    private static final String HEADER = "fmnc¬uddt¬udid¬dqid¬udil¬udtx";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    /**
+     * Writes a list of VerbatimTextRecord objects to a CSV formatted string.
+     *
+     * @param records The list of verbatims to write.
+     * @return A string containing the data in the desired TXT format.
+     */
+    public static String writeToCsv(List<VerbatimTextRecord> records) {
+        try (var stringWriter = new StringWriter()) {
+            // Write the header manually to match the exact format
+            stringWriter.write(HEADER);
+            stringWriter.write(System.lineSeparator());
+
+            // Use a CSVWriter to handle the data rows correctly
+            try (CSVWriter csvWriter = new CSVWriter(stringWriter,
+                CsvParserUtil.DEFAULT_SEPARATOR,
+                CSVWriter.NO_QUOTE_CHARACTER, // No quotes around fields
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                System.lineSeparator())) {
+
+                for (VerbatimTextRecord record : records) {
+                    csvWriter.writeNext(new String[]{
+                        record.getType(),
+                        DATE_FORMATTER.format(record.getDate()),
+                        record.getKey(),
+                        record.getQueueId(),
+                        record.getTitle(),
+                        record.getText()
+                    });
+                }
+            }
+            return stringWriter.toString();
+        } catch (IOException e) {
+            throw new VerbatimCsvWriteException("Failed to write Verbatim verbatims to CSV string", e);
+        }
+    }
+}
+
+
+@Slf4j
+@UtilityClass
+public final class VerbatimParserHelper {
+    // Regex to identify the start of a new agenda item (e.g., "1.", "2.", "10.")
+    // This is now used to clean the title, not to identify the item.
+    private static final Pattern AGENDA_ITEM_PATTERN = Pattern.compile("^(\\d+)\\.\\s+(.*)");
+    // A set of common style IDs for top-level headings in Word. i.eg: "Titre2" is common in French versions of Word.
+    private static final Set<String> AGENDA_HEADING_STYLE_IDS = Set.of("Heading2", "Titre2");
+    private static final Pattern SESSION_START_PATTERN = Pattern.compile("La séance publique est ouverte à (\\d{2}\\.\\d{2}) heures");
+    private static final Pattern SESSION_END_PATTERN = Pattern.compile("La séance publique est levée à (\\d{2}\\.\\d{2}) heures");
+    private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .appendPattern("EEEE d MMMM yyyy")
+        .toFormatter(Locale.FRENCH);
+    // regex to identify a speaker line, e.g., "M. Fernand Etgen, Président.-" or "Mme Martine Hansen.-"
+
+    public static ParsedVerbatimDto parse(final InputStream inputStream, final String sessionIdentifier) throws IOException {
+        List<VerbatimTextRecord> records = new ArrayList<>();
+        LocalDate sessionDate = null;
+        LocalTime startTime = null;
+        LocalTime endTime = null;
+
+        try (XWPFDocument document = new XWPFDocument(inputStream)) {
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
+            StringBuilder currentContent = new StringBuilder();
+            String currentTitle = "";
+            int itemCounter = 0;
+            boolean contentStarted = false;
+
+            for (int i = 0; i < paragraphs.size(); i++) {
+                XWPFParagraph paragraph = paragraphs.get(i);
+                String rawText = paragraph.getText();
+                // Normalizes text by replacing various Unicode whitespace characters with regular spaces and cleaning up the text for consistent pattern matching.
+                String text = StringUtils.normalizeSpace(rawText);
+
+                if (text.isEmpty()) continue;
+
+                // 1. Find Session Date (usually the second non-empty line)
+                if (sessionDate == null && i < 5) {
+                    try {
+                        sessionDate = LocalDate.parse(text, DATE_FORMATTER);
+                    } catch (Exception e) {
+                        // Ignore parsing errors, continue searching
+                    }
+                }
+
+                // 2. Find Session Start Time and skip the "Sommaire"
+                if (!contentStarted) {
+                    Matcher startMatcher = SESSION_START_PATTERN.matcher(text);
+                    if (startMatcher.find()) {
+                        startTime = LocalTime.parse(startMatcher.group(1).replace('.', ':'));
+                        contentStarted = true;
+                    }
+                    continue; // Skip everything before the session starts
+                }
+
+                // 4. Find Session End Time and do not include the line in the content
+                Matcher endMatcher = SESSION_END_PATTERN.matcher(text);
+                if (endMatcher.find()) {
+                    endTime = LocalTime.parse(endMatcher.group(1).replace('.', ':'));
+                    continue; // Skip this line from being added to any intervention
+                }
+
+                // 3. Find Interventions (Agenda Items)
+                boolean isAgendaItem = paragraph.getStyleID() != null && AGENDA_HEADING_STYLE_IDS.contains(paragraph.getStyleID());
+
+                if (isAgendaItem) {
+                    if (itemCounter > 0 && !currentContent.isEmpty()) {
+                        records.add(createRecord(sessionIdentifier, itemCounter, currentTitle, currentContent.toString(), sessionDate));
+                    }
+                    itemCounter++;
+
+                    // The heading text is the title. Try to strip a leading number if it exists.
+                    Matcher titleMatcher = AGENDA_ITEM_PATTERN.matcher(text);
+                    if (titleMatcher.matches()) {
+                        currentTitle = titleMatcher.group(2).trim();
+                    } else {
+                        currentTitle = text;
+                    }
+
+                    currentContent = new StringBuilder();
+                    // DO NOT add the title line to the content
+                } else if (itemCounter > 0) {
+                    // Append the original, non-normalized text to preserve formatting
+                    currentContent.append(rawText).append(System.lineSeparator());
+                }
+            }
+
+            // Add the last processed item
+            if (itemCounter > 0 && !currentContent.isEmpty()) {
+                records.add(createRecord(sessionIdentifier, itemCounter, currentTitle, currentContent.toString(), sessionDate));
+            }
+        }
+        return new ParsedVerbatimDto(sessionDate, startTime, endTime, records);
+    }
+
+    private static VerbatimTextRecord createRecord(final String sessionIdentifier, final int itemNumber, final String title, final String content, final LocalDate sessionDate) {
+        String[] parts = sessionIdentifier.split("\\.");
+        String year = parts.length > 0 ? parts[0] : "0000";
+        String sessionNum = parts.length > 1 ? parts[1] : "000";
+        String fmnc = title.toLowerCase().contains("débat") ? "DEBAT" : "AUTRE";
+        String udid = String.format("C-%s-O-%s-%04d", year, sessionNum, itemNumber);
+        LocalDateTime uddt = sessionDate != null ? sessionDate.atStartOfDay() : LocalDate.of(1970, 1, 1).atStartOfDay();
+        List<SpeakerDto> speakers = SpeakerUtil.parseSpeakers(content);
+
+        return VerbatimTextRecord.builder()
+            .type(fmnc)
+            .date(uddt)
+            .key(udid)
+            .title(title)
+            .text(content)
+            .speakers(speakers)
+            .lineNumber(itemNumber)
+            .build();
+    }
+}
+

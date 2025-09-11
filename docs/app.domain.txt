@@ -1,0 +1,230 @@
+package lu.chd.digital.verbatim.domain;
+
+@Getter
+public enum MatchingStatus {
+    /**
+     * The match was made automatically by the algorithm.
+     */
+    AUTOMATICALLY_MATCHED(1L),
+    /**
+     * The match was made or corrected manually by a user.
+     */
+    MANUALLY_MATCHED(2L),
+    /**
+     * The intervention has no corresponding event.
+     */
+    UNMATCHED(3L),
+    /**
+     * The algorithm found multiple potential matches, requiring user intervention.
+     */
+    MATCHING_CONFLICT(4L);
+
+    private final Long id;
+
+    MatchingStatus(Long id) {
+        this.id = id;
+    }
+}
+
+public enum OutputFileFormat {
+    JSON,
+    XML,
+    CSV
+}
+
+@Getter
+public enum VersionStatus {
+    /**
+     * Matching files have been uploaded, ready for processing.
+     */
+    UPLOADED(1L),
+    /**
+     * Matching process is running.
+     */
+    PROCESSING(2L),
+    /**
+     * Matching complete, waiting for user validation.
+     */
+    AWAITING_CORRECTION(3L),
+    /**
+     * User has validated the version.
+     */
+    VALIDATED(4L),
+    /**
+     * An error occurred during processing.
+     */
+    ERROR(5L);
+
+    private static final Map<Long, VersionStatus> GET_BY_ID = Stream.of(values()).collect(Collectors.toMap(VersionStatus::getId, Function.identity()));
+
+    private final Long id;
+
+    VersionStatus(Long id) {
+        this.id = id;
+    }
+
+    public static VersionStatus getById(Long id) {
+        return GET_BY_ID.get(id);
+    }
+}
+
+/**
+ * Base abstract class for entities which will hold definitions for created, last modified, created by,
+ * last modified by attributes.
+ *
+ * @author LKE
+ * @created on 26.08.2025
+ */
+@Getter
+@Setter
+@Entity
+@Table(name = "matching_version")
+public class MatchingVersion extends AbstractAuditingEntity<Long> {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id", nullable = false)
+    @ToString.Exclude
+    private Session session;
+
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
+    /**
+     * Stores a JSON snapshot of List<MatchingResultDto> of the interventions and their matched event IDs
+     * at the moment of validation. Uses JSONB for PostgreSQL, CLOB for H2.
+     */
+    @Column(name = "matching_result_json", columnDefinition = "text")
+    private String matchingResult;
+
+    @Column(name = "validated_at")
+    private LocalDateTime validatedAt;
+
+    @Column(name = "validated_by")
+    private String validatedBy;
+
+    @Column(name = "status", nullable = false)
+    @Convert(converter = VersionStatusConverter.class)
+    private VersionStatus status = VersionStatus.UPLOADED;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MatchingVersion that = (MatchingVersion) o;
+
+        return new EqualsBuilder().append(id, that.id).append(session, that.session).append(version, that.version).append(matchingResult, that.matchingResult).append(validatedAt, that.validatedAt).append(validatedBy, that.validatedBy).append(status, that.status).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(session).append(version).append(matchingResult).append(validatedAt).append(validatedBy).append(status).toHashCode();
+    }
+}
+
+
+
+@Getter
+@Setter
+@Entity
+@Table(name = "referential_file")
+public class ReferentialFile extends AbstractAuditingEntity<Long> {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "version_number", nullable = false)
+    private Integer versionNumber = 1;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "original_filename", nullable = false)
+    private String originalFilename;
+
+    @Column(name = "description", length = 1000)
+    private String description;
+
+    @Column(name = "content_type", nullable = false)
+    private String contentType;
+
+    @Column(name = "size", nullable = false)
+    private Long size;
+
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @PreRemove
+    private void preRemove() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReferentialFile that = (ReferentialFile) o;
+
+        return new EqualsBuilder().append(active, that.active).append(id, that.id).append(versionNumber, that.versionNumber).append(name, that.name).append(originalFilename, that.originalFilename).append(description, that.description).append(contentType, that.contentType).append(size, that.size).append(content, that.content).append(deletedAt, that.deletedAt).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(versionNumber).append(name).append(originalFilename).append(description).append(contentType).append(size).append(content).append(active).append(deletedAt).toHashCode();
+    }
+}
+
+
+
+@Getter @Setter
+@Entity
+@Table(name = "session")
+public class Session extends AbstractAuditingEntity<Long> {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "session_identifier", unique = true, nullable = false)
+    private String sessionIdentifier; // e.g., "2020.001"
+
+    @Column(name = "session_date")
+    private LocalDate sessionDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Session session = (Session) o;
+
+        return new EqualsBuilder().append(id, session.id).append(sessionIdentifier, session.sessionIdentifier).append(sessionDate, session.sessionDate).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(sessionIdentifier).append(sessionDate).toHashCode();
+    }
+}
+

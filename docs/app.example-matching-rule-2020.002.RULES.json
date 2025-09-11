@@ -1,0 +1,40 @@
+{
+  "similarityThreshold": 0.85,
+  "correspondences": [
+    {
+      "verbatim_term": "Vérification des pouvoirs et assermentation d'un nouveau membre",
+      "event_term": "Vérification des pouvoirs et assermentation",
+      "type": "approximate"
+    },
+    {
+      "verbatim_term": "Assentiment",
+      "event_term": "Assermentation",
+      "type": "approximate"
+    },
+    {
+      "verbatim_term": "Monsieur le Président",
+      "event_term": "Mr. President",
+      "type": "exact"
+    },
+    {
+      "verbatim_term": "Commission européenne",
+      "event_term": "European Commission",
+      "type": "exact"
+    },
+    {
+      "verbatim_term": "Motion 1",
+      "event_term": "Dépôt de la motion 1",
+      "type": "approximate"
+    },
+    {
+      "verbatim_term": "Interruption par M. le Premier Ministre Xavier Bettel",
+      "event_term": "Interruption",
+      "type": "approximate"
+    },
+    {
+      "verbatim_term": "Débat sur la politique générale sur l'état de la nation",
+      "event_term": "Débat sur la politique générale sur l'état de la nation",
+      "type": "exact"
+    }
+  ]
+}
