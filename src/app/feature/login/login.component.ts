@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
@@ -28,6 +28,7 @@ import { NzDividerComponent } from 'ng-zorro-antd/divider';
     NzLayoutModule,
     NzTypographyModule,
     NzDividerComponent,
+    TranslatePipe,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
