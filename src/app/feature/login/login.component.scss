@@ -1,18 +1,20 @@
-/* Final version of the styling for the login component, fully aligned with the chd.lu design system and brand guidelines. */
 @import 'src/assets/scss/vendor.scss';
 
-.login-page {
+.login-container {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f0f2f5; // A light grey background, similar to Ant Design's pro layout
+  background-color: #f0f2f5; // Light grey page background
 }
 
-.login-container {
+.login-box {
+  background: $white;
+  padding: 2.5rem 3rem;
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-base;
   width: 100%;
-  max-width: 400px;
-  padding: 2rem;
+  max-width: 440px;
   text-align: center;
 }
 
@@ -20,12 +22,12 @@
   margin-bottom: 2rem;
 
   .logo {
-    height: 60px;
-    margin-bottom: 1rem;
+    height: 50px;
+    margin-bottom: 1.5rem;
   }
 
   h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: $heading-color;
     margin: 0;
@@ -33,36 +35,27 @@
 }
 
 .ant-card {
-  background: $component-background;
-  border-radius: $border-radius-base;
-  box-shadow: $box-shadow-base;
+  background: transparent;
+  box-shadow: none;
 
   .ant-card-body {
-    padding: 2rem;
+    padding: 0;
   }
 }
 
-.loading-container {
+.loading-spinner {
   padding: 2rem 0;
 }
 
-.error-alert {
-  margin-bottom: 1.5rem;
-  text-align: left;
-
-  button {
-    padding: 0;
-    margin-top: 0.5rem;
+.login-form {
+  .error-alert {
+    margin-bottom: 1.5rem;
+    text-align: left;
   }
-}
 
-.login-button {
-  height: 44px;
-  font-size: $font-size-lg;
-  font-weight: 500;
-
-  .anticon {
-    vertical-align: middle;
+  .login-button {
+    height: 44px;
+    font-weight: 500;
   }
 }
 
@@ -71,25 +64,24 @@
   color: $text-color-secondary;
   font-size: $font-size-sm;
 
-  a {
-    color: $text-color-secondary;
-    &:hover {
-      color: $primary-color;
-    }
-  }
-
-  .ant-divider-vertical {
-    margin: 0 0.5rem;
+  p {
+    margin: 0;
   }
 }
 
-// Responsive adjustments
+// Responsive adjustments for smaller screens
 @media (max-width: 480px) {
   .login-container {
-    padding: 1rem;
+    background-color: $white;
   }
 
-  .ant-card-body {
-    padding: 1.5rem !important;
+  .login-box {
+    padding: 2rem 1.5rem;
+    box-shadow: none;
+    border-radius: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }

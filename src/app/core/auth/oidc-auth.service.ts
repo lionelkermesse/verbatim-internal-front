@@ -73,7 +73,9 @@ export class OidcAuthService {
       this.isInitialized.set(true);
     }
   }
-
+public setTokenValidationHandler(handler: any): void {
+  this.oauthService.tokenValidationHandler = handler;
+}
   private async loadOidcConfig(): Promise<void> {
     try {
       // In a real implementation, you would load this from your backend API

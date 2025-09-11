@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -12,7 +12,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
 import { OidcAuthService } from '@chd-digital-verbatim-front/core/auth/oidc-auth.service';
 import { AccountService } from '@chd-digital-verbatim-front/core/auth/account.service';
-import { NzDividerComponent } from 'ng-zorro-antd/divider';
+import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
 
 @Component({
   selector: 'chd-login',
@@ -27,8 +27,8 @@ import { NzDividerComponent } from 'ng-zorro-antd/divider';
     NzIconModule,
     NzLayoutModule,
     NzTypographyModule,
-    NzDividerComponent,
     TranslatePipe,
+    NgOptimizedImage,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
 
   // Component state signals
   readonly isLoading = signal<boolean>(false);
-  readonly isInitializing = signal<boolean>(true);
+  readonly isInitializing = signal<boolean>(false);
 
   // Computed properties
   get loginError(): string | null {
@@ -65,6 +65,9 @@ export class LoginComponent implements OnInit {
 
       // Initialize OIDC if not already done
       if (!this.isAuthInitialized) {
+        // await this.oidcAuthService.initializeAuth();
+        // Example: set validation handler before initializing auth
+        this.oidcAuthService.setTokenValidationHandler(new JwksValidationHandler());
         await this.oidcAuthService.initializeAuth();
       }
 
