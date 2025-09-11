@@ -1,21 +1,85 @@
-import {ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection, APP_INITIALIZER} from '@angular/core';
-import {provideRouter, TitleStrategy, withComponentInputBinding} from '@angular/router';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  importProvidersFrom,
+  inject,
+  LOCALE_ID,
+  PLATFORM_ID,
+  provideZoneChangeDetection
+} from '@angular/core';
+import {
+  provideRouter,
+  RouterFeatures,
+  TitleStrategy,
+  withComponentInputBinding,
+  withDebugTracing
+} from '@angular/router';
 
-import {routes} from './app.routes';
-import {en_US, provideNzI18n} from 'ng-zorro-antd/i18n';
-import {registerLocaleData} from '@angular/common';
+import { routes } from './app.routes';
+import { en_US, fr_FR, NZ_I18N, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { isPlatformBrowser, registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
-import {FormsModule} from '@angular/forms';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
-import {provideHttpClient, withFetch, withInterceptorsFromDi} from '@angular/common/http';
-import {BrowserModule, Title} from '@angular/platform-browser';
-import {OAuthModule} from 'angular-oauth2-oidc';
-import {TranslationModule} from '@chd-digital-verbatim-front/shared/language/translation.module';
-import {httpInterceptorProviders} from '@chd-digital-verbatim-front/core/interceptor';
-import {AppPageTitleStrategy} from '../app-page-title-strategy';
-import {OidcAuthService} from '@chd-digital-verbatim-front/core/auth/oidc-auth.service';
+import fr from '@angular/common/locales/fr';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { BrowserModule, Title } from '@angular/platform-browser';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { httpInterceptorProviders } from '@chd-digital-verbatim-front/core/interceptor';
+import { AppPageTitleStrategy } from '../app-page-title-strategy';
+import { OidcAuthService } from '@chd-digital-verbatim-front/core/auth/oidc-auth.service';
+import { environment } from '../environments/environment';
+import { NzConfig, provideNzConfig } from 'ng-zorro-antd/core/config';
+import { TranslationModule } from '@chd-digital-verbatim-front/shared/directives/language/translation.module';
+import { provideNzIcons } from './icons-provider';
+import {
+  BrowserStorageService,
+  ServerStorageService,
+  StorageService
+} from '@chd-digital-verbatim-front/shared/services/local-storage';
+import {
+  NgHttpCachingConfig,
+  NgHttpCachingLocalStorage,
+  NgHttpCachingModule,
+  NgHttpCachingStrategy
+} from 'ng-http-caching';
+
 
 registerLocaleData(en);
+registerLocaleData(fr);
+const routerFeatures: RouterFeatures[] = [
+  withComponentInputBinding(),
+  // withNavigationErrorHandler((e: NavigationError) => {
+  //   const router = inject(Router);
+  //   if (e.error.status === 403) {
+  //     router.navigate(['/accessdenied']);
+  //   } else if (e.error.status === 404) {
+  //     router.navigate(['/404']);
+  //   } else if (e.error.status === 401) {
+  //     router.navigate(['/login']);
+  //   } else {
+  //     router.navigate(['/error']);
+  //   }
+  // }),
+];
+
+if (environment.DEBUG_INFO_ENABLED) {
+  routerFeatures.push(withDebugTracing());
+}
+
+const ngZorroConfig: NzConfig = {
+  message: {nzTop: 64},
+  notification: {nzTop: 64},
+  theme: {
+    primaryColor: '#305a8f',
+  },
+};
+
+const ngHttpCachingConfig: NgHttpCachingConfig = {
+  lifetime: 1000 * 60 * 60, // cache expires after 1 hour,
+  cacheStrategy: NgHttpCachingStrategy.DISALLOW_ALL, // TODO: ENABLE When needed
+  store: new NgHttpCachingLocalStorage(), // new HttpCacheStorageService(),
+};
+
 
 // Initialize OIDC authentication
 export function initializeOidc(oidcAuthService: OidcAuthService): () => Promise<void> {
@@ -24,25 +88,47 @@ export function initializeOidc(oidcAuthService: OidcAuthService): () => Promise<
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes, withComponentInputBinding()),
-    provideNzI18n(en_US),
-    importProvidersFrom(FormsModule, BrowserModule),
+    provideZoneChangeDetection({eventCoalescing: true}),
+    importProvidersFrom(BrowserModule),
+    importProvidersFrom(TranslationModule),
+    importProvidersFrom(OAuthModule.forRoot()),
+    importProvidersFrom(NgHttpCachingModule.forRoot(ngHttpCachingConfig)),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
-    importProvidersFrom(TranslationModule),
     provideHttpClient(withInterceptorsFromDi()),
-    importProvidersFrom(OAuthModule.forRoot()),
     Title,
     {provide: LOCALE_ID, useValue: 'fr'},
     httpInterceptorProviders,
     {provide: TitleStrategy, useClass: AppPageTitleStrategy},
+    {provide: TitleStrategy, useClass: AppPageTitleStrategy},
+    {
+      provide: StorageService,
+      useFactory: (platformId: object) => (isPlatformBrowser(platformId) ? new BrowserStorageService() : new ServerStorageService()),
+      deps: [PLATFORM_ID],
+    },
+    provideNzI18n(fr_FR),
+    provideNzIcons(),
+    provideNzConfig(ngZorroConfig),
+    {
+      provide: NZ_I18N,
+      useFactory() {
+        const localId = inject(LOCALE_ID);
+        switch (localId) {
+          case 'en':
+            return en_US;
+          case 'fr':
+            return fr_FR;
+          default:
+            return fr_FR;
+        }
+      },
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: initializeOidc,
       deps: [OidcAuthService],
       multi: true
     },
-
   ]
 };
