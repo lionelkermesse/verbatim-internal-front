@@ -1,309 +1,95 @@
-// Chamber of Deputies color scheme
-$chd-primary: #003366;
-$chd-secondary: #0066cc;
-$chd-light-blue: #e6f2ff;
-$chd-dark-blue: #002244;
-$chd-grey: #666666;
-$chd-light-grey: #f5f5f5;
-$chd-white: #ffffff;
-$chd-border: #d9d9d9;
+/* Final version of the styling for the login component, fully aligned with the chd.lu design system and brand guidelines. */
+@import 'src/assets/scss/vendor.scss';
 
-.login-layout {
-  min-height: 100vh;
-  background: linear-gradient(135deg, $chd-light-blue 0%, $chd-white 100%);
+.login-page {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.login-content {
-  width: 100%;
-  max-width: 100%;
-  padding: 24px;
+  min-height: 100vh;
+  background-color: #f0f2f5; // A light grey background, similar to Ant Design's pro layout
 }
 
 .login-container {
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  text-align: center;
 }
 
 .login-header {
-  text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
 
-  .chamber-logo {
-    height: 80px;
-    width: auto;
-    margin-bottom: 16px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  .logo {
+    height: 60px;
+    margin-bottom: 1rem;
   }
 
-  .login-title {
-    color: $chd-primary;
-    font-size: 28px;
+  h1 {
+    font-size: 1.75rem;
     font-weight: 600;
-    margin-bottom: 8px !important;
-    line-height: 1.2;
-  }
-
-  .login-subtitle {
-    color: $chd-grey;
-    font-size: 16px;
-    margin-bottom: 0 !important;
-    line-height: 1.4;
+    color: $heading-color;
+    margin: 0;
   }
 }
 
-.login-card {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border: 1px solid $chd-border;
-  background: $chd-white;
+.ant-card {
+  background: $component-background;
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-base;
 
-  :deep(.ant-card-body) {
-    padding: 32px;
+  .ant-card-body {
+    padding: 2rem;
   }
 }
 
 .loading-container {
-  text-align: center;
-  padding: 40px 0;
+  padding: 2rem 0;
+}
 
-  :deep(.ant-spin-text) {
-    color: $chd-secondary;
-    font-size: 16px;
+.error-alert {
+  margin-bottom: 1.5rem;
+  text-align: left;
+
+  button {
+    padding: 0;
+    margin-top: 0.5rem;
   }
 }
 
-.login-form {
-  .login-error {
-    margin-bottom: 24px;
+.login-button {
+  height: 44px;
+  font-size: $font-size-lg;
+  font-weight: 500;
 
-    :deep(.ant-alert-message) {
-      color: #d32f2f;
-      font-weight: 500;
-    }
-
-    :deep(.ant-alert-description) {
-      color: #666;
-      margin-top: 8px;
-
-      p {
-        margin-bottom: 8px;
-      }
-    }
-  }
-
-  .login-button-container {
-    margin-bottom: 24px;
-
-    .login-button {
-      height: 48px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      background: $chd-secondary;
-      border-color: $chd-secondary;
-      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
-
-      &:hover {
-        background: darken($chd-secondary, 8%);
-        border-color: darken($chd-secondary, 8%);
-        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
-      }
-
-      &:focus {
-        background: $chd-secondary;
-        border-color: $chd-secondary;
-      }
-
-      :deep(.anticon) {
-        margin-right: 8px;
-        font-size: 18px;
-      }
-    }
-  }
-
-  .login-info {
-    .info-alert {
-      border-radius: 8px;
-      background: $chd-light-blue;
-      border-color: lighten($chd-secondary, 30%);
-
-      :deep(.ant-alert-icon) {
-        color: $chd-secondary;
-      }
-
-      :deep(.ant-alert-message) {
-        color: $chd-primary;
-        font-weight: 500;
-      }
-
-      :deep(.ant-alert-description) {
-        color: $chd-grey;
-      }
-    }
+  .anticon {
+    vertical-align: middle;
   }
 }
 
 .login-footer {
-  margin-top: 40px;
-  text-align: center;
-  color: $chd-grey;
+  margin-top: 2rem;
+  color: $text-color-secondary;
+  font-size: $font-size-sm;
 
-  p {
-    margin-bottom: 12px !important;
-    font-size: 14px;
+  a {
+    color: $text-color-secondary;
+    &:hover {
+      color: $primary-color;
+    }
   }
 
-  .footer-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-
-    a {
-      color: $chd-grey;
-      font-size: 14px;
-      text-decoration: none;
-      transition: color 0.3s ease;
-
-      &:hover {
-        color: $chd-secondary;
-        text-decoration: underline;
-      }
-    }
-
-    :deep(.ant-divider-vertical) {
-      height: 12px;
-      margin: 0 12px;
-      border-color: lighten($chd-grey, 20%);
-    }
+  .ant-divider-vertical {
+    margin: 0 0.5rem;
   }
 }
 
-// Responsive design
-@media (max-width: 768px) {
-  .login-content {
-    padding: 16px;
-  }
-
-  .login-container {
-    max-width: 100%;
-  }
-
-  .login-header {
-    margin-bottom: 24px;
-
-    .chamber-logo {
-      height: 60px;
-    }
-
-    .login-title {
-      font-size: 24px;
-    }
-
-    .login-subtitle {
-      font-size: 14px;
-    }
-  }
-
-  .login-card {
-    :deep(.ant-card-body) {
-      padding: 24px 20px;
-    }
-  }
-
-  .login-footer {
-    margin-top: 32px;
-
-    .footer-links {
-      flex-direction: column;
-      gap: 8px;
-
-      :deep(.ant-divider-vertical) {
-        display: none;
-      }
-    }
-  }
-}
-
+// Responsive adjustments
 @media (max-width: 480px) {
-  .login-content {
-    padding: 12px;
+  .login-container {
+    padding: 1rem;
   }
 
-  .login-header {
-    .chamber-logo {
-      height: 50px;
-    }
-
-    .login-title {
-      font-size: 20px;
-    }
-  }
-
-  .login-card {
-    :deep(.ant-card-body) {
-      padding: 20px 16px;
-    }
-  }
-
-  .login-form {
-    .login-button-container {
-      .login-button {
-        height: 44px;
-        font-size: 15px;
-      }
-    }
-  }
-}
-
-// Accessibility improvements
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-// High contrast mode
-@media (prefers-contrast: high) {
-  .login-card {
-    border-width: 2px;
-    border-color: $chd-primary;
-  }
-
-  .login-header .login-title {
-    color: $chd-dark-blue;
-    font-weight: 700;
-  }
-
-  .login-form .login-button {
-    border-width: 2px;
-    font-weight: 600;
-  }
-}
-
-// Print styles
-@media print {
-  .login-layout {
-    background: white;
-  }
-
-  .login-card {
-    box-shadow: none;
-    border: 1px solid #000;
-  }
-
-  .login-form .login-button {
-    background: white;
-    color: black;
-    border: 1px solid black;
+  .ant-card-body {
+    padding: 1.5rem !important;
   }
 }
