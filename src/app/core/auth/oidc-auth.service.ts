@@ -1,8 +1,9 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { OAuthService, AuthConfig, JwksValidationHandler } from 'angular-oauth2-oidc';
-import { Observable, BehaviorSubject, from, of } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
+import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
+import { from, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 import { Account } from './account.model';
