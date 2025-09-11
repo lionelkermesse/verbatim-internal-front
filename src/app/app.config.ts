@@ -1,4 +1,4 @@
-import {ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection} from '@angular/core';
+import {ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection, APP_INITIALIZER} from '@angular/core';
 import {provideRouter, TitleStrategy, withComponentInputBinding} from '@angular/router';
 
 import {routes} from './app.routes';
@@ -9,11 +9,18 @@ import {FormsModule} from '@angular/forms';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {provideHttpClient, withFetch, withInterceptorsFromDi} from '@angular/common/http';
 import {BrowserModule, Title} from '@angular/platform-browser';
+import {OAuthModule} from 'angular-oauth2-oidc';
 import {TranslationModule} from '@chd-digital-verbatim-front/shared/language/translation.module';
 import {httpInterceptorProviders} from '@chd-digital-verbatim-front/core/interceptor';
 import {AppPageTitleStrategy} from '../app-page-title-strategy';
+import {OidcAuthService} from '@chd-digital-verbatim-front/core/auth/oidc-auth.service';
 
 registerLocaleData(en);
+
+// Initialize OIDC authentication
+export function initializeOidc(oidcAuthService: OidcAuthService): () => Promise<void> {
+  return () => oidcAuthService.initializeAuth();
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,10 +32,17 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     importProvidersFrom(TranslationModule),
     provideHttpClient(withInterceptorsFromDi()),
+    importProvidersFrom(OAuthModule.forRoot()),
     Title,
     {provide: LOCALE_ID, useValue: 'fr'},
     httpInterceptorProviders,
     {provide: TitleStrategy, useClass: AppPageTitleStrategy},
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeOidc,
+      deps: [OidcAuthService],
+      multi: true
+    },
 
   ]
 };

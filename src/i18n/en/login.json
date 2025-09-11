@@ -1,4 +1,23 @@
 {
+  "title": "Verbatim Matching System",
+  "subtitle": "Chamber of Deputies - Luxembourg",
+  "button": {
+    "text": "Sign in with SSO"
+  },
+  "initializing": "Initializing authentication...",
+  "error": {
+    "description": "Unable to authenticate. Please contact your system administrator if the problem persists.",
+    "retry": "Try Again"
+  },
+  "info": {
+    "message": "Secure Access Required",
+    "description": "This application requires authentication through your organization's Single Sign-On (SSO) system."
+  },
+  "footer": {
+    "copyright": "© 2025 Chamber of Deputies - All rights reserved",
+    "help": "Help",
+    "contact": "Contact Support"
+  },
   "login": {
     "title": "Sign in",
     "form": {
