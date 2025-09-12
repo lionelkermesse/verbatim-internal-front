@@ -16,15 +16,14 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
-import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session-chd.model';
 import { VersionStatus } from '@chd-digital-verbatim-front/core/models';
 import { SessionService } from '@chd-digital-verbatim-front/feature/entities/session/session.service';
-import dayjs from 'dayjs/esm';
-import FormatMediumDatetimePipe from '../../../../shared/pipes/date/format-medium-datetime.pipe';
-import FormatMediumDatePipe from '../../../../shared/pipes/date/format-medium-date.pipe';
+import FormatMediumDatetimePipe from '@chd-digital-verbatim-front/shared/pipes/date/format-medium-datetime.pipe';
+import FormatMediumDatePipe from '@chd-digital-verbatim-front/shared/pipes/date/format-medium-date.pipe';
+import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session.model';
 
 @Component({
-  selector: 'chd-session',
+  selector: 'chd-session-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -44,10 +43,10 @@ import FormatMediumDatePipe from '../../../../shared/pipes/date/format-medium-da
     FormatMediumDatePipe,
     FormatMediumDatetimePipe,
   ],
-  templateUrl: './session-chd.component.html',
-  styleUrls: ['./session-chd.component.scss'],
+  templateUrl: './session-list.component.html',
+  styleUrls: ['./session-list.component.scss'],
 })
-export class SessionChdComponent implements OnInit {
+export class SessionListComponent implements OnInit {
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
 
@@ -93,7 +92,7 @@ export class SessionChdComponent implements OnInit {
   }
 
   onSessionClick(session: ISession): void {
-    this.router.navigate(['/session', session.sessionIdentifier]);
+    this.router.navigate(['/sessions', session.sessionIdentifier]);
   }
 
   getStatusColor(status?: keyof typeof VersionStatus | null): string {

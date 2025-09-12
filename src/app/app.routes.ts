@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { UserRouteAccessService } from './core/auth/user-route-access.service';
 
 export const routes: Routes = [
   // Default redirect
@@ -34,18 +33,8 @@ export const routes: Routes = [
   {
     path: 'sessions',
     // canActivate: [UserRouteAccessService],
-    loadComponent: () => import('./feature/entities/session/list/session-chd.component').then(m => m.SessionChdComponent),
-    data: { authorities: [] }, // No specific authorities required, just authentication
-    title: 'sessions.title'
+    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session.routes'),
   },
-  {
-    path: 'session/:id',
-    // canActivate: [UserRouteAccessService],
-    loadComponent: () => import('./feature/entities/session/detail/session-detail.component').then(m => m.SessionDetailComponent),
-    data: { authorities: [] },
-    title: 'sessions.detail.title'
-  },
-
   // Home route (will redirect to sessions for authenticated users)
   {
     path: 'home',

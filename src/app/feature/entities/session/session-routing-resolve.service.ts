@@ -4,7 +4,7 @@ import {ActivatedRouteSnapshot, Router} from '@angular/router';
 import {EMPTY, Observable, of} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 
-import {ISession} from './session-chd.model';
+import {ISession} from './session.model';
 import {SessionService} from './session.service';
 
 const sessionResolve = (route: ActivatedRouteSnapshot): Observable<null | ISession> => {

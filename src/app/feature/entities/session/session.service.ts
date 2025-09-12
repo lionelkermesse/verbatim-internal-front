@@ -8,7 +8,7 @@ import {isPresent} from '@chd-digital-verbatim-front/core/util/operators';
 import {DATE_FORMAT} from '@chd-digital-verbatim-front/config/input.constants';
 import {ApplicationConfigService} from '@chd-digital-verbatim-front/core/config/application-config.service';
 import {createRequestOption} from '@chd-digital-verbatim-front/core/request/request-util';
-import {ISession, NewSession} from './session-chd.model';
+import { ISession, NewSession } from '@chd-digital-verbatim-front/feature/entities/session/session.model';
 
 export type PartialUpdateSession = Partial<ISession> & Pick<ISession, 'id'>;
 
