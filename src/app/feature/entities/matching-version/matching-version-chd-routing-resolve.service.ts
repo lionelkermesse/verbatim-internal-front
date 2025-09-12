@@ -8,7 +8,7 @@ import {IMatchingVersion} from './matching-version-chd.model';
 import {MatchingVersionService} from './matching-version.service';
 
 const matchingVersionResolve = (route: ActivatedRouteSnapshot): Observable<null | IMatchingVersion> => {
-  const id = route.params.id;
+  const id = route.params['id'];
   if (id) {
     return inject(MatchingVersionService)
       .find(id)

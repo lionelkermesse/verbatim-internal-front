@@ -1,0 +1,215 @@
+<nz-layout class="session-detail-layout">
+  <nz-content class="session-detail-content">
+    <!-- Breadcrumb Navigation -->
+    <nz-breadcrumb class="breadcrumb">
+      <nz-breadcrumb-item>
+        <a (click)="onBackToSessions()">
+          <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+          {{ 'session.breadcrumb.session' | translate }}
+        </a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <span>{{ session()?.sessionIdentifier || ('session.breadcrumb.detail' | translate) }}</span>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <!-- Session Header -->
+    <div class="session-detail-header">
+      <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
+        <nz-col [nzSpan]="16">
+          <div *ngIf="isLoadingSession(); else sessionHeaderContent" class="loading-header">
+            <nz-spin nzSize="small"/>
+            <span class="loading-text">{{ 'session.detail.loading' | translate }}</span>
+          </div>
+          <ng-template #sessionHeaderContent>
+            <h1 nz-typography class="page-title">
+              {{ session()?.sessionIdentifier || '-' }}
+            </h1>
+            <p nz-typography nzType="secondary" class="page-subtitle">
+              {{ 'session.detail.subtitle' | translate }}
+            </p>
+          </ng-template>
+        </nz-col>
+        <nz-col [nzSpan]="8" class="header-actions">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            (click)="onNewMatching()"
+            [disabled]="!session()"
+          >
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            {{ 'session.actions.new' | translate }}
+          </button>
+        </nz-col>
+      </nz-row>
+    </div>
+
+    <!-- Session Details Card -->
+    <nz-card [nzBordered]="false" class="session-info-card" [nzLoading]="isLoadingSession()">
+      <nz-descriptions nzTitle="{{ 'session.detail.info.title' | translate }}" nzBordered [nzColumn]="2">
+        <nz-descriptions-item [nzTitle]="'session.detail.info.identifier' | translate">
+          {{ session()?.sessionIdentifier || '-' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="'session.detail.info.date' | translate">
+          {{ formatDateShort(session()?.sessionDate) }}
+        </nz-descriptions-item>
+        <!--        <nz-descriptions-item [nzTitle]="'session.detail.info.createdBy' | translate">-->
+        <!--          {{ session()?.createdBy || '-' }}-->
+        <!--        </nz-descriptions-item>-->
+        <!--        <nz-descriptions-item [nzTitle]="'session.detail.info.createdAt' | translate">-->
+        <!--          {{ formatDate(session()?.createdAt) }}-->
+        <!--        </nz-descriptions-item>-->
+        <!--        <nz-descriptions-item [nzTitle]="'session.detail.info.lastModified' | translate" [nzSpan]="2">-->
+        <!--          {{ session()?.updatedBy || '-' }} - {{ formatDate(session()?.updatedAt) }}-->
+        <!--        </nz-descriptions-item>-->
+      </nz-descriptions>
+    </nz-card>
+
+    <nz-divider></nz-divider>
+
+    <!-- Matching Versions Table -->
+    <nz-card [nzBordered]="false" class="matching-versions-card">
+      <div class="card-header">
+        <h2 nz-typography>{{ 'session.detail.matchingVersions.title' | translate }}</h2>
+        <p nz-typography nzType="secondary">
+          {{ 'session.detail.matchingVersions.subtitle' | translate }}
+        </p>
+      </div>
+
+      <nz-table
+        #matchingVersionsTable
+        [nzData]="matchingVersions()"
+        [nzLoading]="isLoadingVersions()"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex()"
+        (nzPageIndexChange)="onPageIndexChange($event)"
+        [nzShowSizeChanger]="true"
+        [nzPageSizeOptions]="[10, 20, 50]"
+        nzShowPagination
+        nzSize="middle"
+        class="matching-versions-table"
+      >
+        <!-- Table Header -->
+        <thead>
+        <tr>
+          <th>{{ 'session.detail.table.version' | translate }}</th>
+          <th>{{ 'session.detail.table.status' | translate }}</th>
+          <th>{{ 'session.detail.table.createdBy' | translate }}</th>
+          <th>{{ 'session.detail.table.createdDate' | translate }}</th>
+          <th>{{ 'session.detail.table.validatedBy' | translate }}</th>
+          <th nzAlign="center">{{ 'session.detail.table.actions' | translate }}</th>
+        </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody>
+        <tr *ngFor="let version of matchingVersionsTable.data" class="version-row">
+          <td class="version-number">
+            <strong> {{ version.version || '-' }}</strong>
+          </td>
+
+          <td class="version-status">
+            <nz-tag [nzColor]="getStatusColor(version.status || 'UPLOADED')">
+              {{ ('session.status.' + (version.status?.toLowerCase() || 'uploaded')) | translate }}
+            </nz-tag>
+          </td>
+
+          <td class="version-created">
+            <div class="created-info">
+              <div class="created-by">{{ version.createdBy || '-' }}</div>
+            </div>
+          </td>
+
+          <td class="version-date">
+            {{ version.createdAt | formatMediumDatetime }}
+          </td>
+
+          <td class="version-validated">
+            <div class="validated-info" *ngIf="version.validatedBy; else notValidated">
+              <div class="validated-by">{{ version.validatedBy }}</div>
+              <div class="validated-date">{{ version.validatedAt | formatMediumDatetime }}</div>
+            </div>
+            <ng-template #notValidated>
+              <span class="not-validated">{{ 'session.detail.notValidated' | translate }}</span>
+            </ng-template>
+          </td>
+
+          <td nzAlign="center" class="version-actions">
+            <nz-space nzSize="small">
+              <button
+                nz-button
+                *nzSpaceItem
+                nzType="link"
+                nzSize="small"
+                (click)="onViewMatching(version)"
+                [title]="'session.detail.actions.view' | translate"
+              >
+                <span nz-icon nzType="eye" nzTheme="outline"></span>
+                {{ 'session.detail.actions.view' | translate }}
+              </button>
+
+              <button
+                nz-button
+                *nzSpaceItem
+                nzType="link"
+                nzSize="small"
+                (click)="onEditMatching(version)"
+                [disabled]="version.status === 'VALIDATED'"
+                [title]="'session.detail.actions.edit' | translate"
+              >
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+                {{ 'session.detail.actions.edit' | translate }}
+              </button>
+
+              <button
+                nz-button
+                *nzSpaceItem
+                nzType="link"
+                nzSize="small"
+                (click)="onExportMatching(version)"
+                [title]="'session.detail.actions.export' | translate"
+              >
+                <span nz-icon nzType="download" nzTheme="outline"></span>
+                {{ 'session.detail.actions.export' | translate }}
+              </button>
+
+              <button
+                nz-button
+                *nzSpaceItem
+                nzType="link"
+                nzSize="small"
+                nzDanger
+                (click)="onDeleteMatching(version)"
+                [disabled]="version.status === 'VALIDATED'"
+                [title]="'session.detail.actions.delete' | translate"
+              >
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+                {{ 'session.detail.actions.delete' | translate }}
+              </button>
+            </nz-space>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingVersions() && matchingVersions().length === 0" class="empty-state">
+        <nz-empty
+          [nzNotFoundContent]="'session.detail.empty.message' | translate"
+          [nzNotFoundFooter]="emptyFooterTemplate"
+        >
+          <ng-template #emptyFooterTemplate>
+            <p nz-typography nzType="secondary">
+              {{ 'session.detail.empty.description' | translate }}
+            </p>
+            <button nz-button nzType="primary" (click)="onNewMatching()">
+              <span nz-icon nzType="plus" nzTheme="outline"></span>
+              {{ 'session.actions.new' | translate }}
+            </button>
+          </ng-template>
+        </nz-empty>
+      </div>
+    </nz-card>
+  </nz-content>
+</nz-layout>

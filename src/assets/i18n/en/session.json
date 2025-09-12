@@ -1,32 +1,76 @@
 {
-  "verbatimMatchingApp": {
-    "session": {
-      "home": {
-        "title": "Sessions",
-        "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Session",
-        "createOrEditLabel": "Create or edit a Session",
-        "notFound": "No Sessions found"
+  "session": {
+    "title": "Sessions",
+    "subtitle": "Manage verbatim matching sessions",
+    "search": {
+      "placeholder": "Search sessions by identifier or date..."
+    },
+    "table": {
+      "identifier": "Session Identifier",
+      "date": "Session Date",
+      "status": "Status",
+      "version": "Version",
+      "created": "Created By",
+      "actions": "Actions"
+    },
+    "status": {
+      "uploaded": "Uploaded",
+      "processing": "Processing",
+      "awaiting_correction": "Awaiting Correction",
+      "validated": "Validated",
+      "error": "Error"
+    },
+    "actions": {
+      "view": "View Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "new": "New Matching"
+    },
+    "empty": {
+      "message": "No sessions found",
+      "description": "No sessions available. Sessions will appear here once they are created."
+    },
+    "breadcrumb": {
+      "session": "Session",
+      "detail": "Session Details"
+    },
+    "detail": {
+      "loading": "Loading session details...",
+      "subtitle": "View session information and manage matching versions",
+      "info": {
+        "title": "Session Information",
+        "identifier": "Session Identifier",
+        "date": "Session Date",
+        "createdBy": "Created By",
+        "createdDate": "Created Date",
+        "lastModified": "Last Modified"
       },
-      "created": "A new Session is created with identifier {{ param }}",
-      "updated": "A Session is updated with identifier {{ param }}",
-      "deleted": "A Session is deleted with identifier {{ param }}",
-      "delete": {
-        "question": "Are you sure you want to delete Session {{ id }}?"
+      "matchingVersions": {
+        "title": "Matching Versions",
+        "subtitle": "List of all verbatim matching versions for this session"
       },
-      "detail": {
-        "title": "Session"
+      "table": {
+        "version": "Version",
+        "status": "Status",
+        "createdBy": "Created By",
+        "createdDate": "Created Date",
+        "validatedBy": "Validated By",
+        "actions": "Actions"
       },
-      "id": "Id",
-      "sessionDate": "Session Date",
-      "sessionIdentifier": "Session Identifier",
-      "verbatimFileContent": "Verbatim File Content",
-      "eventFileContent": "Event File Content",
-      "createdBy": "Created By",
-      "createdDate": "Created Date",
-      "lastModifiedBy": "Last Modified By",
-      "lastModifiedDate": "Last Modified Date",
-      "matchingVersion": "Matching Version"
+      "version": {
+        "label": "Version"
+      },
+      "notValidated": "Not validated",
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "export": "Export",
+        "delete": "Delete"
+      },
+      "empty": {
+        "message": "No matching versions found",
+        "description": "This session has no matching versions yet. Create a new matching to get started."
+      }
     }
   }
 }

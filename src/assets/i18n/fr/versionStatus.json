@@ -1,12 +1,10 @@
 {
-  "verbatimMatchingApp": {
-    "VersionStatus": {
-      "null": "",
-      "UPLOADED": "UPLOADED",
-      "PROCESSING": "PROCESSING",
-      "AWAITING_CORRECTION": "AWAITING_CORRECTION",
-      "VALIDATED": "VALIDATED",
-      "ERROR": "ERROR"
-    }
+  "versionStatus": {
+    "null": "-",
+    "UPLOADED": "Téléchargé",
+    "PROCESSING": "Traitement en cours",
+    "AWAITING_CORRECTION": "En attente de correction",
+    "VALIDATED": "Validé",
+    "ERROR": "Erreur"
   }
 }

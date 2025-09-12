@@ -1,0 +1,392 @@
+@import 'src/assets/scss/vendor.scss';
+
+.session-detail-layout {
+  background: $body-background;
+  min-height: 100vh;
+}
+
+.session-detail-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  margin-bottom: 16px;
+
+  .ant-breadcrumb-link {
+    color: $primary-color;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      color: darken($primary-color, 10%);
+    }
+
+    .anticon {
+      margin-right: 6px;
+    }
+  }
+
+  .ant-breadcrumb-separator {
+    color: $text-color-secondary;
+  }
+}
+
+.session-detail-header {
+  margin-bottom: 24px;
+
+  .page-title {
+    color: $primary-color;
+    font-size: 2.25rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .page-subtitle {
+    color: $text-color-secondary;
+    font-size: $font-size-lg;
+    margin: 0;
+  }
+
+  .loading-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .loading-text {
+      color: $text-color-secondary;
+      font-size: $font-size-lg;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+
+    .ant-btn-primary {
+      height: 44px;
+      font-size: $font-size-lg;
+      font-weight: 500;
+      box-shadow: $box-shadow-base;
+
+      .anticon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.session-info-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+  margin-bottom: 24px;
+
+  .ant-descriptions-title {
+    color: $heading-color;
+    font-size: $font-size-lg;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .ant-descriptions-item-label {
+    background: $table-header-bg;
+    font-weight: 600;
+    color: $heading-color;
+  }
+
+  .ant-descriptions-item-content {
+    color: $text-color;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+.matching-versions-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+
+  .ant-card-body {
+    padding: 24px;
+  }
+
+  .card-header {
+    margin-bottom: 20px;
+
+    h2 {
+      color: $heading-color;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      color: $text-color-secondary;
+      font-size: $font-size-base;
+      margin: 0;
+    }
+  }
+}
+
+.matching-versions-table {
+  .ant-table {
+    border-radius: $border-radius-base;
+  }
+
+  .ant-table-thead > tr > th {
+    background: $table-header-bg;
+    color: $table-header-color;
+    font-weight: 600;
+    border-bottom: 2px solid $border-color-split;
+    font-size: $font-size-base;
+    padding: 16px 12px;
+
+    &.ant-table-column-sort {
+      background: darken($table-header-bg, 2%);
+    }
+  }
+
+  .ant-table-tbody > tr {
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $table-row-hover-bg;
+    }
+
+    > td {
+      padding: 16px 12px;
+      vertical-align: middle;
+      font-size: $font-size-base;
+      border-bottom: 1px solid $border-color-split;
+    }
+  }
+
+  .version-number {
+    strong {
+      color: $info-color;
+      font-weight: 600;
+    }
+  }
+
+  .version-status {
+    .ant-tag {
+      font-weight: 500;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .version-created {
+    .created-info {
+      .created-by {
+        font-weight: 500;
+        color: $text-color;
+      }
+    }
+  }
+
+  .version-date {
+    color: $text-color;
+    font-family: 'Courier New', monospace;
+    font-size: $font-size-sm;
+  }
+
+  .version-validated {
+    .validated-info {
+      .validated-by {
+        font-weight: 500;
+        color: $success-color;
+        margin-bottom: 2px;
+      }
+
+      .validated-date {
+        color: $text-color-secondary;
+        font-size: $font-size-sm;
+        font-family: 'Courier New', monospace;
+      }
+    }
+
+    .not-validated {
+      color: $text-color-secondary;
+      font-style: italic;
+      font-size: $font-size-sm;
+    }
+  }
+
+  .version-actions {
+    .ant-btn-link {
+      color: $primary-color;
+      padding: 4px 8px;
+      height: auto;
+      line-height: 1.5;
+      font-size: $font-size-sm;
+
+      &:hover:not(:disabled) {
+        color: darken($primary-color, 10%);
+        background: fade-out($primary-color, 0.95);
+      }
+
+      &.ant-btn-dangerous {
+        color: $error-color;
+
+        &:hover:not(:disabled) {
+          color: darken($error-color, 10%);
+          background: fade-out($error-color, 0.95);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .anticon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .ant-table-pagination {
+    margin: 16px 0 0 0;
+    text-align: right;
+
+    .ant-pagination-item-active {
+      border-color: $primary-color;
+      background-color: $primary-color;
+
+      a {
+        color: $white;
+      }
+    }
+
+    .ant-pagination-item:hover {
+      border-color: $primary-color;
+
+      a {
+        color: $primary-color;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      &:hover {
+        border-color: $primary-color;
+
+        .ant-pagination-item-link {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+
+  .ant-empty {
+    .ant-empty-image {
+      opacity: 0.6;
+    }
+
+    .ant-empty-description {
+      color: $text-color-secondary;
+      font-size: $font-size-lg;
+      margin-bottom: 16px;
+    }
+  }
+
+  .ant-btn-primary {
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .session-detail-content {
+    padding: 16px;
+  }
+
+  .session-detail-header {
+    .page-title {
+      font-size: 1.75rem;
+    }
+
+    nz-row {
+      flex-direction: column;
+      gap: 16px;
+
+      nz-col {
+        width: 100% !important;
+      }
+
+      .header-actions {
+        justify-content: stretch;
+
+        .ant-btn-primary {
+          width: 100%;
+          height: 48px;
+        }
+      }
+    }
+  }
+
+  .session-info-card {
+    .ant-descriptions {
+      .ant-descriptions-item {
+        padding-bottom: 12px;
+      }
+    }
+  }
+
+  .matching-versions-table {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 12px 8px;
+      font-size: $font-size-sm;
+    }
+
+    .version-actions {
+      .ant-btn-link {
+        span:not(.anticon) {
+          display: none; // Hide text, keep only icons on mobile
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .session-detail-content {
+    padding: 12px;
+  }
+
+  .session-info-card,
+  .matching-versions-card {
+    border-radius: 0;
+    margin-left: -12px;
+    margin-right: -12px;
+    border-left: none;
+    border-right: none;
+  }
+
+  .matching-versions-table {
+    .ant-table {
+      border-radius: 0;
+    }
+
+    .ant-table-thead > tr > th:nth-child(n+4),
+    .ant-table-tbody > tr > td:nth-child(n+4) {
+      display: none; // Hide less important columns on very small screens
+    }
+  }
+}
