@@ -12,10 +12,9 @@ import {ISession, NewSession} from './session-chd.model';
 
 export type PartialUpdateSession = Partial<ISession> & Pick<ISession, 'id'>;
 
-type RestOf<T extends ISession | NewSession> = Omit<T, 'sessionDate' | 'createdDate' | 'lastModifiedDate'> & {
+type RestOf<T extends ISession | NewSession> = Omit<T, 'sessionDate' | 'lastProcessedAt'> & {
   sessionDate?: string | null;
-  createdDate?: string | null;
-  lastModifiedDate?: string | null;
+  lastProcessedAt?: string | null;
 };
 
 export type RestSession = RestOf<ISession>;
@@ -32,7 +31,7 @@ export class SessionService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/sessions');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/v1/sessions');
 
   create(session: NewSession): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(session);
@@ -55,7 +54,7 @@ export class SessionService {
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  find(id: number): Observable<EntityResponseType> {
+  find(id: string): Observable<EntityResponseType> {
     return this.http
       .get<RestSession>(`${this.resourceUrl}/${id}`, {observe: 'response'})
       .pipe(map(res => this.convertResponseFromServer(res)));
@@ -104,8 +103,7 @@ export class SessionService {
     return {
       ...session,
       sessionDate: session.sessionDate?.format(DATE_FORMAT) ?? null,
-      createdDate: session.createdDate?.toJSON() ?? null,
-      lastModifiedDate: session.lastModifiedDate?.toJSON() ?? null,
+      lastProcessedAt: session.lastProcessedAt?.toJSON() ?? null,
     };
   }
 
@@ -113,8 +111,7 @@ export class SessionService {
     return {
       ...restSessionChd,
       sessionDate: restSessionChd.sessionDate ? dayjs(restSessionChd.sessionDate) : undefined,
-      createdDate: restSessionChd.createdDate ? dayjs(restSessionChd.createdDate) : undefined,
-      lastModifiedDate: restSessionChd.lastModifiedDate ? dayjs(restSessionChd.lastModifiedDate) : undefined,
+      lastProcessedAt: restSessionChd.lastProcessedAt ? dayjs(restSessionChd.lastProcessedAt) : undefined,
     };
   }
 

@@ -7,12 +7,14 @@ import dayjs from 'dayjs/esm';
 import {isPresent} from '@chd-digital-verbatim-front/core/util/operators';
 import {ApplicationConfigService} from '@chd-digital-verbatim-front/core/config/application-config.service';
 import {createRequestOption} from '@chd-digital-verbatim-front/core/request/request-util';
-import {IMatchingVersion, NewMatchingVersion} from './matching-version-chd.model';
+import {
+  IMatchingVersion, NewMatchingVersion
+} from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.model';
 
 export type PartialUpdateMatchingVersion = Partial<IMatchingVersion> & Pick<IMatchingVersion, 'id'>;
 
-type RestOf<T extends IMatchingVersion | NewMatchingVersion> = Omit<T, 'createdDate' | 'validatedAt'> & {
-  createdDate?: string | null;
+type RestOf<T extends IMatchingVersion | NewMatchingVersion> = Omit<T, 'createdAt' | 'validatedAt'> & {
+  createdAt?: string | null;
   validatedAt?: string | null;
 };
 
@@ -30,7 +32,7 @@ export class MatchingVersionService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/matching-versions');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/v1/matching');
 
   create(matchingVersion: NewMatchingVersion): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(matchingVersion);
@@ -61,6 +63,12 @@ export class MatchingVersionService {
     return this.http
       .get<RestMatchingVersion>(`${this.resourceUrl}/${id}`, {observe: 'response'})
       .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  findAll(sessionId: string): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestMatchingVersion[]>(`${this.resourceUrl}/${sessionId}`, {observe: 'response'})
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -109,7 +117,7 @@ export class MatchingVersionService {
   ): RestOf<T> {
     return {
       ...matchingVersion,
-      createdDate: matchingVersion.createdDate?.toJSON() ?? null,
+      createdAt: matchingVersion.createdAt?.toJSON() ?? null,
       validatedAt: matchingVersion.validatedAt?.toJSON() ?? null,
     };
   }
@@ -117,7 +125,7 @@ export class MatchingVersionService {
   protected convertDateFromServer(restMatchingVersion: RestMatchingVersion): IMatchingVersion {
     return {
       ...restMatchingVersion,
-      createdDate: restMatchingVersion.createdDate ? dayjs(restMatchingVersion.createdDate) : undefined,
+      createdAt: restMatchingVersion.createdAt ? dayjs(restMatchingVersion.createdAt) : undefined,
       validatedAt: restMatchingVersion.validatedAt ? dayjs(restMatchingVersion.validatedAt) : undefined,
     };
   }

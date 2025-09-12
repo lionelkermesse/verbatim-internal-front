@@ -1,0 +1,132 @@
+<nz-layout class="session-layout">
+  <nz-content class="session-content">
+    <!-- Page Header -->
+    <div class="session-header">
+      <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
+        <nz-col [nzSpan]="12">
+          <h1 nz-typography class="page-title">
+            {{ 'session.title' | translate }}
+          </h1>
+          <p nz-typography nzType="secondary" class="page-subtitle">
+            {{ 'session.subtitle' | translate }}
+          </p>
+        </nz-col>
+        <nz-col [nzSpan]="12" class="header-actions">
+          <!-- Search Input -->
+          <nz-input-group nzSuffixIcon="search" class="search-input">
+            <input
+              type="text"
+              nz-input
+              [placeholder]="'session.search.placeholder' | translate"
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearch()"
+            />
+          </nz-input-group>
+        </nz-col>
+      </nz-row>
+    </div>
+
+    <!-- Sessions Table -->
+    <nz-card [nzBordered]="false" class="sessions-card">
+      <nz-table
+        #sessionsTable
+        [nzData]="filteredSessions()"
+        [nzLoading]="isLoading()"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex()"
+        (nzPageIndexChange)="onPageIndexChange($event)"
+        [nzShowSizeChanger]="true"
+        [nzPageSizeOptions]="[10, 20, 50]"
+        nzShowPagination
+        nzSize="middle"
+        class="sessions-table"
+      >
+        <!-- Table Header -->
+        <thead>
+        <tr>
+          <th nzColumnKey="sessionIdentifier" nzShowSort>
+            {{ 'session.table.identifier' | translate }}
+          </th>
+          <th nzColumnKey="sessionDate" nzShowSort>
+            {{ 'session.table.date' | translate }}
+          </th>
+          <th>
+            {{ 'session.table.status' | translate }}
+          </th>
+          <th>
+            {{ 'session.table.version' | translate }}
+          </th>
+          <th nzAlign="center">
+            {{ 'session.table.actions' | translate }}
+          </th>
+        </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody>
+        <tr
+          *ngFor="let session of sessionsTable.data"
+          class="session-row"
+          (click)="onSessionClick(session)"
+        >
+          <td class="session-identifier">
+            <strong>{{ session.sessionIdentifier || '-' }}</strong>
+          </td>
+
+          <td class="session-date">
+            {{ session.sessionDate | formatMediumDate }}
+          </td>
+
+          <td [class]="session.status ? 'session-status' : ''">
+            <!-- Status will be derived from matching versions -->
+            @if (session.status) {
+              <nz-tag [nzColor]="getStatusColor(session.status)">
+                {{ ('versionStatus.' + session.status) | translate }}
+              </nz-tag>
+            } @else {
+              <strong>{{ '-' }}</strong>
+            }
+          </td>
+
+          <td class="session-created">
+            <div class="created-info">
+              <div class="created-by">{{ session.latestVersion ? (('session.detail.version.label' | translate) + ' ' + session.latestVersion) : '-' }}</div>
+              <div class="created-date">{{ session.lastProcessedAt | formatMediumDatetime }}</div>
+            </div>
+          </td>
+
+          <td nzAlign="center" class="session-actions">
+            <nz-space nzSize="small">
+              <button
+                nz-button
+                *nzSpaceItem
+                nzType="link"
+                nzSize="small"
+                (click)="onSessionClick(session); $event.stopPropagation()"
+                [title]="'session.actions.view' | translate"
+              >
+                <span nz-icon nzType="eye" nzTheme="outline"></span>
+                {{ 'session.actions.view' | translate }}
+              </button>
+            </nz-space>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading() && filteredSessions().length === 0" class="empty-state">
+        <nz-empty
+          [nzNotFoundContent]="'session.empty.message' | translate"
+          [nzNotFoundFooter]="emptyFooterTemplate"
+        >
+          <ng-template #emptyFooterTemplate>
+            <p nz-typography nzType="secondary">
+              {{ 'session.empty.description' | translate }}
+            </p>
+          </ng-template>
+        </nz-empty>
+      </div>
+    </nz-card>
+  </nz-content>
+</nz-layout>

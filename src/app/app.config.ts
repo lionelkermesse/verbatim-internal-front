@@ -8,11 +8,12 @@ import {
   provideZoneChangeDetection
 } from '@angular/core';
 import {
-  provideRouter,
+  NavigationError,
+  provideRouter, Router,
   RouterFeatures,
   TitleStrategy,
   withComponentInputBinding,
-  withDebugTracing
+  withDebugTracing, withNavigationErrorHandler
 } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -48,18 +49,18 @@ registerLocaleData(en);
 registerLocaleData(fr);
 const routerFeatures: RouterFeatures[] = [
   withComponentInputBinding(),
-  // withNavigationErrorHandler((e: NavigationError) => {
-  //   const router = inject(Router);
-  //   if (e.error.status === 403) {
-  //     router.navigate(['/accessdenied']);
-  //   } else if (e.error.status === 404) {
-  //     router.navigate(['/404']);
-  //   } else if (e.error.status === 401) {
-  //     router.navigate(['/login']);
-  //   } else {
-  //     router.navigate(['/error']);
-  //   }
-  // }),
+  withNavigationErrorHandler((e: NavigationError) => {
+    const router = inject(Router);
+    if (e.error.status === 403) {
+      router.navigate(['/accessdenied']);
+    } else if (e.error.status === 404) {
+      router.navigate(['/404']);
+    } else if (e.error.status === 401) {
+      router.navigate(['/login']);
+    } else {
+      router.navigate(['/error']);
+    }
+  }),
 ];
 
 if (environment.DEBUG_INFO_ENABLED) {

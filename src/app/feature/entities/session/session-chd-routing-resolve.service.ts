@@ -8,7 +8,7 @@ import {ISession} from './session-chd.model';
 import {SessionService} from './session.service';
 
 const sessionResolve = (route: ActivatedRouteSnapshot): Observable<null | ISession> => {
-  const id = route.params.id;
+  const id = route.params['id'];
   if (id) {
     return inject(SessionService)
       .find(id)

@@ -85,6 +85,12 @@ Upload Files → Backend Processing → Results Display → User Corrections →
 - **Error Handling**: Consistent error display and recovery
 - **User Feedback**: Loading states, progress indicators, success/error messages
 
+## CRITICAL DESIGN REQUIREMENTS
+- **Theme Consistency**: Always use the theme provided in vendor.scss and global.scss
+- **CHD Design Matching**: Every component design must match www.chd.lu website design
+- **Visual Consistency**: All UI components should follow Luxembourg Chamber of Deputies branding and styling
+- **No Custom Styling**: Use established theme files rather than creating custom component styles
+
 ## Known Technical Constraints
 
 ### Backend Integration Requirements

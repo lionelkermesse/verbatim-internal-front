@@ -5,7 +5,7 @@ export const routes: Routes = [
   // Default redirect
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/sessions',
     pathMatch: 'full'
   },
   {
@@ -30,12 +30,20 @@ export const routes: Routes = [
     ]
   },
 
-  // Protected routes - temporarily redirect to home until sessions module is created
+  // Protected routes
   {
     path: 'sessions',
-    canActivate: [UserRouteAccessService],
-    loadComponent: () => import('./feature/home/home.component').then(m => m.default),
-    data: { authorities: [] } // No specific authorities required, just authentication
+    // canActivate: [UserRouteAccessService],
+    loadComponent: () => import('./feature/entities/session/list/session-chd.component').then(m => m.SessionChdComponent),
+    data: { authorities: [] }, // No specific authorities required, just authentication
+    title: 'sessions.title'
+  },
+  {
+    path: 'session/:id',
+    // canActivate: [UserRouteAccessService],
+    loadComponent: () => import('./feature/entities/session/detail/session-detail.component').then(m => m.SessionDetailComponent),
+    data: { authorities: [] },
+    title: 'sessions.detail.title'
   },
 
   // Home route (will redirect to sessions for authenticated users)

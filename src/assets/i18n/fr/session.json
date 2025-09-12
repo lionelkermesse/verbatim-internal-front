@@ -1,32 +1,76 @@
 {
-  "verbatimMatchingApp": {
-    "session": {
-      "home": {
-        "title": "Sessions",
-        "refreshListLabel": "Actualiser la liste",
-        "createLabel": "Créer un nouveau Session",
-        "createOrEditLabel": "Créer ou éditer un Session",
-        "notFound": "Aucun Session trouvé"
+  "session": {
+    "title": "Sessions",
+    "subtitle": "Gérer les sessions de correspondance verbatim",
+    "search": {
+      "placeholder": "Rechercher par identifiant ou date de session..."
+    },
+    "table": {
+      "identifier": "Identifiant de Session",
+      "date": "Date de Session",
+      "status": "Statut",
+      "created": "Créé par",
+      "version": "Version",
+      "actions": "Actions"
+    },
+    "status": {
+      "uploaded": "Téléchargé",
+      "processing": "En traitement",
+      "awaiting_correction": "En attente de correction",
+      "validated": "Validé",
+      "error": "Erreur"
+    },
+    "actions": {
+      "view": "Voir les détails",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "new": "Nouvelle correspondance"
+    },
+    "empty": {
+      "message": "Aucune session trouvée",
+      "description": "Aucune session disponible. Les sessions apparaîtront ici une fois créées."
+    },
+    "breadcrumb": {
+      "session": "Session",
+      "detail": "Détails de la Session"
+    },
+    "detail": {
+      "loading": "Chargement des détails de la session...",
+      "subtitle": "Consulter les informations de session et gérer les versions de correspondance",
+      "info": {
+        "title": "Informations de Session",
+        "identifier": "Identifiant de Session",
+        "date": "Date de Session",
+        "createdBy": "Créé par",
+        "createdDate": "Date de Création",
+        "lastModified": "Dernière Modification"
       },
-      "created": "Un nouveau Session a été créé avec l'identifiant {{ param }}",
-      "updated": "Le Session avec l'identifiant {{ param }} a été mis à jour",
-      "deleted": "Le Session avec l'identifiant {{ param }} a été supprimé",
-      "delete": {
-        "question": "Êtes-vous certain de vouloir supprimer le Session {{ id }} ?"
+      "matchingVersions": {
+        "title": "Versions de Correspondance",
+        "subtitle": "Liste de toutes les versions de correspondance verbatim pour cette session"
       },
-      "detail": {
-        "title": "Session"
+      "table": {
+        "version": "Version",
+        "status": "Statut",
+        "createdBy": "Créé par",
+        "createdDate": "Date de Création",
+        "validatedBy": "Validé par",
+        "actions": "Actions"
       },
-      "id": "Id",
-      "sessionDate": "Session Date",
-      "sessionIdentifier": "Session Identifier",
-      "verbatimFileContent": "Verbatim File Content",
-      "eventFileContent": "Event File Content",
-      "createdBy": "Created By",
-      "createdDate": "Created Date",
-      "lastModifiedBy": "Last Modified By",
-      "lastModifiedDate": "Last Modified Date",
-      "matchingVersion": "Matching Version"
+      "version": {
+        "label": "Version"
+      },
+      "notValidated": "Non validé",
+      "actions": {
+        "view": "Voir",
+        "edit": "Modifier",
+        "export": "Exporter",
+        "delete": "Supprimer"
+      },
+      "empty": {
+        "message": "Aucune version de correspondance trouvée",
+        "description": "Cette session n'a pas encore de versions de correspondance. Créez une nouvelle correspondance pour commencer."
+      }
     }
   }
 }

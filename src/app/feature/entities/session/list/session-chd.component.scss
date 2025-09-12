@@ -1,0 +1,287 @@
+@import 'src/assets/scss/vendor.scss';
+
+.session-layout {
+  background: $body-background;
+  min-height: 100vh;
+}
+
+.session-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.session-header {
+  margin-bottom: 24px;
+
+  .page-title {
+    color: $primary-color;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .page-subtitle {
+    color: $text-color-secondary;
+    font-size: $font-size-lg;
+    margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .search-input {
+      max-width: 300px;
+      width: 100%;
+
+      .ant-input {
+        border-color: $border-color-base;
+        font-size: $font-size-base;
+
+        &:hover {
+          border-color: $primary-color;
+        }
+
+        &:focus {
+          border-color: $primary-color;
+          box-shadow: 0 0 0 2px fade-out($primary-color, 0.8);
+        }
+      }
+
+      .ant-input-suffix {
+        color: $text-color-secondary;
+      }
+    }
+  }
+}
+
+.sessions-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+
+  .ant-card-body {
+    padding: 0;
+  }
+}
+
+.sessions-table {
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .ant-table {
+    border-radius: $card-radius;
+  }
+
+  .ant-table-thead > tr > th {
+    background: $table-header-bg;
+    color: $table-header-color;
+    font-weight: 600;
+    border-bottom: 2px solid $border-color-split;
+    font-size: $font-size-base;
+    padding: 16px 12px;
+
+    &.ant-table-column-sort {
+      background: darken($table-header-bg, 2%);
+    }
+  }
+
+  .ant-table-tbody > tr {
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $table-row-hover-bg;
+    }
+
+    > td {
+      padding: 16px 12px;
+      vertical-align: middle;
+      font-size: $font-size-base;
+      border-bottom: 1px solid $border-color-split;
+    }
+  }
+
+  .session-identifier {
+    strong {
+      color: $primary-color;
+      font-weight: 600;
+    }
+  }
+
+  .session-date {
+    color: $text-color;
+    font-family: 'Courier New', monospace;
+  }
+
+  .session-status {
+    .ant-tag {
+      font-weight: 500;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .session-created {
+    .created-info {
+      .created-by {
+        font-weight: 500;
+        color: $text-color;
+        margin-bottom: 4px;
+      }
+
+      .created-date {
+        color: $text-color-secondary;
+        font-size: $font-size-sm;
+        font-family: 'Courier New', monospace;
+      }
+    }
+  }
+
+  .session-actions {
+    .ant-btn-link {
+      color: $primary-color;
+      padding: 4px 8px;
+      height: auto;
+      line-height: 1.5;
+      font-size: $font-size-sm;
+
+      &:hover {
+        color: darken($primary-color, 10%);
+        background: fade-out($primary-color, 0.95);
+      }
+
+      .anticon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .ant-table-pagination {
+    margin: 16px;
+    text-align: right;
+
+    .ant-pagination-item-active {
+      border-color: $primary-color;
+      background-color: $primary-color;
+
+      a {
+        color: $white;
+      }
+    }
+
+    .ant-pagination-item:hover {
+      border-color: $primary-color;
+
+      a {
+        color: $primary-color;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      &:hover {
+        border-color: $primary-color;
+
+        .ant-pagination-item-link {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+
+  .ant-empty {
+    .ant-empty-image {
+      opacity: 0.6;
+    }
+
+    .ant-empty-description {
+      color: $text-color-secondary;
+      font-size: $font-size-lg;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .session-content {
+    padding: 16px;
+  }
+
+  .session-header {
+    .page-title {
+      font-size: 1.5rem;
+    }
+
+    nz-row {
+      flex-direction: column;
+      gap: 16px;
+
+      nz-col {
+        width: 100% !important;
+      }
+
+      .header-actions {
+        justify-content: stretch;
+
+        .search-input {
+          max-width: none;
+        }
+      }
+    }
+  }
+
+  .sessions-table {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 12px 8px;
+      font-size: $font-size-sm;
+    }
+
+    .session-actions {
+      .ant-btn-link {
+        span:not(.anticon) {
+          display: none; // Hide text, keep only icons on mobile
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .session-content {
+    padding: 12px;
+  }
+
+  .sessions-card {
+    border-radius: 0;
+    margin: -12px;
+    border-left: none;
+    border-right: none;
+  }
+
+  .sessions-table {
+    .ant-table {
+      border-radius: 0;
+    }
+
+    .ant-table-thead > tr > th:last-child,
+    .ant-table-tbody > tr > td:last-child {
+      display: none; // Hide actions column on very small screens
+    }
+  }
+}
