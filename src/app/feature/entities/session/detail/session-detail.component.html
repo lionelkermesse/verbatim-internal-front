@@ -52,7 +52,7 @@
           {{ session()?.sessionIdentifier || '-' }}
         </nz-descriptions-item>
         <nz-descriptions-item [nzTitle]="'session.detail.info.date' | translate">
-          {{ formatDateShort(session()?.sessionDate) }}
+          {{ session()?.sessionDate | formatMediumDate }}
         </nz-descriptions-item>
         <!--        <nz-descriptions-item [nzTitle]="'session.detail.info.createdBy' | translate">-->
         <!--          {{ session()?.createdBy || '-' }}-->
@@ -136,58 +136,51 @@
           </td>
 
           <td nzAlign="center" class="version-actions">
-            <nz-space nzSize="small">
-              <button
-                nz-button
-                *nzSpaceItem
-                nzType="link"
-                nzSize="small"
-                (click)="onViewMatching(version)"
-                [title]="'session.detail.actions.view' | translate"
-              >
-                <span nz-icon nzType="eye" nzTheme="outline"></span>
-                {{ 'session.detail.actions.view' | translate }}
-              </button>
+            <button
+              nz-button
+              nzType="link"
+              nzSize="small"
+              nz-dropdown
+              [nzDropdownMenu]="versionActionsMenu"
+              nzPlacement="bottomRight"
+              [title]="'session.detail.actions.menu' | translate"
+            >
+              <span nz-icon nzType="more" nzTheme="outline"></span>
+              {{ 'session.detail.actions.actions' | translate }}
+              <span nz-icon nzType="down" nzTheme="outline"></span>
+            </button>
 
-              <button
-                nz-button
-                *nzSpaceItem
-                nzType="link"
-                nzSize="small"
-                (click)="onEditMatching(version)"
-                [disabled]="version.status === 'VALIDATED'"
-                [title]="'session.detail.actions.edit' | translate"
-              >
-                <span nz-icon nzType="edit" nzTheme="outline"></span>
-                {{ 'session.detail.actions.edit' | translate }}
-              </button>
-
-              <button
-                nz-button
-                *nzSpaceItem
-                nzType="link"
-                nzSize="small"
-                (click)="onExportMatching(version)"
-                [title]="'session.detail.actions.export' | translate"
-              >
-                <span nz-icon nzType="download" nzTheme="outline"></span>
-                {{ 'session.detail.actions.export' | translate }}
-              </button>
-
-              <button
-                nz-button
-                *nzSpaceItem
-                nzType="link"
-                nzSize="small"
-                nzDanger
-                (click)="onDeleteMatching(version)"
-                [disabled]="version.status === 'VALIDATED'"
-                [title]="'session.detail.actions.delete' | translate"
-              >
-                <span nz-icon nzType="delete" nzTheme="outline"></span>
-                {{ 'session.detail.actions.delete' | translate }}
-              </button>
-            </nz-space>
+            <nz-dropdown-menu #versionActionsMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-item (click)="onViewMatching(version)">
+                  <span nz-icon nzType="eye" nzTheme="outline"></span>
+                  {{ 'session.detail.actions.view' | translate }}
+                </li>
+                <li
+                  nz-menu-item
+                  (click)="onEditMatching(version)"
+                  [class.disabled]="version.status === 'VALIDATED'"
+                >
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  {{ 'session.detail.actions.edit' | translate }}
+                </li>
+                <li nz-menu-divider></li>
+                <li nz-menu-item (click)="onExportMatching(version)">
+                  <span nz-icon nzType="download" nzTheme="outline"></span>
+                  {{ 'session.detail.actions.export' | translate }}
+                </li>
+                <li nz-menu-divider></li>
+                <li
+                  nz-menu-item
+                  nzDanger
+                  (click)="onDeleteMatching(version)"
+                  [class.disabled]="version.status === 'VALIDATED'"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  {{ 'session.detail.actions.delete' | translate }}
+                </li>
+              </ul>
+            </nz-dropdown-menu>
           </td>
         </tr>
         </tbody>

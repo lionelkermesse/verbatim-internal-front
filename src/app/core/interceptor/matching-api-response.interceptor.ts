@@ -8,7 +8,6 @@ import {
 } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { IApiResponse } from '@chd-digital-verbatim-front/core/models';
-import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session-chd.model';
 import {
   IMatchingVersion
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.model';

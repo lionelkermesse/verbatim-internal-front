@@ -1,0 +1,62 @@
+{
+  "matching": {
+    "upload": {
+      "title": "Télécharger le Fichier Verbatim",
+      "subtitle": "Téléchargez un fichier DOCX pour créer une nouvelle correspondance verbatim",
+      "breadcrumb": {
+        "upload": "Télécharger le Fichier"
+      },
+      "steps": {
+        "upload": "Téléchargement",
+        "uploadDesc": "Sélectionner fichier DOCX",
+        "validate": "Validation",
+        "validateDesc": "Vérifier le format",
+        "process": "Traitement",
+        "processDesc": "Générer la correspondance",
+        "complete": "Terminé",
+        "completeDesc": "Voir les résultats"
+      },
+      "file": {
+        "title": "Document Verbatim",
+        "description": "Sélectionnez le fichier DOCX contenant la transcription verbatim de cette session."
+      },
+      "dropzone": {
+        "title": "Cliquez ou faites glisser le fichier ici",
+        "description": "Support pour un seul fichier à la fois.",
+        "requirements": "Seuls les fichiers DOCX jusqu'à 50 Mo sont supportés."
+      },
+      "validating": "Validation du fichier...",
+      "ready": "Le fichier est prêt pour le traitement",
+      "error": {
+        "general": "Échec de la validation",
+        "invalidFormat": "Seuls les fichiers DOCX sont acceptés",
+        "fileSize": "La taille du fichier doit être inférieure à 50 Mo",
+        "validation": "Échec de la validation du fichier",
+        "server": "Erreur serveur lors de la validation",
+        "processing": "Erreur lors du traitement"
+      },
+      "retry": "Réessayer",
+      "instructions": {
+        "title": "Instructions de Téléchargement",
+        "format": {
+          "title": "Format de Fichier",
+          "desc": "Seuls les fichiers Microsoft Word (.docx) sont acceptés."
+        },
+        "size": {
+          "title": "Taille de Fichier",
+          "desc": "La taille maximale du fichier est de 50 Mo pour un traitement optimal."
+        },
+        "validation": {
+          "title": "Validation",
+          "desc": "Les fichiers sont automatiquement validés pour le format et la structure du contenu."
+        }
+      },
+      "processing": {
+        "title": "Traitement de la Correspondance Verbatim",
+        "description": "Le système analyse le document et génère les résultats de correspondance. Cela peut prendre quelques minutes."
+      },
+      "cancel": "Annuler",
+      "start": "Démarrer la Correspondance"
+    }
+  }
+}

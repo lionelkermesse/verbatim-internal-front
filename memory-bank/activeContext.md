@@ -91,6 +91,12 @@ Upload Files → Backend Processing → Results Display → User Corrections →
 - **Visual Consistency**: All UI components should follow Luxembourg Chamber of Deputies branding and styling
 - **No Custom Styling**: Use established theme files rather than creating custom component styles
 
+## CRITICAL I18N STRUCTURE REQUIREMENTS
+- **Component-Based Keys**: All i18n JSON files must start with component name as root key
+- **Structure Example**: `{ "session": { "title": "...", ... } }` not `{ "title": "...", ... }`
+- **Naming Convention**: File name matches root key (session.json has "session" root key)
+- **Consistency**: All translation keys follow this hierarchical pattern
+
 ## Known Technical Constraints
 
 ### Backend Integration Requirements

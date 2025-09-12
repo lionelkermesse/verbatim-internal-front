@@ -23,10 +23,11 @@
 ## 🔄 PARTIALLY IMPLEMENTED FEATURES
 
 ### Session Management (Feature 1)
-- **Status**: Components exist but minimal implementation
-- **Files**: session-chd.component.ts (empty), session.service.ts, session.model.ts
-- **Routes**: Configured but redirecting to home temporarily
-- **Needed**: Full implementation of session list and detail views
+- **Status**: COMPLETE and refactored
+- **Files**: Reorganized into `list/` and `detail/` subdirectories
+- **Components**: SessionListComponent (list), SessionDetailComponent (detail)
+- **Features**: Search, filtering, navigation, proper CHD theming
+- **Fixed**: Scrolling issue in detail page resolved
 
 ### Matching Version Management
 - **Status**: Entity models and services exist

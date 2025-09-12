@@ -1,0 +1,220 @@
+<nz-layout class="matching-upload-layout">
+  <nz-content class="matching-upload-content">
+    <!-- Breadcrumb Navigation -->
+    <nz-breadcrumb class="breadcrumb">
+      <nz-breadcrumb-item>
+        <a [routerLink]="['/sessions']">
+          {{ 'session.breadcrumb.session' | translate }}
+        </a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <a (click)="onCancel()">
+          {{ session()?.sessionIdentifier || '-' }}
+        </a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <span>{{ 'matching.upload.breadcrumb.upload' | translate }}</span>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <!-- Page Header -->
+    <div class="upload-header">
+      <h1 nz-typography class="page-title">
+        {{ 'matching.upload.title' | translate }}
+      </h1>
+      <p nz-typography nzType="secondary" class="page-subtitle">
+        {{ 'matching.upload.subtitle' | translate }}
+      </p>
+    </div>
+
+    <!-- Progress Steps -->
+    <nz-card [nzBordered]="false" class="steps-card">
+      <nz-steps [nzCurrent]="currentStep()" nzSize="small">
+        <nz-step
+          [nzTitle]="'matching.upload.steps.upload' | translate"
+          [nzDescription]="'matching.upload.steps.uploadDesc' | translate"
+        ></nz-step>
+        <nz-step
+          [nzTitle]="'matching.upload.steps.validate' | translate"
+          [nzDescription]="'matching.upload.steps.validateDesc' | translate"
+        ></nz-step>
+        <nz-step
+          [nzTitle]="'matching.upload.steps.process' | translate"
+          [nzDescription]="'matching.upload.steps.processDesc' | translate"
+        ></nz-step>
+        <nz-step
+          [nzTitle]="'matching.upload.steps.complete' | translate"
+          [nzDescription]="'matching.upload.steps.completeDesc' | translate"
+        ></nz-step>
+      </nz-steps>
+    </nz-card>
+
+    <!-- Main Content -->
+    <nz-row [nzGutter]="[24, 24]">
+      <!-- Upload Section -->
+      <nz-col [nzSpan]="16">
+        <nz-card [nzBordered]="false" class="upload-card">
+          <div class="upload-section">
+            <h3 nz-typography>{{ 'matching.upload.file.title' | translate }}</h3>
+            <p nz-typography nzType="secondary">
+              {{ 'matching.upload.file.description' | translate }}
+            </p>
+
+            <!-- Error Alert -->
+            <nz-alert
+              *ngIf="validationError()"
+              nzType="error"
+              nzCloseable
+              [nzMessage]="validationError() | translate"
+              class="upload-error"
+              (nzOnClose)="validationError.set(null)"
+            ></nz-alert>
+
+            <!-- File Upload -->
+            <div class="file-upload-container">
+              <nz-upload
+                class="upload-dragger"
+                nzType="drag"
+                [nzBeforeUpload]="beforeUpload"
+                [nzShowUploadList]="false"
+                [nzAccept]="'.docx'"
+                [nzMultiple]="false"
+              >
+                <div class="upload-dragger-content">
+                  <div class="upload-icon">
+                    <span nz-icon nzType="inbox" nzTheme="twotone"></span>
+                  </div>
+                  <h4 nz-typography class="upload-title">
+                    {{ 'matching.upload.dropzone.title' | translate }}
+                  </h4>
+                  <p nz-typography nzType="secondary" class="upload-description">
+                    {{ 'matching.upload.dropzone.description' | translate }}
+                  </p>
+                  <p nz-typography nzType="secondary" class="upload-requirements">
+                    {{ 'matching.upload.dropzone.requirements' | translate }}
+                  </p>
+                </div>
+              </nz-upload>
+            </div>
+
+            <!-- File Info -->
+            <div *ngIf="uploadedFile()" class="file-info">
+              <nz-card nzSize="small">
+                <div class="file-details">
+                  <div class="file-icon">
+                    <span nz-icon nzType="file-word" nzTheme="twoTone" [nzTwotoneColor]="'#1890ff'"></span>
+                  </div>
+                  <div class="file-content">
+                    <div class="file-name">{{ uploadedFile()?.name }}</div>
+                    <div class="file-size">{{ (uploadedFile()?.size || 0) / 1024 / 1024 | number:'1.1-1' }} MB</div>
+                  </div>
+                  <div class="file-actions">
+                    <button nz-button nzType="text" nzSize="small" (click)="onRemoveFile()">
+                      <span nz-icon nzType="close" nzTheme="outline"></span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Validation Status -->
+                <div class="validation-status" *ngIf="currentStep() > 0">
+                  <nz-divider nzSize="small"></nz-divider>
+
+                  <div *ngIf="isValidating()" class="validating">
+                    <nz-spin nzSize="small"></nz-spin>
+                    <span>{{ 'matching.upload.validating' | translate }}</span>
+                  </div>
+
+                  <div *ngIf="validationStatus() === 'ready'" class="validation-ready">
+                    <span nz-icon nzType="check-circle" nzTheme="twoTone" nzTwotoneColor="#52c41a"></span>
+                    <span>{{ 'matching.upload.ready' | translate }}</span>
+                  </div>
+
+                  <div *ngIf="validationStatus() === 'error'" class="validation-error">
+                    <span nz-icon nzType="close-circle" nzTheme="twoTone" nzTwotoneColor="#ff4d4f"></span>
+                    <span>{{ 'matching.upload.error.general' | translate }}</span>
+                    <button nz-button nzType="link" nzSize="small" (click)="onRetry()">
+                      {{ 'matching.upload.retry' | translate }}
+                    </button>
+                  </div>
+                </div>
+              </nz-card>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <!-- Instructions Section -->
+      <nz-col [nzSpan]="8">
+        <nz-card [nzBordered]="false" class="instructions-card">
+          <h3 nz-typography>{{ 'matching.upload.instructions.title' | translate }}</h3>
+
+          <div class="instruction-item">
+            <span nz-icon nzType="file-word" nzTheme="outline" class="instruction-icon"></span>
+            <div class="instruction-content">
+              <div class="instruction-title">{{ 'matching.upload.instructions.format.title' | translate }}</div>
+              <div class="instruction-desc">{{ 'matching.upload.instructions.format.desc' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="instruction-item">
+            <span nz-icon nzType="cloud-upload" nzTheme="outline" class="instruction-icon"></span>
+            <div class="instruction-content">
+              <div class="instruction-title">{{ 'matching.upload.instructions.size.title' | translate }}</div>
+              <div class="instruction-desc">{{ 'matching.upload.instructions.size.desc' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="instruction-item">
+            <span nz-icon nzType="safety-certificate" nzTheme="outline" class="instruction-icon"></span>
+            <div class="instruction-content">
+              <div class="instruction-title">{{ 'matching.upload.instructions.validation.title' | translate }}</div>
+              <div class="instruction-desc">{{ 'matching.upload.instructions.validation.desc' | translate }}</div>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+
+    <!-- Processing Section -->
+    <div *ngIf="isProcessing()" class="processing-section">
+      <nz-card [nzBordered]="false" class="processing-card">
+        <div class="processing-content">
+          <div class="processing-icon">
+            <nz-spin nzSize="large"></nz-spin>
+          </div>
+          <h3 nz-typography>{{ 'matching.upload.processing.title' | translate }}</h3>
+          <p nz-typography nzType="secondary">
+            {{ 'matching.upload.processing.description' | translate }}
+          </p>
+          <nz-progress
+            [nzPercent]="processingProgress()"
+            nzStatus="active"
+            [nzShowInfo]="true"
+          ></nz-progress>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <nz-space nzSize="middle">
+        <button *nzSpaceItem nz-button nzSize="large" (click)="onCancel()">
+          {{ 'matching.upload.cancel' | translate }}
+        </button>
+
+        <button
+          *nzSpaceItem
+          nz-button
+          nzType="primary"
+          nzSize="large"
+          [nzLoading]="isProcessing()"
+          [disabled]="!canStartMatching"
+          (click)="onStartMatching()"
+        >
+          <span nz-icon nzType="play-circle" nzTheme="outline"></span>
+          {{ 'matching.upload.start' | translate }}
+        </button>
+      </nz-space>
+    </div>
+  </nz-content>
+</nz-layout>

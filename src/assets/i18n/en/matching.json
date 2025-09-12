@@ -1,0 +1,62 @@
+{
+  "matching": {
+    "upload": {
+      "title": "Upload Verbatim File",
+      "subtitle": "Upload a DOCX file to create a new verbatim matching",
+      "breadcrumb": {
+        "upload": "Upload File"
+      },
+      "steps": {
+        "upload": "Upload",
+        "uploadDesc": "Select DOCX file",
+        "validate": "Validate",
+        "validateDesc": "Check file format",
+        "process": "Process",
+        "processDesc": "Generate matching",
+        "complete": "Complete",
+        "completeDesc": "View results"
+      },
+      "file": {
+        "title": "Verbatim Document",
+        "description": "Select the DOCX file containing the verbatim transcript for this session."
+      },
+      "dropzone": {
+        "title": "Click or drag file to upload",
+        "description": "Support for single file upload only.",
+        "requirements": "Only DOCX files up to 50MB are supported."
+      },
+      "validating": "Validating file...",
+      "ready": "File is ready for processing",
+      "error": {
+        "general": "Validation failed",
+        "invalidFormat": "Only DOCX files are accepted",
+        "fileSize": "File size must be less than 50MB",
+        "validation": "File validation failed",
+        "server": "Server error occurred during validation",
+        "processing": "Error occurred during processing"
+      },
+      "retry": "Retry",
+      "instructions": {
+        "title": "Upload Instructions",
+        "format": {
+          "title": "File Format",
+          "desc": "Only Microsoft Word (.docx) files are accepted."
+        },
+        "size": {
+          "title": "File Size",
+          "desc": "Maximum file size is 50MB for optimal processing."
+        },
+        "validation": {
+          "title": "Validation",
+          "desc": "Files are automatically validated for format and content structure."
+        }
+      },
+      "processing": {
+        "title": "Processing Verbatim Matching",
+        "description": "The system is analyzing the document and generating matching results. This may take a few minutes."
+      },
+      "cancel": "Cancel",
+      "start": "Start Matching"
+    }
+  }
+}

@@ -18,18 +18,21 @@ import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { SessionService } from '@chd-digital-verbatim-front/feature/entities/session/session.service';
 import {
   MatchingVersionService
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.service';
-import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session-chd.model';
 import { VersionStatus } from '@chd-digital-verbatim-front/core/models';
 import {
   IMatchingVersion
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.model';
-import FormatMediumDatetimePipe from '../../../../shared/pipes/date/format-medium-datetime.pipe';
+import FormatMediumDatetimePipe from '@chd-digital-verbatim-front/shared/pipes/date/format-medium-datetime.pipe';
+import FormatMediumDatePipe from '@chd-digital-verbatim-front/shared/pipes/date/format-medium-date.pipe';
+import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session.model';
 
 @Component({
   selector: 'chd-session-detail',
@@ -51,8 +54,11 @@ import FormatMediumDatetimePipe from '../../../../shared/pipes/date/format-mediu
     NzDescriptionsModule,
     NzDividerModule,
     NzEmptyModule,
+    NzDropDownModule,
+    NzMenuModule,
     NzSpinModule,
-    FormatMediumDatetimePipe
+    FormatMediumDatetimePipe,
+    FormatMediumDatePipe
   ],
   templateUrl: './session-detail.component.html',
   styleUrls: ['./session-detail.component.scss'],
@@ -149,14 +155,6 @@ export class SessionDetailComponent implements OnInit {
       case 'ERROR': return 'red';
       default: return 'default';
     }
-  }
-
-  formatDate(date: any): string {
-    return date ? date.format('DD/MM/YYYY HH:mm') : '-';
-  }
-
-  formatDateShort(date: any): string {
-    return date ? date.format('DD/MM/YYYY') : '-';
   }
 
   onPageIndexChange(pageIndex: number): void {

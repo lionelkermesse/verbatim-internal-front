@@ -71,6 +71,14 @@ export class MatchingVersionService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
+  validateVerbatimFile(formData: FormData): Observable<{status: string, message?: string}> {
+    return this.http.post<{status: string, message?: string}>(`${this.resourceUrl}/validate`, formData);
+  }
+
+  createMatching(formData: FormData): Observable<{id: number}> {
+    return this.http.post<{id: number}>(`${this.resourceUrl}/process`, formData);
+  }
+
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http
