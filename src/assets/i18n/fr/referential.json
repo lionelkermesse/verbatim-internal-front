@@ -49,13 +49,19 @@
       "format": "Format",
       "fileSize": "Taille du Fichier",
       "filename": "Nom du Fichier",
+      "similarityThreshold": "Seuil de Similarité",
       "correspondences": "Correspondances",
       "noCorrespondences": "Aucune correspondance trouvée dans le référentiel actuel",
       "download": "Télécharger l'Actuel",
+      "showTable": "Afficher le Tableau",
+      "showRaw": "Afficher le Contenu Brut",
       "none": {
         "title": "Aucun Référentiel Actif",
         "description": "Aucun fichier de référentiel n'est actuellement actif. Téléchargez un nouveau fichier pour commencer."
       }
+    },
+    "preview": {
+      "title": "Aperçu du Contenu Brut"
     },
     "files": {
       "title": "Tous les Fichiers de Référentiel",
@@ -86,6 +92,7 @@
       "menu": "Menu des actions de fichier",
       "actions": "Actions",
       "download": "Télécharger",
+      "preview": "Aperçu du Contenu Brut",
       "delete": "Supprimer"
     }
   }

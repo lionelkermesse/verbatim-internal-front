@@ -1,6 +1,6 @@
 <header class="navbar-container">
   <div class="navbar-logo">
-    <img ngSrc="/chd-logo.svg" alt="Chambre des Députés Logo" class="logo" width="203" height="32">
+    <img ngSrc="/chd-logo.svg" alt="Chambre des Députés Logo" class="logo" width="203" height="32" priority>
   </div>
 
   <!-- Navigation Links -->
@@ -16,11 +16,22 @@
   </nav>
 
   <div class="navbar-actions">
-    <nz-select [(ngModel)]="selectedLanguage" (ngModelChange)="onLanguageChange($event)" class="language-selector" nzBorderless>
-      <nz-option nzValue="fr" nzLabel="FR"></nz-option>
-      <nz-option nzValue="de" nzLabel="DE"></nz-option>
-      <nz-option nzValue="en" nzLabel="EN"></nz-option>
-      <nz-option nzValue="lu" nzLabel="LU"></nz-option>
+    <nz-select
+      [(ngModel)]="selectedLanguage"
+      (ngModelChange)="onLanguageChange($event)"
+      class="language-selector"
+      nzBorderless
+      [nzCustomTemplate]="selectedTemplate"
+    >
+      <nz-option nzValue="fr" nzLabel="Français"></nz-option>
+      <nz-option nzValue="de" nzLabel="Deutsch"></nz-option>
+      <nz-option nzValue="en" nzLabel="English"></nz-option>
+      <nz-option nzValue="lu" nzLabel="Lëtzebuergesch"></nz-option>
     </nz-select>
+
+    <!-- Custom selected display showing only ISO2 code -->
+    <ng-template #selectedTemplate>
+      <span class="selected-language">{{ getLanguageCode(selectedLanguage) }}</span>
+    </ng-template>
   </div>
 </header>

@@ -1,0 +1,77 @@
+{
+  "session": {
+    "title": "Sessioune",
+    "subtitle": "Verbatim-Matching-Sessioune geréieren",
+    "search": {
+      "placeholder": "Sessioune no Kennung oder Datum sichen..."
+    },
+    "table": {
+      "identifier": "Sessiouns-Kennung",
+      "date": "Sessiouns-Datum",
+      "status": "Status",
+      "created": "Erstellt vun",
+      "actions": "Aktiounen"
+    },
+    "status": {
+      "uploaded": "Eropgelueden",
+      "processing": "Am Beaarbechten",
+      "awaiting_correction": "Waart op Korrektur",
+      "validated": "Validéiert",
+      "error": "Feeler"
+    },
+    "actions": {
+      "view": "Detailer weisen",
+      "edit": "Änneren",
+      "delete": "Läschen",
+      "new": "Nei Matching"
+    },
+    "empty": {
+      "message": "Keng Sessioune fonnt",
+      "description": "Keng Sessioune verfügbar. Sessioune ginn hei gewisen, sou baal se erstellt ginn."
+    },
+    "breadcrumb": {
+      "session": "Sessioune",
+      "detail": "Sessiouns-Detailer"
+    },
+    "detail": {
+      "loading": "Lued Sessiouns-Detailer...",
+      "subtitle": "Sessiouns-Informatiounen weisen an Matching-Versiounen geréieren",
+      "info": {
+        "title": "Sessiouns-Informatiounen",
+        "identifier": "Sessiouns-Kennung",
+        "date": "Sessiouns-Datum",
+        "createdBy": "Erstellt vun",
+        "createdDate": "Erstellt den",
+        "lastModified": "Lescht Ännerung"
+      },
+      "matchingVersions": {
+        "title": "Matching-Versiounen",
+        "subtitle": "Lëscht vun all Verbatim-Matching-Versiounen fir dës Sessioun"
+      },
+      "table": {
+        "version": "Versioun",
+        "status": "Status",
+        "createdBy": "Erstellt vun",
+        "createdDate": "Erstellt den",
+        "validatedBy": "Validéiert vun",
+        "actions": "Aktiounen"
+      },
+      "version": {
+        "label": "Versioun"
+      },
+      "notValidated": "Net validéiert",
+      "actions": {
+        "menu": "Versiounsaktioune-Menü",
+        "actions": "Aktiounen",
+        "view": "Weisen",
+        "edit": "Änneren",
+        "export": "Exportéieren",
+        "delete": "Läschen"
+      },
+      "empty": {
+        "message": "Keng Matching-Versiounen fonnt",
+        "description": "Dës Sessioun huet nach keng Matching-Versiounen. Erstellt een neie Matching fir unzefänken."
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "session": {
+    "title": "Sitzungen",
+    "subtitle": "Verbatim-Matching-Sitzungen verwalten",
+    "search": {
+      "placeholder": "Sitzungen nach Kennung oder Datum suchen..."
+    },
+    "table": {
+      "identifier": "Sitzungskennung",
+      "date": "Sitzungsdatum",
+      "status": "Status",
+      "created": "Erstellt von",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "uploaded": "Hochgeladen",
+      "processing": "In Bearbeitung",
+      "awaiting_correction": "Wartet auf Korrektur",
+      "validated": "Validiert",
+      "error": "Fehler"
+    },
+    "actions": {
+      "view": "Details anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "new": "Neues Matching"
+    },
+    "empty": {
+      "message": "Keine Sitzungen gefunden",
+      "description": "Keine Sitzungen verfügbar. Sitzungen werden hier angezeigt, sobald sie erstellt wurden."
+    },
+    "breadcrumb": {
+      "session": "Sitzungen",
+      "detail": "Sitzungsdetails"
+    },
+    "detail": {
+      "loading": "Lade Sitzungsdetails...",
+      "subtitle": "Sitzungsinformationen anzeigen und Matching-Versionen verwalten",
+      "info": {
+        "title": "Sitzungsinformationen",
+        "identifier": "Sitzungskennung",
+        "date": "Sitzungsdatum",
+        "createdBy": "Erstellt von",
+        "createdDate": "Erstellungsdatum",
+        "lastModified": "Letzte Änderung"
+      },
+      "matchingVersions": {
+        "title": "Matching-Versionen",
+        "subtitle": "Liste aller Verbatim-Matching-Versionen für diese Sitzung"
+      },
+      "table": {
+        "version": "Version",
+        "status": "Status",
+        "createdBy": "Erstellt von",
+        "createdDate": "Erstellungsdatum",
+        "validatedBy": "Validiert von",
+        "actions": "Aktionen"
+      },
+      "version": {
+        "label": "Version"
+      },
+      "notValidated": "Nicht validiert",
+      "actions": {
+        "menu": "Versionsaktionen-Menü",
+        "actions": "Aktionen",
+        "view": "Anzeigen",
+        "edit": "Bearbeiten",
+        "export": "Exportieren",
+        "delete": "Löschen"
+      },
+      "empty": {
+        "message": "Keine Matching-Versionen gefunden",
+        "description": "Diese Sitzung hat noch keine Matching-Versionen. Erstellen Sie ein neues Matching, um zu beginnen."
+      }
+    }
+  }
+}

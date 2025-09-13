@@ -1,0 +1,99 @@
+{
+  "referential": {
+    "title": "Referenzdaten-Verwaltung",
+    "subtitle": "Referenzdateien für Verbatim-Matching-Konfiguration verwalten",
+    "upload": {
+      "button": "Neue Datei hochladen",
+      "title": "Referenzdatei hochladen",
+      "subtitle": "Eine neue JSON- oder XML-Referenzdatei hochladen",
+      "dropzone": {
+        "title": "Klicken oder Datei hierher ziehen",
+        "description": "Unterstützung nur für JSON- und XML-Dateien.",
+        "requirements": "Nur JSON/XML-Dateien bis 10MB werden unterstützt."
+      },
+      "success": "Datei erfolgreich hochgeladen",
+      "error": {
+        "invalidFormat": "Nur JSON- und XML-Dateien werden akzeptiert",
+        "fileSize": "Dateigröße muss kleiner als 10MB sein",
+        "upload": "Fehler beim Hochladen"
+      },
+      "file": {
+        "title": "Referenz-Konfigurationsdatei",
+        "description": "Wählen Sie die JSON- oder XML-Datei mit der Referenzkonfiguration aus."
+      },
+      "fileType": "Datei",
+      "successDescription": "Die Referenzdatei wurde hochgeladen und ist jetzt aktiv.",
+      "instructions": {
+        "title": "Upload-Anweisungen",
+        "format": {
+          "title": "Dateiformat",
+          "desc": "JSON- oder XML-Dateien mit Korrespondenzregeln werden akzeptiert."
+        },
+        "size": {
+          "title": "Dateigröße",
+          "desc": "Maximale Dateigröße ist 10MB für optimale Verarbeitung."
+        },
+        "structure": {
+          "title": "Dateistruktur",
+          "desc": "Dateien sollten Korrespondenzregeln mit Verbatim-Begriffen, Ereignisbegriffen und Match-Typen enthalten."
+        }
+      },
+      "cancel": "Abbrechen",
+      "upload": "Datei hochladen"
+    },
+    "current": {
+      "title": "Aktuelle Referenzdaten",
+      "subtitle": "Details der aktuell aktiven Referenzdatei",
+      "uploadedBy": "Hochgeladen von",
+      "uploadDate": "Upload-Datum",
+      "format": "Format",
+      "fileSize": "Dateigröße",
+      "filename": "Dateiname",
+      "similarityThreshold": "Ähnlichkeitsschwelle",
+      "correspondences": "Korrespondenzen",
+      "noCorrespondences": "Keine Korrespondenzen in aktuellen Referenzdaten gefunden",
+      "download": "Aktuelle herunterladen",
+      "showTable": "Tabelle anzeigen",
+      "showRaw": "Rohdaten anzeigen",
+      "none": {
+        "title": "Keine aktiven Referenzdaten",
+        "description": "Keine Referenzdatei ist aktuell aktiv. Laden Sie eine neue Datei hoch, um zu beginnen."
+      }
+    },
+    "preview": {
+      "title": "Rohdaten-Vorschau"
+    },
+    "files": {
+      "title": "Alle Referenzdateien",
+      "subtitle": "Verlauf aller hochgeladenen Referenzdateien"
+    },
+    "table": {
+      "filename": "Dateiname",
+      "format": "Format",
+      "size": "Größe",
+      "uploadedBy": "Hochgeladen von",
+      "uploadDate": "Upload-Datum",
+      "status": "Status",
+      "actions": "Aktionen",
+      "verbatimTerm": "Verbatim-Begriff",
+      "eventTerm": "Ereignis-Begriff",
+      "type": "Typ",
+      "similarity": "Ähnlichkeit"
+    },
+    "type": {
+      "exact": "Exakt",
+      "approximate": "Ungefähr"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "actions": {
+      "menu": "Dateiaktionen-Menü",
+      "actions": "Aktionen",
+      "download": "Herunterladen",
+      "preview": "Rohdaten-Vorschau",
+      "delete": "Löschen"
+    }
+  }
+}
