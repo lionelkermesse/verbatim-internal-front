@@ -57,6 +57,52 @@
       },
       "cancel": "Annuler",
       "start": "Démarrer la Correspondance"
+    },
+    "detail": {
+      "title": "Version de Correspondance",
+      "subtitle": "Consulter et modifier les résultats de correspondance verbatim",
+      "loading": "Chargement des données de correspondance...",
+      "breadcrumb": {
+        "detail": "Version"
+      },
+      "save": "Sauvegarder les Modifications",
+      "validate": "Valider",
+      "tree": {
+        "title": "Hiérarchie des Événements",
+        "subtitle": "Vue arborescente des événements et sous-événements avec intervenants et contenu verbatim"
+      },
+      "selected": {
+        "title": "Détails de l'Événement",
+        "edit": "Modifier",
+        "none": "Sélectionnez un événement dans l'arborescence pour voir les détails",
+        "lineNumber": "Numéro de Ligne",
+        "speakers": "Intervenants",
+        "verbatim": "Contenu Verbatim",
+        "status": "Statut de Correspondance"
+      },
+      "edit": {
+        "title": "Modifier l'Événement",
+        "titleRequired": "Le titre est requis",
+        "titlePlaceholder": "Saisir le titre de l'événement",
+        "speakers": "Intervenants",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "function": "Fonction",
+        "party": "Parti",
+        "addSpeaker": "Ajouter un Intervenant",
+        "removeSpeaker": "Supprimer",
+        "verbatim": "Contenu Verbatim",
+        "verbatimPlaceholder": "Saisir le texte verbatim...",
+        "cancel": "Annuler",
+        "save": "Sauvegarder les Modifications"
+      }
+    },
+    "status": {
+      "uploaded": "Téléchargé",
+      "processing": "En traitement",
+      "awaiting_correction": "En attente de correction",
+      "validated": "Validé",
+      "error": "Erreur"
     }
   }
 }

@@ -57,6 +57,52 @@
       },
       "cancel": "Cancel",
       "start": "Start Matching"
+    },
+    "detail": {
+      "title": "Matching Version",
+      "subtitle": "View and edit verbatim matching results",
+      "loading": "Loading matching data...",
+      "breadcrumb": {
+        "detail": "Version"
+      },
+      "save": "Save Changes",
+      "validate": "Validate",
+      "tree": {
+        "title": "Events Hierarchy",
+        "subtitle": "Tree view of events and sub-events with speakers and verbatim content"
+      },
+      "selected": {
+        "title": "Event Details",
+        "edit": "Edit",
+        "none": "Select an event from the tree to view details",
+        "lineNumber": "Line Number",
+        "speakers": "Speakers",
+        "verbatim": "Verbatim Content",
+        "status": "Matching Status"
+      },
+      "edit": {
+        "title": "Edit Event",
+        "titleRequired": "Title is required",
+        "titlePlaceholder": "Enter event title",
+        "speakers": "Speakers",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "function": "Function",
+        "party": "Party",
+        "addSpeaker": "Add Speaker",
+        "removeSpeaker": "Remove",
+        "verbatim": "Verbatim Content",
+        "verbatimPlaceholder": "Enter verbatim text...",
+        "cancel": "Cancel",
+        "save": "Save Changes"
+      }
+    },
+    "status": {
+      "uploaded": "Uploaded",
+      "processing": "Processing",
+      "awaiting_correction": "Awaiting Correction",
+      "validated": "Validated",
+      "error": "Error"
     }
   }
 }

@@ -118,28 +118,59 @@ export class SessionDetailComponent implements OnInit {
   }
 
   onNewMatching(): void {
-    const sessionId = this.session()?.id;
-    if (sessionId) {
-      this.router.navigate(['/session', sessionId, 'new-matching']);
+    const sessionIdentifier = this.session()?.sessionIdentifier;
+    if (sessionIdentifier) {
+      this.router.navigate(['/matching/upload', sessionIdentifier]);
     }
   }
 
   onViewMatching(matchingVersion: IMatchingVersion): void {
-    this.router.navigate(['/matching', matchingVersion.id]);
+    const sessionIdentifier = this.session()?.sessionIdentifier;
+    if (sessionIdentifier && matchingVersion.version) {
+      this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version]);
+    }
   }
 
   onEditMatching(matchingVersion: IMatchingVersion): void {
-    this.router.navigate(['/matching', matchingVersion.id, 'edit']);
+    const sessionIdentifier = this.session()?.sessionIdentifier;
+    if (sessionIdentifier && matchingVersion.version) {
+      this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version, 'edit']);
+    }
   }
 
   onDeleteMatching(matchingVersion: IMatchingVersion): void {
-    // TODO: Implement delete functionality with confirmation modal
-    console.log('Delete matching:', matchingVersion.id);
+    const sessionIdentifier = this.session()?.sessionIdentifier;
+    if (sessionIdentifier && matchingVersion.version) {
+      this.matchingVersionService.deleteMatchingVersion(sessionIdentifier, matchingVersion.version).subscribe({
+        next: () => {
+          // Reload matching versions after successful delete
+          this.loadMatchingVersions(sessionIdentifier);
+        },
+        error: (error) => {
+          console.error('Error deleting matching version:', error);
+        }
+      });
+    }
   }
 
   onExportMatching(matchingVersion: IMatchingVersion): void {
-    // TODO: Implement export functionality
-    console.log('Export matching:', matchingVersion.id);
+    const sessionIdentifier = this.session()?.sessionIdentifier;
+    if (sessionIdentifier && matchingVersion.version) {
+      this.matchingVersionService.exportMatching(sessionIdentifier, matchingVersion.version, 'JSON').subscribe({
+        next: (blob) => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `matching_${sessionIdentifier}_v${matchingVersion.version}.json`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (error) => {
+          console.error('Error exporting matching:', error);
+        }
+      });
+    }
   }
 
   onBackToSessions(): void {

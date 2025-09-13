@@ -65,7 +65,7 @@
               *ngIf="validationError()"
               nzType="error"
               nzCloseable
-              [nzMessage]="validationError() | translate"
+              [nzMessage]="validationError() ? (validationError()! | translate) : '' "
               class="upload-error"
               (nzOnClose)="validationError.set(null)"
             ></nz-alert>
@@ -102,7 +102,7 @@
               <nz-card nzSize="small">
                 <div class="file-details">
                   <div class="file-icon">
-                    <span nz-icon nzType="file-word" nzTheme="twoTone" [nzTwotoneColor]="'#1890ff'"></span>
+                    <span nz-icon nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'"></span>
                   </div>
                   <div class="file-content">
                     <div class="file-name">{{ uploadedFile()?.name }}</div>
@@ -117,7 +117,7 @@
 
                 <!-- Validation Status -->
                 <div class="validation-status" *ngIf="currentStep() > 0">
-                  <nz-divider nzSize="small"></nz-divider>
+                  <nz-divider nzSize="small"/>
 
                   <div *ngIf="isValidating()" class="validating">
                     <nz-spin nzSize="small"></nz-spin>
@@ -125,12 +125,12 @@
                   </div>
 
                   <div *ngIf="validationStatus() === 'ready'" class="validation-ready">
-                    <span nz-icon nzType="check-circle" nzTheme="twoTone" nzTwotoneColor="#52c41a"></span>
+                    <span nz-icon nzType="check-circle" nzTheme="twotone" nzTwotoneColor="#52c41a"></span>
                     <span>{{ 'matching.upload.ready' | translate }}</span>
                   </div>
 
                   <div *ngIf="validationStatus() === 'error'" class="validation-error">
-                    <span nz-icon nzType="close-circle" nzTheme="twoTone" nzTwotoneColor="#ff4d4f"></span>
+                    <span nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="#ff4d4f"></span>
                     <span>{{ 'matching.upload.error.general' | translate }}</span>
                     <button nz-button nzType="link" nzSize="small" (click)="onRetry()">
                       {{ 'matching.upload.retry' | translate }}
@@ -180,7 +180,7 @@
       <nz-card [nzBordered]="false" class="processing-card">
         <div class="processing-content">
           <div class="processing-icon">
-            <nz-spin nzSize="large"></nz-spin>
+            <nz-spin nzSize="large"/>
           </div>
           <h3 nz-typography>{{ 'matching.upload.processing.title' | translate }}</h3>
           <p nz-typography nzType="secondary">

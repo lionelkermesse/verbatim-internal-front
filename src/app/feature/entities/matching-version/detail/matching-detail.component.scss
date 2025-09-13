@@ -1,0 +1,436 @@
+@import 'src/assets/scss/vendor.scss';
+
+.matching-detail-layout {
+  background: $body-background;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.matching-detail-content {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.breadcrumb {
+  margin-bottom: 16px;
+
+  .ant-breadcrumb-link {
+    color: $primary-color;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      color: darken($primary-color, 10%);
+    }
+  }
+
+  .ant-breadcrumb-separator {
+    color: $text-color-secondary;
+  }
+}
+
+.matching-header {
+  margin-bottom: 24px;
+
+  .page-title {
+    color: $primary-color;
+    font-size: 2.25rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .page-subtitle {
+    color: $text-color-secondary;
+    font-size: $font-size-lg;
+    margin: 0 0 12px 0;
+  }
+
+  .loading-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .loading-text {
+      color: $text-color-secondary;
+      font-size: $font-size-lg;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    .ant-btn {
+      height: 44px;
+      font-size: $font-size-lg;
+      font-weight: 500;
+
+      .anticon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.tree-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+  height: calc(100vh - 200px);
+
+  .tree-header {
+    margin-bottom: 16px;
+
+    h3 {
+      color: $heading-color;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      color: $text-color-secondary;
+      margin: 0;
+    }
+  }
+
+  .tree-container {
+    height: calc(100% - 80px);
+    overflow-y: auto;
+
+    .matching-tree {
+      border: 1px solid $border-color-split;
+      border-radius: $border-radius-base;
+      background: $body-background;
+
+      .ant-tree-node-content-wrapper {
+        padding: 8px 12px;
+        border-radius: $border-radius-base;
+        margin: 2px 0;
+
+        &:hover {
+          background: $table-row-hover-bg;
+        }
+
+        &.ant-tree-node-selected {
+          background: fade-out($primary-color, 0.9);
+          border-color: $primary-color;
+        }
+
+        .tree-node-content {
+          width: 100%;
+
+          .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+
+            .node-title {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              flex: 1;
+
+              strong {
+                color: $heading-color;
+                font-weight: 600;
+              }
+            }
+
+            .node-actions {
+              opacity: 0;
+              transition: opacity 0.2s ease;
+
+              .ant-btn-text {
+                color: $primary-color;
+                padding: 2px 6px;
+                height: auto;
+
+                &:hover {
+                  background: fade-out($primary-color, 0.95);
+                }
+              }
+            }
+          }
+
+          &:hover .node-actions {
+            opacity: 1;
+          }
+
+          .node-speakers {
+            margin-bottom: 8px;
+
+            .ant-tag {
+              margin: 2px 4px 2px 0;
+              font-size: 11px;
+            }
+          }
+
+          .node-verbatim {
+            .verbatim-text {
+              color: $text-color-secondary;
+              font-size: $font-size-sm;
+              font-style: italic;
+              margin: 0;
+              line-height: 1.4;
+              max-height: 60px;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.details-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+  height: calc(100vh - 200px);
+
+  .item-details {
+    height: 100%;
+    overflow-y: auto;
+
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      h3 {
+        color: $heading-color;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .ant-btn-primary {
+        .anticon {
+          margin-right: 6px;
+        }
+      }
+    }
+
+    .detail-item {
+      margin-bottom: 16px;
+
+      .detail-label {
+        font-weight: 600;
+        color: $heading-color;
+        margin-bottom: 6px;
+        display: block;
+        font-size: $font-size-sm;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .detail-value {
+        color: $text-color;
+        font-size: $font-size-base;
+
+        &.verbatim-content {
+          background: $body-background;
+          padding: 12px;
+          border-radius: $border-radius-base;
+          border: 1px solid $border-color-split;
+          font-family: 'Courier New', monospace;
+          font-size: $font-size-sm;
+          line-height: 1.6;
+          white-space: pre-wrap;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+
+        .ant-tag {
+          margin: 2px 4px 2px 0;
+        }
+      }
+    }
+  }
+
+  .no-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: $text-color-secondary;
+
+    .no-selection-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    p {
+      font-size: $font-size-lg;
+      margin: 0;
+    }
+  }
+}
+
+// Edit Drawer Styles
+.ant-drawer-content {
+  .drawer-actions {
+    position: sticky;
+    bottom: 0;
+    background: $component-background;
+    padding: 16px 0 0 0;
+    border-top: 1px solid $border-color-split;
+    margin-top: 24px;
+
+    .ant-btn {
+      height: 44px;
+      font-size: $font-size-lg;
+      font-weight: 500;
+      min-width: 100px;
+
+      .anticon {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .speaker-form {
+    margin-bottom: 16px;
+
+    .speaker-card {
+      border: 1px solid $border-color-split;
+      border-radius: $border-radius-base;
+
+      .speaker-fields {
+        .ant-form-item {
+          margin-bottom: 12px;
+
+          .ant-form-item-label {
+            padding-bottom: 4px;
+
+            label {
+              font-size: $font-size-sm;
+              color: $text-color-secondary;
+            }
+          }
+        }
+      }
+
+      .speaker-actions {
+        text-align: right;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid $border-color-split;
+
+        .ant-btn-text {
+          color: $error-color;
+          font-size: $font-size-sm;
+
+          &:hover {
+            background: fade-out($error-color, 0.95);
+          }
+        }
+      }
+    }
+  }
+
+  .add-speaker-btn {
+    border: 2px dashed $border-color-base;
+    color: $primary-color;
+    height: 44px;
+
+    &:hover {
+      border-color: $primary-color;
+      color: darken($primary-color, 10%);
+    }
+
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Form field styles
+.ant-form-item-label > label {
+  color: $heading-color;
+  font-weight: 500;
+}
+
+.ant-input {
+  border-color: $border-color-base;
+
+  &:hover {
+    border-color: $primary-color;
+  }
+
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px fade-out($primary-color, 0.8);
+  }
+}
+
+.ant-input[disabled] {
+  background: $body-background;
+  color: $text-color-secondary;
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .matching-detail-content {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .tree-card,
+  .details-card {
+    height: calc(50vh - 100px);
+  }
+
+  nz-row {
+    flex-direction: column;
+
+    nz-col {
+      width: 100% !important;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .matching-detail-content {
+    padding: 12px;
+  }
+
+  .matching-header {
+    .page-title {
+      font-size: 1.75rem;
+    }
+
+    .header-actions {
+      justify-content: center;
+      margin-top: 16px;
+
+      .ant-btn {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .tree-card,
+  .details-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+}

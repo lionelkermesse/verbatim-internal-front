@@ -34,7 +34,7 @@ export class MatchingVersionService {
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/v1/matching');
 
-  create(matchingVersion: NewMatchingVersion): Observable<EntityResponseType> {
+  createMatching(matchingVersion: NewMatchingVersion): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(matchingVersion);
     return this.http
       .post<RestMatchingVersion>(this.resourceUrl, copy, {observe: 'response'})
@@ -71,12 +71,40 @@ export class MatchingVersionService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
-  validateVerbatimFile(formData: FormData): Observable<{status: string, message?: string}> {
-    return this.http.post<{status: string, message?: string}>(`${this.resourceUrl}/validate`, formData);
+  startMatching(sessionIdentifier: string, formData: FormData): Observable<EntityResponseType> {
+    return this.http.post<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/start`, formData, {observe: 'response'})
+      .pipe(map(res => this.convertResultDtoResponse(res)));
   }
 
-  createMatching(formData: FormData): Observable<{id: number}> {
-    return this.http.post<{id: number}>(`${this.resourceUrl}/process`, formData);
+  getMatchingVersion(sessionIdentifier: string, version: number): Observable<EntityResponseType> {
+    return this.http.get<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/${version}`, {observe: 'response'})
+      .pipe(map(res => this.convertResultDtoResponse(res)));
+  }
+
+  updateMatching(sessionIdentifier: string, updateRequest: any): Observable<EntityResponseType> {
+    return this.http.put<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/update`, updateRequest, {observe: 'response'})
+      .pipe(map(res => this.convertResultDtoResponse(res)));
+  }
+
+  validateMatching(sessionIdentifier: string, version: number): Observable<EntityResponseType> {
+    return this.http.post<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/${version}/validate`, {}, {observe: 'response'})
+      .pipe(map(res => this.convertResultDtoResponse(res)));
+  }
+
+  deleteMatchingVersion(sessionIdentifier: string, version: number): Observable<HttpResponse<{}>> {
+    return this.http.delete(`${this.resourceUrl}/${sessionIdentifier}/${version}`, {observe: 'response'});
+  }
+
+  exportMatching(sessionIdentifier: string, version: number, format: string): Observable<Blob> {
+    return this.http.get(`${this.resourceUrl}/${sessionIdentifier}/${version}/export?format=${format}`, {
+      responseType: 'blob'
+    });
+  }
+
+  private convertResultDtoResponse(res: HttpResponse<{success: boolean, data: RestMatchingVersion, message: string}>): HttpResponse<IMatchingVersion> {
+    return res.clone({
+      body: res.body?.data ? this.convertDateFromServer(res.body.data) : null,
+    });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {

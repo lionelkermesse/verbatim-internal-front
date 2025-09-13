@@ -35,6 +35,11 @@ export const routes: Routes = [
     // canActivate: [UserRouteAccessService],
     loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session.routes'),
   },
+  {
+    path: 'matching',
+    // canActivate: [UserRouteAccessService],
+    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.routes'),
+  },
   // Home route (will redirect to sessions for authenticated users)
   {
     path: 'home',
