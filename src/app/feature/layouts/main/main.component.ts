@@ -7,13 +7,14 @@ import {AccountService} from '@chd-digital-verbatim-front/core/auth/account.serv
 import {AppPageTitleStrategy} from '../../../app-page-title-strategy';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
 import {FooterComponent} from '@chd-digital-verbatim-front/feature/layouts/footer/footer.component';
+import {NavbarComponent} from '@chd-digital-verbatim-front/feature/layouts/navbar/navbar.component';
 
 @Component({
   selector: 'chd-main',
   standalone: true,
   templateUrl: './main.component.html',
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent],
+  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, NavbarComponent],
 })
 export default class MainComponent implements OnInit {
   private readonly renderer: Renderer2;
