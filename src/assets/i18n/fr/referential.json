@@ -2,6 +2,10 @@
   "referential": {
     "title": "Gestion du Référentiel",
     "subtitle": "Gérer les fichiers de référentiel pour la configuration de correspondance verbatim",
+    "tabs": {
+      "current": "Référentiel Actuel",
+      "allFiles": "Tous les Fichiers"
+    },
     "upload": {
       "button": "Télécharger un Nouveau Fichier",
       "title": "Télécharger un Fichier de Référentiel",

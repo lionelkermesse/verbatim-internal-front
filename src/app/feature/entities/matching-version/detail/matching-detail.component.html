@@ -73,10 +73,25 @@
       <nz-col [nzSpan]="14">
         <nz-card [nzBordered]="false" class="tree-card" [nzLoading]="isLoading()">
           <div class="tree-header">
-            <h3 nz-typography>{{ 'matching.detail.tree.title' | translate }}</h3>
-            <p nz-typography nzType="secondary">
-              {{ 'matching.detail.tree.subtitle' | translate }}
-            </p>
+            <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
+              <nz-col>
+                <h3 nz-typography>{{ 'matching.detail.tree.title' | translate }}</h3>
+                <p nz-typography nzType="secondary">
+                  {{ 'matching.detail.tree.subtitle' | translate }}
+                </p>
+              </nz-col>
+              <nz-col *ngIf="isEditMode()">
+                <button
+                  nz-button
+                  nzType="primary"
+                  nzSize="small"
+                  (click)="onAddEvent()"
+                >
+                  <span nz-icon nzType="plus" nzTheme="outline"></span>
+                  {{ 'matching.detail.tree.addEvent' | translate }}
+                </button>
+              </nz-col>
+            </nz-row>
           </div>
 
           <div class="tree-container">
@@ -86,6 +101,7 @@
               [nzSelectedKeys]="selectedKeys()"
               (nzExpandChange)="onNodeExpand($event)"
               (nzSelectChange)="onNodeSelect($event)"
+              [nzTreeTemplate]="nzTreeTemplate"
               nzShowLine
               nzBlockNode
               class="matching-tree"
@@ -104,14 +120,59 @@
                       </nz-tag>
                     </div>
                     <div class="node-actions" *ngIf="isEditMode()">
-                      <button
-                        nz-button
-                        nzType="text"
-                        nzSize="small"
-                        (click)="onEditItem(origin); $event.stopPropagation()"
-                      >
-                        <span nz-icon nzType="edit" nzTheme="outline"></span>
-                      </button>
+                      <nz-space nzSize="small">
+                        <button
+                          *nzSpaceItem
+                          nz-button
+                          nzType="text"
+                          nzSize="small"
+                          (click)="onEditItem(origin); $event.stopPropagation()"
+                          [title]="'matching.detail.tree.edit' | translate"
+                        >
+                          <span nz-icon nzType="edit" nzTheme="outline"></span>
+                        </button>
+                        <button
+                          *nzSpaceItem
+                          nz-button
+                          nzType="text"
+                          nzSize="small"
+                          (click)="onAddInnerEvent(origin); $event.stopPropagation()"
+                          [title]="'matching.detail.tree.addInner' | translate"
+                        >
+                          <span nz-icon nzType="plus" nzTheme="outline"></span>
+                        </button>
+                        <button
+                          *nzSpaceItem
+                          nz-button
+                          nzType="text"
+                          nzSize="small"
+                          (click)="onMoveEventUp(origin); $event.stopPropagation()"
+                          [title]="'matching.detail.tree.moveUp' | translate"
+                        >
+                          <span nz-icon nzType="up" nzTheme="outline"></span>
+                        </button>
+                        <button
+                          *nzSpaceItem
+                          nz-button
+                          nzType="text"
+                          nzSize="small"
+                          (click)="onMoveEventDown(origin); $event.stopPropagation()"
+                          [title]="'matching.detail.tree.moveDown' | translate"
+                        >
+                          <span nz-icon nzType="down" nzTheme="outline"></span>
+                        </button>
+                        <button
+                          *nzSpaceItem
+                          nz-button
+                          nzType="text"
+                          nzDanger
+                          nzSize="small"
+                          (click)="onDeleteEvent(origin); $event.stopPropagation()"
+                          [title]="'matching.detail.tree.delete' | translate"
+                        >
+                          <span nz-icon nzType="delete" nzTheme="outline"></span>
+                        </button>
+                      </nz-space>
                     </div>
                   </div>
 

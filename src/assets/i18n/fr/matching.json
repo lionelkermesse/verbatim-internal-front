@@ -69,7 +69,13 @@
       "validate": "Valider",
       "tree": {
         "title": "Hiérarchie des Événements",
-        "subtitle": "Vue arborescente des événements et sous-événements avec intervenants et contenu verbatim"
+        "subtitle": "Vue arborescente des événements et sous-événements avec intervenants et contenu verbatim",
+        "addEvent": "Ajouter un Événement",
+        "addInner": "Ajouter un Sous-Événement",
+        "edit": "Modifier",
+        "moveUp": "Déplacer vers le Haut",
+        "moveDown": "Déplacer vers le Bas",
+        "delete": "Supprimer"
       },
       "selected": {
         "title": "Détails de l'Événement",

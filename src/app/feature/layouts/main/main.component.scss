@@ -1,0 +1,42 @@
+@import 'src/assets/scss/vendor.scss';
+
+// Main layout container
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// Main content area that grows to fill space above footer
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  // Add margin bottom to account for footer height
+  margin-bottom: 0; // Footer will be in normal flow now
+}
+
+.container-fluid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+
+  .card.jh-card {
+    flex: 1;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    background: $body-background;
+    box-shadow: none;
+    padding: 0;
+    min-height: calc(100vh - 64px - 60px); // Account for navbar and footer
+  }
+}
+
+// Ensure proper layout flow
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

@@ -122,9 +122,12 @@ export class MatchingDetailComponent implements OnInit {
     }
 
     console.log('Building tree nodes from result:', result.result);
+    console.log('Result structure:', JSON.stringify(result, null, 2));
     const nodes = result.result.map(item => this.itemToTreeNode(item));
     this.treeNodes.set(nodes);
     console.log('Tree nodes built:', nodes);
+    console.log('Tree nodes count:', nodes.length);
+    console.log('Tree nodes structure:', JSON.stringify(nodes, null, 2));
   }
 
   private itemToTreeNode(item: IMatchingResultItem): NzTreeNodeOptions {
@@ -151,12 +154,26 @@ export class MatchingDetailComponent implements OnInit {
   }
 
   onNodeSelect(event: any): void {
-    // Extract keys from the select event
-    const keys: string[] = Array.isArray(event) ? event : (event.keys || []);
+    console.log('Node select event:', event);
+    // Extract keys from the select event - ng-zorro passes different event structures
+    let keys: string[] = [];
+
+    if (Array.isArray(event)) {
+      keys = event;
+    } else if (event && event.keys) {
+      keys = event.keys;
+    } else if (event && event.selectedKeys) {
+      keys = event.selectedKeys;
+    }
+
+    console.log('Extracted keys:', keys);
     this.selectedKeys.set(keys);
+
     if (keys.length > 0) {
       const nodeKey = keys[0];
+      console.log('Looking for item with key:', nodeKey);
       const selectedItem = this.findItemById(+nodeKey);
+      console.log('Found item:', selectedItem);
       this.selectedItem.set(selectedItem);
     } else {
       this.selectedItem.set(null);
@@ -354,5 +371,117 @@ export class MatchingDetailComponent implements OnInit {
       case 'MATCHING_CONFLICT': return 'red';
       default: return 'default';
     }
+  }
+
+  // User Story 2.5 - Manage event/sub-event structure
+  onAddEvent(): void {
+    const result = this.matchingResult();
+    if (!result) return;
+
+    const newEvent: IMatchingResultItem = {
+      id: Date.now(), // Generate temporary ID
+      title: 'New Event',
+      verbatim: '',
+      lineNumber: (result.result.length + 1),
+      inners: [],
+      speakers: [],
+      status: 'UNMATCHED',
+      level: 0,
+      expand: true
+    };
+
+    result.result.push(newEvent);
+    this.matchingResult.set(result);
+    this.buildTreeNodes();
+    this.hasChanges.set(true);
+  }
+
+  onAddInnerEvent(parentItem: IMatchingResultItem): void {
+    const newInner: IMatchingResultItem = {
+      id: Date.now() + Math.random(), // Generate unique temporary ID
+      title: 'New Sub-Event',
+      verbatim: '',
+      lineNumber: (parentItem.inners?.length || 0) + 1,
+      inners: [],
+      speakers: [],
+      status: 'UNMATCHED',
+      level: (parentItem.level || 0) + 1,
+      expand: true
+    };
+
+    if (!parentItem.inners) {
+      parentItem.inners = [];
+    }
+    parentItem.inners.push(newInner);
+
+    this.buildTreeNodes();
+    this.hasChanges.set(true);
+  }
+
+  onDeleteEvent(item: IMatchingResultItem): void {
+    const result = this.matchingResult();
+    if (!result) return;
+
+    // Find and remove the item from the tree structure
+    this.removeItemFromTree(item.id, result.result);
+    this.matchingResult.set(result);
+    this.buildTreeNodes();
+    this.hasChanges.set(true);
+
+    // Clear selection if deleted item was selected
+    if (this.selectedItem()?.id === item.id) {
+      this.selectedItem.set(null);
+      this.selectedKeys.set([]);
+    }
+  }
+
+  private removeItemFromTree(itemId: number, items: IMatchingResultItem[]): boolean {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === itemId) {
+        items.splice(i, 1);
+        return true;
+      }
+      if (items[i].inners && this.removeItemFromTree(itemId, items[i].inners)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  onMoveEventUp(item: IMatchingResultItem): void {
+    const result = this.matchingResult();
+    if (!result) return;
+
+    // Find the parent array and move item up
+    this.moveItemInTree(item.id, result.result, -1);
+    this.buildTreeNodes();
+    this.hasChanges.set(true);
+  }
+
+  onMoveEventDown(item: IMatchingResultItem): void {
+    const result = this.matchingResult();
+    if (!result) return;
+
+    // Find the parent array and move item down
+    this.moveItemInTree(item.id, result.result, 1);
+    this.buildTreeNodes();
+    this.hasChanges.set(true);
+  }
+
+  private moveItemInTree(itemId: number, items: IMatchingResultItem[], direction: number): boolean {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === itemId) {
+        const newIndex = i + direction;
+        if (newIndex >= 0 && newIndex < items.length) {
+          // Swap items
+          [items[i], items[newIndex]] = [items[newIndex], items[i]];
+        }
+        return true;
+      }
+      if (items[i].inners && this.moveItemInTree(itemId, items[i].inners, direction)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

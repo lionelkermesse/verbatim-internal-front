@@ -1,10 +1,14 @@
-<chd-page-ribbon/>
+<div class="main-layout">
+  <chd-page-ribbon/>
 
-<app-navbar></app-navbar>
+  <app-navbar></app-navbar>
 
-<div class="container-fluid">
-  <div class="card jh-card">
-    <router-outlet/>
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="card jh-card">
+        <router-outlet/>
+      </div>
+    </div>
   </div>
 
   <chd-footer/>
