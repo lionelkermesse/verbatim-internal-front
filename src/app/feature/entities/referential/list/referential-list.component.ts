@@ -21,6 +21,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
 import { ReferentialService } from '../referential.service';
 import { IReferentialFile, IReferentialContent } from '../models/referential.model';
@@ -48,6 +49,7 @@ import { IReferentialFile, IReferentialContent } from '../models/referential.mod
     NzDropDownModule,
     NzMenuModule,
     NzModalModule,
+    NzTabsModule,
   ],
   templateUrl: './referential-list.component.html',
   styleUrls: ['./referential-list.component.scss'],
@@ -66,6 +68,7 @@ export class ReferentialListComponent implements OnInit {
   readonly showRawContent = signal<boolean>(false);
   readonly previewModalVisible = signal<boolean>(false);
   readonly previewFile = signal<IReferentialFile | null>(null);
+  readonly selectedTabIndex = signal<number>(0);
 
   ngOnInit(): void {
     this.loadCurrentReferential();
@@ -179,5 +182,9 @@ export class ReferentialListComponent implements OnInit {
   closePreviewModal(): void {
     this.previewModalVisible.set(false);
     this.previewFile.set(null);
+  }
+
+  onTabChange(index: number): void {
+    this.selectedTabIndex.set(index);
   }
 }

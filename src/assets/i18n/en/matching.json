@@ -69,7 +69,13 @@
       "validate": "Validate",
       "tree": {
         "title": "Events Hierarchy",
-        "subtitle": "Tree view of events and sub-events with speakers and verbatim content"
+        "subtitle": "Tree view of events and sub-events with speakers and verbatim content",
+        "addEvent": "Add Event",
+        "addInner": "Add Sub-Event",
+        "edit": "Edit",
+        "moveUp": "Move Up",
+        "moveDown": "Move Down",
+        "delete": "Delete"
       },
       "selected": {
         "title": "Event Details",

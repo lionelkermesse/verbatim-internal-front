@@ -2,6 +2,10 @@
   "referential": {
     "title": "Referential Management",
     "subtitle": "Manage referential files for verbatim matching configuration",
+    "tabs": {
+      "current": "Current Referential",
+      "allFiles": "All Files"
+    },
     "upload": {
       "button": "Upload New File",
       "title": "Upload Referential File",

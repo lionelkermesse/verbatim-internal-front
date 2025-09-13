@@ -25,239 +25,248 @@
       </nz-row>
     </div>
 
-    <!-- Current Referential Section (User Story 3.1) -->
-    <nz-card [nzBordered]="false" class="current-referential-card" [nzLoading]="isLoadingCurrent()">
-      <div class="card-header">
-        <h2 nz-typography>{{ 'referential.current.title' | translate }}</h2>
-        <p nz-typography nzType="secondary">
-          {{ 'referential.current.subtitle' | translate }}
-        </p>
-      </div>
-
-      <div *ngIf="currentReferential(); else noCurrentReferential" class="current-referential-info">
-        <!-- Current Referential Details -->
-        <nz-descriptions nzBordered [nzColumn]="2" class="referential-details">
-          <nz-descriptions-item [nzTitle]="'referential.current.uploadedBy' | translate">
-            {{ currentReferential()?.createdBy || '-' }}
-          </nz-descriptions-item>
-          <nz-descriptions-item [nzTitle]="'referential.current.uploadDate' | translate">
-            {{ currentReferential()?.createdAt || '-' }}
-          </nz-descriptions-item>
-          <nz-descriptions-item [nzTitle]="'referential.current.format' | translate">
-            <nz-tag [nzColor]="currentReferential()?.contentType?.includes('json') ? 'blue' : 'orange'">
-              {{ currentReferential()?.contentType?.includes('json') ? 'JSON' : 'XML' }}
-            </nz-tag>
-          </nz-descriptions-item>
-          <nz-descriptions-item [nzTitle]="'referential.current.fileSize' | translate">
-            {{ formatFileSize(currentReferential()?.size || 0) }}
-          </nz-descriptions-item>
-          <nz-descriptions-item [nzTitle]="'referential.current.similarityThreshold' | translate">
-            {{ (currentReferential()?.rules?.similarityThreshold || 0) * 100 | number:'1.0-1' }}%
-          </nz-descriptions-item>
-          <nz-descriptions-item [nzTitle]="'referential.current.filename' | translate" [nzSpan]="2">
-            {{ currentReferential()?.originalFilename || '-' }}
-          </nz-descriptions-item>
-        </nz-descriptions>
-
-        <nz-divider></nz-divider>
-
-        <!-- Correspondences Section -->
-        <div class="correspondences-section">
-          <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
-            <nz-col>
-              <h3 nz-typography>{{ 'referential.current.correspondences' | translate }}</h3>
-            </nz-col>
-            <nz-col>
-              <button
-                nz-button
-                nzType="link"
-                nzSize="small"
-                (click)="toggleRawContent()"
-              >
-                <span nz-icon [nzType]="showRawContent() ? 'table' : 'code'" nzTheme="outline"></span>
-                {{ showRawContent() ? ('referential.current.showTable' | translate) : ('referential.current.showRaw' | translate) }}
-              </button>
-            </nz-col>
-          </nz-row>
-
-          <!-- Raw Content Preview -->
-          <div *ngIf="showRawContent()" class="raw-content-section">
-            <nz-card nzSize="small" class="raw-content-card">
-              <pre class="raw-content">{{ currentReferential()?.rawContent }}</pre>
-            </nz-card>
+    <!-- Tabs Section -->
+    <nz-tabset
+      [nzSelectedIndex]="selectedTabIndex()"
+      (nzSelectedIndexChange)="onTabChange($event)"
+      class="referential-tabs"
+    >
+      <!-- Current Referential Tab -->
+      <nz-tab [nzTitle]="'referential.tabs.current' | translate">
+        <nz-card [nzBordered]="false" class="current-referential-card" [nzLoading]="isLoadingCurrent()">
+          <div class="card-header">
+            <h2 nz-typography>{{ 'referential.current.title' | translate }}</h2>
+            <p nz-typography nzType="secondary">
+              {{ 'referential.current.subtitle' | translate }}
+            </p>
           </div>
 
-          <!-- Correspondences Table -->
-          <div *ngIf="!showRawContent() && currentReferential()?.rules?.correspondences && currentReferential()!.rules.correspondences.length > 0; else noCorrespondences">
-            <nz-table
-              [nzData]="currentReferential()?.rules?.correspondences || []"
-              nzSize="middle"
-              [nzPageSize]="10"
-              class="correspondences-table"
-            >
-              <thead>
-                <tr>
-                  <th>{{ 'referential.table.verbatimTerm' | translate }}</th>
-                  <th>{{ 'referential.table.eventTerm' | translate }}</th>
-                  <th>{{ 'referential.table.type' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let correspondence of currentReferential()?.rules?.correspondences">
-                  <td class="verbatim-term">{{ correspondence.verbatim_term }}</td>
-                  <td class="event-term">{{ correspondence.event_term }}</td>
-                  <td class="correspondence-type">
-                    <nz-tag [nzColor]="correspondence.type === 'exact' ? 'green' : 'orange'">
-                      {{ 'referential.type.' + correspondence.type | translate }}
-                    </nz-tag>
-                  </td>
-                </tr>
-              </tbody>
-            </nz-table>
-          </div>
+          <div *ngIf="currentReferential(); else noCurrentReferential" class="current-referential-info">
+            <!-- Current Referential Details -->
+            <nz-descriptions nzBordered [nzColumn]="2" class="referential-details">
+              <nz-descriptions-item [nzTitle]="'referential.current.uploadedBy' | translate">
+                {{ currentReferential()?.createdBy || '-' }}
+              </nz-descriptions-item>
+              <nz-descriptions-item [nzTitle]="'referential.current.uploadDate' | translate">
+                {{ currentReferential()?.createdAt || '-' }}
+              </nz-descriptions-item>
+              <nz-descriptions-item [nzTitle]="'referential.current.format' | translate">
+                <nz-tag [nzColor]="currentReferential()?.contentType?.includes('json') ? 'blue' : 'orange'">
+                  {{ currentReferential()?.contentType?.includes('json') ? 'JSON' : 'XML' }}
+                </nz-tag>
+              </nz-descriptions-item>
+              <nz-descriptions-item [nzTitle]="'referential.current.fileSize' | translate">
+                {{ formatFileSize(currentReferential()?.size || 0) }}
+              </nz-descriptions-item>
+              <nz-descriptions-item [nzTitle]="'referential.current.similarityThreshold' | translate">
+                {{ (currentReferential()?.rules?.similarityThreshold || 0) * 100 | number:'1.0-1' }}%
+              </nz-descriptions-item>
+              <nz-descriptions-item [nzTitle]="'referential.current.filename' | translate" [nzSpan]="2">
+                {{ currentReferential()?.originalFilename || '-' }}
+              </nz-descriptions-item>
+            </nz-descriptions>
 
-          <ng-template #noCorrespondences>
-            <nz-alert
-              nzType="info"
-              [nzMessage]="'referential.current.noCorrespondences' | translate"
-              nzShowIcon
-            ></nz-alert>
-          </ng-template>
-        </div>
+            <nz-divider></nz-divider>
 
-        <!-- Download Current -->
-        <div class="download-actions">
-          <button
-            nz-button
-            nzType="default"
-            (click)="onDownloadFile(currentReferential()!)"
-          >
-            <span nz-icon nzType="download" nzTheme="outline"></span>
-            {{ 'referential.current.download' | translate }}
-          </button>
-        </div>
-      </div>
-
-      <ng-template #noCurrentReferential>
-        <nz-alert
-          nzType="warning"
-          [nzMessage]="'referential.current.none.title' | translate"
-          [nzDescription]="'referential.current.none.description' | translate"
-          nzShowIcon
-        >
-          <ng-template #nzDescription>
-            <p>{{ 'referential.current.none.description' | translate }}</p>
-            <button nz-button nzType="primary" (click)="onUploadNew()">
-              <span nz-icon nzType="upload" nzTheme="outline"></span>
-              {{ 'referential.upload.button' | translate }}
-            </button>
-          </ng-template>
-        </nz-alert>
-      </ng-template>
-    </nz-card>
-
-    <nz-divider></nz-divider>
-
-    <!-- All Referential Files Section -->
-    <nz-card [nzBordered]="false" class="files-card">
-      <div class="card-header">
-        <h2 nz-typography>{{ 'referential.files.title' | translate }}</h2>
-        <p nz-typography nzType="secondary">
-          {{ 'referential.files.subtitle' | translate }}
-        </p>
-      </div>
-
-      <nz-table
-        [nzData]="allFiles()"
-        [nzLoading]="isLoadingFiles()"
-        nzSize="middle"
-        [nzPageSize]="10"
-        class="files-table"
-      >
-        <thead>
-          <tr>
-            <th>{{ 'referential.table.filename' | translate }}</th>
-            <th>{{ 'referential.table.format' | translate }}</th>
-            <th>{{ 'referential.table.size' | translate }}</th>
-            <th>{{ 'referential.table.uploadedBy' | translate }}</th>
-            <th>{{ 'referential.table.uploadDate' | translate }}</th>
-            <th>{{ 'referential.table.status' | translate }}</th>
-            <th nzAlign="center">{{ 'referential.table.actions' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let file of allFiles()" class="file-row">
-            <td class="filename">
-              <div class="file-info">
-                <span nz-icon
-                  [nzType]="file.contentType.includes('json') ? 'file-text' : 'file-zip'"
-                  nzTheme="outline"
-                  class="file-icon"
-                ></span>
-                <span class="file-name">{{ file.originalFilename }}</span>
-              </div>
-            </td>
-
-            <td class="format">
-              <nz-tag [nzColor]="file.contentType.includes('json') ? 'blue' : 'orange'">
-                {{ file.contentType.includes('json') ? 'JSON' : 'XML' }}
-              </nz-tag>
-            </td>
-
-            <td class="size">{{ formatFileSize(file.size) }}</td>
-
-            <td class="uploaded-by">{{ file.createdBy }}</td>
-
-            <td class="upload-date">{{ file.createdAt }}</td>
-
-            <td class="status">
-              <nz-tag [nzColor]="file.isActive ? 'green' : 'default'">
-                {{ file.isActive ? ('referential.status.active' | translate) : ('referential.status.inactive' | translate) }}
-              </nz-tag>
-            </td>
-
-            <td nzAlign="center" class="file-actions">
-              <button
-                nz-button
-                nzType="link"
-                nzSize="small"
-                nz-dropdown
-                [nzDropdownMenu]="fileActionsMenu"
-                nzPlacement="bottomRight"
-                [title]="'referential.actions.menu' | translate"
-              >
-                <span nz-icon nzType="more" nzTheme="outline"></span>
-                {{ 'referential.actions.actions' | translate }}
-                <span nz-icon nzType="down" nzTheme="outline"></span>
-              </button>
-
-              <nz-dropdown-menu #fileActionsMenu="nzDropdownMenu">
-                <ul nz-menu>
-                  <li nz-menu-item (click)="onDownloadFile(file)">
-                    <span nz-icon nzType="download" nzTheme="outline"></span>
-                    {{ 'referential.actions.download' | translate }}
-                  </li>
-                  <li nz-menu-item (click)="onPreviewRawContent(file)">
-                    <span nz-icon nzType="eye" nzTheme="outline"></span>
-                    {{ 'referential.actions.preview' | translate }}
-                  </li>
-                  <li nz-menu-divider></li>
-                  <li
-                    nz-menu-item
-                    nzDanger
-                    (click)="onDeleteFile(file)"
-                    [class.disabled]="file.isActive"
+            <!-- Correspondences Section -->
+            <div class="correspondences-section">
+              <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
+                <nz-col>
+                  <h3 nz-typography>{{ 'referential.current.correspondences' | translate }}</h3>
+                </nz-col>
+                <nz-col>
+                  <button
+                    nz-button
+                    nzType="link"
+                    nzSize="small"
+                    (click)="toggleRawContent()"
                   >
-                    <span nz-icon nzType="delete" nzTheme="outline"></span>
-                    {{ 'referential.actions.delete' | translate }}
-                  </li>
-                </ul>
-              </nz-dropdown-menu>
-            </td>
-          </tr>
-        </tbody>
-      </nz-table>
-    </nz-card>
+                    <span nz-icon [nzType]="showRawContent() ? 'table' : 'code'" nzTheme="outline"></span>
+                    {{ showRawContent() ? ('referential.current.showTable' | translate) : ('referential.current.showRaw' | translate) }}
+                  </button>
+                </nz-col>
+              </nz-row>
+
+              <!-- Raw Content Preview -->
+              <div *ngIf="showRawContent()" class="raw-content-section">
+                <nz-card nzSize="small" class="raw-content-card">
+                  <pre class="raw-content">{{ currentReferential()?.rawContent }}</pre>
+                </nz-card>
+              </div>
+
+              <!-- Correspondences Table -->
+              <div *ngIf="!showRawContent() && currentReferential()?.rules?.correspondences && currentReferential()!.rules.correspondences.length > 0; else noCorrespondences">
+                <nz-table
+                  [nzData]="currentReferential()?.rules?.correspondences || []"
+                  nzSize="middle"
+                  [nzPageSize]="10"
+                  class="correspondences-table"
+                >
+                  <thead>
+                    <tr>
+                      <th>{{ 'referential.table.verbatimTerm' | translate }}</th>
+                      <th>{{ 'referential.table.eventTerm' | translate }}</th>
+                      <th>{{ 'referential.table.type' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let correspondence of currentReferential()?.rules?.correspondences">
+                      <td class="verbatim-term">{{ correspondence.verbatim_term }}</td>
+                      <td class="event-term">{{ correspondence.event_term }}</td>
+                      <td class="correspondence-type">
+                        <nz-tag [nzColor]="correspondence.type === 'exact' ? 'green' : 'orange'">
+                          {{ 'referential.type.' + correspondence.type | translate }}
+                        </nz-tag>
+                      </td>
+                    </tr>
+                  </tbody>
+                </nz-table>
+              </div>
+
+              <ng-template #noCorrespondences>
+                <nz-alert
+                  nzType="info"
+                  [nzMessage]="'referential.current.noCorrespondences' | translate"
+                  nzShowIcon
+                ></nz-alert>
+              </ng-template>
+            </div>
+
+            <!-- Download Current -->
+            <div class="download-actions">
+              <button
+                nz-button
+                nzType="default"
+                (click)="onDownloadFile(currentReferential()!)"
+              >
+                <span nz-icon nzType="download" nzTheme="outline"></span>
+                {{ 'referential.current.download' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <ng-template #noCurrentReferential>
+            <nz-alert
+              nzType="warning"
+              [nzMessage]="'referential.current.none.title' | translate"
+              [nzDescription]="'referential.current.none.description' | translate"
+              nzShowIcon
+            >
+              <ng-template #nzDescription>
+                <p>{{ 'referential.current.none.description' | translate }}</p>
+                <button nz-button nzType="primary" (click)="onUploadNew()">
+                  <span nz-icon nzType="upload" nzTheme="outline"></span>
+                  {{ 'referential.upload.button' | translate }}
+                </button>
+              </ng-template>
+            </nz-alert>
+          </ng-template>
+        </nz-card>
+      </nz-tab>
+
+      <!-- All Files Tab -->
+      <nz-tab [nzTitle]="'referential.tabs.allFiles' | translate">
+        <nz-card [nzBordered]="false" class="files-card">
+          <div class="card-header">
+            <h2 nz-typography>{{ 'referential.files.title' | translate }}</h2>
+            <p nz-typography nzType="secondary">
+              {{ 'referential.files.subtitle' | translate }}
+            </p>
+          </div>
+
+          <nz-table
+            [nzData]="allFiles()"
+            [nzLoading]="isLoadingFiles()"
+            nzSize="middle"
+            [nzPageSize]="10"
+            class="files-table"
+          >
+            <thead>
+              <tr>
+                <th>{{ 'referential.table.filename' | translate }}</th>
+                <th>{{ 'referential.table.format' | translate }}</th>
+                <th>{{ 'referential.table.size' | translate }}</th>
+                <th>{{ 'referential.table.uploadedBy' | translate }}</th>
+                <th>{{ 'referential.table.uploadDate' | translate }}</th>
+                <th>{{ 'referential.table.status' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let file of allFiles()" class="file-row">
+                <td class="filename">
+                  <div class="file-info">
+                    <span nz-icon
+                      [nzType]="file.contentType.includes('json') ? 'file-text' : 'file-zip'"
+                      nzTheme="outline"
+                      class="file-icon"
+                    ></span>
+                    <span class="file-name">{{ file.originalFilename }}</span>
+                  </div>
+                </td>
+
+                <td class="format">
+                  <nz-tag [nzColor]="file.contentType.includes('json') ? 'blue' : 'orange'">
+                    {{ file.contentType.includes('json') ? 'JSON' : 'XML' }}
+                  </nz-tag>
+                </td>
+
+                <td class="size">{{ formatFileSize(file.size) }}</td>
+
+                <td class="uploaded-by">{{ file.createdBy }}</td>
+
+                <td class="upload-date">{{ file.createdAt }}</td>
+
+                <td class="status">
+                  <nz-tag [nzColor]="file.isActive ? 'green' : 'default'">
+                    {{ file.isActive ? ('referential.status.active' | translate) : ('referential.status.inactive' | translate) }}
+                  </nz-tag>
+                </td>
+
+                <td nzAlign="center" class="file-actions">
+                  <button
+                    nz-button
+                    nzType="link"
+                    nzSize="small"
+                    nz-dropdown
+                    [nzDropdownMenu]="fileActionsMenu"
+                    nzPlacement="bottomRight"
+                    [title]="'referential.actions.menu' | translate"
+                  >
+                    <span nz-icon nzType="more" nzTheme="outline"></span>
+                    {{ 'referential.actions.actions' | translate }}
+                    <span nz-icon nzType="down" nzTheme="outline"></span>
+                  </button>
+
+                  <nz-dropdown-menu #fileActionsMenu="nzDropdownMenu">
+                    <ul nz-menu>
+                      <li nz-menu-item (click)="onDownloadFile(file)">
+                        <span nz-icon nzType="download" nzTheme="outline"></span>
+                        {{ 'referential.actions.download' | translate }}
+                      </li>
+                      <li nz-menu-item (click)="onPreviewRawContent(file)">
+                        <span nz-icon nzType="eye" nzTheme="outline"></span>
+                        {{ 'referential.actions.preview' | translate }}
+                      </li>
+                      <li nz-menu-divider></li>
+                      <li
+                        nz-menu-item
+                        nzDanger
+                        (click)="onDeleteFile(file)"
+                        [class.disabled]="file.isActive"
+                      >
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                        {{ 'referential.actions.delete' | translate }}
+                      </li>
+                    </ul>
+                  </nz-dropdown-menu>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-card>
+      </nz-tab>
+    </nz-tabset>
 
     <!-- Raw Content Preview Modal -->
     <nz-modal
