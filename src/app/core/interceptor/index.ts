@@ -9,6 +9,9 @@ import {
 import {
   MatchingApiResponseInterceptor
 } from '@chd-digital-verbatim-front/core/interceptor/matching-api-response.interceptor';
+import {
+  ReferentialApiResponseInterceptor
+} from '@chd-digital-verbatim-front/core/interceptor/referential-api-response.interceptor';
 
 export const httpInterceptorProviders = [
   {
@@ -34,6 +37,11 @@ export const httpInterceptorProviders = [
   {
     provide: HTTP_INTERCEPTORS,
     useClass: MatchingApiResponseInterceptor,
+    multi: true
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: ReferentialApiResponseInterceptor,
     multi: true
   }
 ];

@@ -1,0 +1,99 @@
+{
+  "referential": {
+    "title": "Referential Management",
+    "subtitle": "Manage referential files for verbatim matching configuration",
+    "upload": {
+      "button": "Upload New File",
+      "title": "Upload Referential File",
+      "subtitle": "Upload a new JSON or XML referential file",
+      "dropzone": {
+        "title": "Click or drag file to upload",
+        "description": "Support for JSON and XML files only.",
+        "requirements": "Only JSON/XML files up to 10MB are supported."
+      },
+      "success": "File uploaded successfully",
+      "error": {
+        "invalidFormat": "Only JSON and XML files are accepted",
+        "fileSize": "File size must be less than 10MB",
+        "upload": "Error occurred during upload"
+      },
+      "file": {
+        "title": "Referential Configuration File",
+        "description": "Select the JSON or XML file containing the referential configuration."
+      },
+      "fileType": "file",
+      "successDescription": "The referential file has been uploaded and is now active.",
+      "instructions": {
+        "title": "Upload Instructions",
+        "format": {
+          "title": "File Format",
+          "desc": "JSON or XML files containing correspondence rules are accepted."
+        },
+        "size": {
+          "title": "File Size",
+          "desc": "Maximum file size is 10MB for optimal processing."
+        },
+        "structure": {
+          "title": "File Structure",
+          "desc": "Files should contain correspondence rules with verbatim terms, event terms, and match types."
+        }
+      },
+      "cancel": "Cancel",
+      "upload": "Upload File"
+    },
+    "current": {
+      "title": "Current Referential",
+      "subtitle": "Details of the currently active referential file",
+      "uploadedBy": "Uploaded By",
+      "uploadDate": "Upload Date",
+      "format": "Format",
+      "fileSize": "File Size",
+      "filename": "Filename",
+      "similarityThreshold": "Similarity Threshold",
+      "correspondences": "Correspondences",
+      "noCorrespondences": "No correspondences found in current referential",
+      "download": "Download Current",
+      "showTable": "Show Table",
+      "showRaw": "Show Raw Content",
+      "none": {
+        "title": "No Active Referential",
+        "description": "No referential file is currently active. Upload a new file to begin."
+      }
+    },
+    "preview": {
+      "title": "Raw Content Preview"
+    },
+    "files": {
+      "title": "All Referential Files",
+      "subtitle": "History of all uploaded referential files"
+    },
+    "table": {
+      "filename": "Filename",
+      "format": "Format",
+      "size": "Size",
+      "uploadedBy": "Uploaded By",
+      "uploadDate": "Upload Date",
+      "status": "Status",
+      "actions": "Actions",
+      "verbatimTerm": "Verbatim Term",
+      "eventTerm": "Event Term",
+      "type": "Type",
+      "similarity": "Similarity"
+    },
+    "type": {
+      "exact": "Exact",
+      "approximate": "Approximate"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "menu": "File actions menu",
+      "actions": "Actions",
+      "download": "Download",
+      "preview": "Preview Raw Content",
+      "delete": "Delete"
+    }
+  }
+}

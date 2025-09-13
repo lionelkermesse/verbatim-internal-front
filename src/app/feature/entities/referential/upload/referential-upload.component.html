@@ -1,0 +1,166 @@
+<nz-layout class="referential-upload-layout">
+  <nz-content class="referential-upload-content">
+    <!-- Breadcrumb Navigation -->
+    <nz-breadcrumb class="breadcrumb">
+      <nz-breadcrumb-item>
+        <a [routerLink]="['/referential']">
+          {{ 'referential.title' | translate }}
+        </a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <span>{{ 'referential.upload.title' | translate }}</span>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <!-- Page Header -->
+    <div class="upload-header">
+      <h1 nz-typography class="page-title">
+        {{ 'referential.upload.title' | translate }}
+      </h1>
+      <p nz-typography nzType="secondary" class="page-subtitle">
+        {{ 'referential.upload.subtitle' | translate }}
+      </p>
+    </div>
+
+    <!-- Upload Section -->
+    <nz-row [nzGutter]="[24, 24]">
+      <nz-col [nzSpan]="16">
+        <nz-card [nzBordered]="false" class="upload-card">
+          <!-- Error Alert -->
+          <nz-alert
+            *ngIf="uploadError()"
+            nzType="error"
+            nzCloseable
+            [nzMessage]="(uploadError() || '') | translate"
+            class="upload-error"
+            (nzOnClose)="uploadError.set(null)"
+          ></nz-alert>
+
+          <!-- Success Result -->
+          <div *ngIf="uploadStatus() === 'success'" class="upload-success">
+            <nz-result
+              nzStatus="success"
+              [nzTitle]="'referential.upload.success' | translate"
+              [nzSubTitle]="'referential.upload.successDescription' | translate"
+            ></nz-result>
+          </div>
+
+          <!-- Upload Form -->
+          <div *ngIf="uploadStatus() !== 'success'" class="upload-section">
+            <h3 nz-typography>{{ 'referential.upload.file.title' | translate }}</h3>
+            <p nz-typography nzType="secondary">
+              {{ 'referential.upload.file.description' | translate }}
+            </p>
+
+            <!-- File Upload Dragger -->
+            <div class="file-upload-container">
+              <nz-upload
+                class="upload-dragger"
+                nzType="drag"
+                [nzBeforeUpload]="beforeUpload"
+                [nzShowUploadList]="false"
+                [nzAccept]="'.json,.xml'"
+                [nzMultiple]="false"
+              >
+                <div class="upload-dragger-content">
+                  <div class="upload-icon">
+                    <span nz-icon nzType="inbox" nzTheme="twotone"></span>
+                  </div>
+                  <h4 nz-typography class="upload-title">
+                    {{ 'referential.upload.dropzone.title' | translate }}
+                  </h4>
+                  <p nz-typography nzType="secondary" class="upload-description">
+                    {{ 'referential.upload.dropzone.description' | translate }}
+                  </p>
+                  <p nz-typography nzType="secondary" class="upload-requirements">
+                    {{ 'referential.upload.dropzone.requirements' | translate }}
+                  </p>
+                </div>
+              </nz-upload>
+            </div>
+
+            <!-- Selected File Info -->
+            <div *ngIf="uploadedFile()" class="file-info">
+              <nz-card nzSize="small">
+                <div class="file-details">
+                  <div class="file-icon">
+                    <span nz-icon
+                      [nzType]="uploadedFile()?.name?.endsWith('.json') ? 'file-text' : 'file-zip'"
+                      nzTheme="twotone"
+                      [nzTwotoneColor]="'#1890ff'"
+                    ></span>
+                  </div>
+                  <div class="file-content">
+                    <div class="file-name">{{ uploadedFile()?.name }}</div>
+                    <div class="file-size">{{ (uploadedFile()?.size || 0) / 1024 / 1024 | number:'1.1-1' }} MB</div>
+                    <div class="file-type">
+                      {{ uploadedFile()?.name?.endsWith('.json') ? 'JSON' : 'XML' }} {{ 'referential.upload.fileType' | translate }}
+                    </div>
+                  </div>
+                  <div class="file-actions">
+                    <button nz-button nzType="text" nzSize="small" (click)="onRemoveFile()">
+                      <span nz-icon nzType="close" nzTheme="outline"></span>
+                    </button>
+                  </div>
+                </div>
+              </nz-card>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <!-- Instructions Section -->
+      <nz-col [nzSpan]="8">
+        <nz-card [nzBordered]="false" class="instructions-card">
+          <h3 nz-typography>{{ 'referential.upload.instructions.title' | translate }}</h3>
+
+          <div class="instruction-item">
+            <span nz-icon nzType="file-text" nzTheme="outline" class="instruction-icon"></span>
+            <div class="instruction-content">
+              <div class="instruction-title">{{ 'referential.upload.instructions.format.title' | translate }}</div>
+              <div class="instruction-desc">{{ 'referential.upload.instructions.format.desc' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="instruction-item">
+            <span nz-icon nzType="cloud-upload" nzTheme="outline" class="instruction-icon"></span>
+            <div class="instruction-content">
+              <div class="instruction-title">{{ 'referential.upload.instructions.size.title' | translate }}</div>
+              <div class="instruction-desc">{{ 'referential.upload.instructions.size.desc' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="instruction-item">
+            <span nz-icon nzType="api" nzTheme="outline" class="instruction-icon"></span>
+            <div class="instruction-content">
+              <div class="instruction-title">{{ 'referential.upload.instructions.structure.title' | translate }}</div>
+              <div class="instruction-desc">{{ 'referential.upload.instructions.structure.desc' | translate }}</div>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <nz-space nzSize="middle">
+        <button *nzSpaceItem nz-button nzSize="large" (click)="onCancel()">
+          {{ 'referential.upload.cancel' | translate }}
+        </button>
+
+        <button
+          *nzSpaceItem
+          nz-button
+          nzType="primary"
+          nzSize="large"
+          [nzLoading]="isUploading()"
+          [disabled]="!canUpload"
+          (click)="onUpload()"
+        >
+          <span nz-icon nzType="upload" nzTheme="outline"></span>
+          {{ 'referential.upload.upload' | translate }}
+        </button>
+      </nz-space>
+    </div>
+  </nz-content>
+</nz-layout>

@@ -1,0 +1,337 @@
+@import 'src/assets/scss/vendor.scss';
+
+.referential-layout {
+  background: $body-background;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.referential-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.referential-header {
+  margin-bottom: 24px;
+
+  .page-title {
+    color: $primary-color;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .page-subtitle {
+    color: $text-color-secondary;
+    font-size: $font-size-lg;
+    margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .ant-btn-primary {
+      height: 44px;
+      font-size: $font-size-lg;
+      font-weight: 500;
+      box-shadow: $box-shadow-base;
+
+      .anticon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.current-referential-card,
+.files-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+  margin-bottom: 24px;
+
+  .card-header {
+    margin-bottom: 20px;
+
+    h2 {
+      color: $heading-color;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      color: $text-color-secondary;
+      font-size: $font-size-base;
+      margin: 0;
+    }
+  }
+}
+
+.referential-details {
+  margin-bottom: 20px;
+
+  .ant-descriptions-item-label {
+    background: $table-header-bg;
+    font-weight: 600;
+    color: $heading-color;
+  }
+
+  .ant-descriptions-item-content {
+    color: $text-color;
+  }
+}
+
+.correspondences-section {
+  h3 {
+    color: $heading-color;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+  }
+
+  .correspondences-table {
+    .ant-table-thead > tr > th {
+      background: $table-header-bg;
+      color: $table-header-color;
+      font-weight: 600;
+      border-bottom: 2px solid $border-color-split;
+    }
+
+    .ant-table-tbody > tr > td {
+      padding: 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid $border-color-split;
+    }
+
+    .verbatim-term,
+    .event-term {
+      font-family: 'Courier New', monospace;
+      font-size: $font-size-sm;
+      color: $text-color;
+    }
+
+    .correspondence-type {
+      .ant-tag {
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+    }
+
+    .similarity {
+      text-align: center;
+      font-weight: 500;
+      color: $info-color;
+    }
+  }
+}
+
+.download-actions {
+  margin-top: 20px;
+  text-align: right;
+
+  .ant-btn {
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.files-table {
+  .ant-table-thead > tr > th {
+    background: $table-header-bg;
+    color: $table-header-color;
+    font-weight: 600;
+    border-bottom: 2px solid $border-color-split;
+  }
+
+  .ant-table-tbody > tr {
+    &:hover {
+      background: $table-row-hover-bg;
+    }
+
+    > td {
+      padding: 16px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid $border-color-split;
+    }
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .file-icon {
+      color: $info-color;
+      font-size: 16px;
+    }
+
+    .file-name {
+      font-weight: 500;
+      color: $text-color;
+    }
+  }
+
+  .format {
+    .ant-tag {
+      font-weight: 500;
+    }
+  }
+
+  .size {
+    font-family: 'Courier New', monospace;
+    color: $text-color-secondary;
+  }
+
+  .uploaded-by {
+    font-weight: 500;
+    color: $text-color;
+  }
+
+  .upload-date {
+    font-family: 'Courier New', monospace;
+    color: $text-color-secondary;
+    font-size: $font-size-sm;
+  }
+
+  .status {
+    .ant-tag {
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+  }
+
+  .file-actions {
+    .ant-btn-link {
+      color: $primary-color;
+      padding: 4px 8px;
+      height: auto;
+      line-height: 1.5;
+      font-size: $font-size-sm;
+
+      &:hover {
+        color: darken($primary-color, 10%);
+        background: fade-out($primary-color, 0.95);
+      }
+
+      .anticon {
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+// Menu item styles
+.ant-dropdown-menu {
+  .ant-menu-item {
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .anticon {
+      margin-right: 8px;
+    }
+
+    &[nzDanger="true"] {
+      color: $error-color;
+
+      &:hover {
+        background: fade-out($error-color, 0.95);
+      }
+    }
+  }
+}
+
+// Alert styles
+.ant-alert {
+  border-radius: $border-radius-base;
+
+  &.ant-alert-warning {
+    border-color: $warning-color;
+  }
+
+  &.ant-alert-info {
+    border-color: $info-color;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .referential-content {
+    padding: 16px;
+  }
+
+  .referential-header {
+    .page-title {
+      font-size: 1.5rem;
+    }
+
+    nz-row {
+      flex-direction: column;
+      gap: 16px;
+
+      nz-col {
+        width: 100% !important;
+      }
+
+      .header-actions {
+        justify-content: stretch;
+
+        .ant-btn-primary {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .correspondences-table,
+  .files-table {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 8px 6px;
+      font-size: $font-size-sm;
+    }
+
+    .file-actions {
+      .ant-btn-link {
+        span:not(.anticon) {
+          display: none; // Hide text, keep only icons on mobile
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .referential-content {
+    padding: 12px;
+  }
+
+  .current-referential-card,
+  .files-card {
+    border-radius: 0;
+    margin-left: -12px;
+    margin-right: -12px;
+    border-left: none;
+    border-right: none;
+  }
+
+  .files-table,
+  .correspondences-table {
+    .ant-table {
+      border-radius: 0;
+    }
+  }
+}
