@@ -5,11 +5,11 @@
 
   <!-- Navigation Links -->
   <nav class="navbar-nav">
-    <a [routerLink]="['/sessions']" routerLinkActive="active" class="nav-link">
+    <a [routerLink]="['/sessions']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-link">
       <span nz-icon nzType="table" nzTheme="outline"></span>
       {{ 'nav.sessions' | translate }}
     </a>
-    <a [routerLink]="['/referential']" routerLinkActive="active" class="nav-link">
+    <a [routerLink]="['/referential']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-link">
       <span nz-icon nzType="setting" nzTheme="outline"></span>
       {{ 'nav.referential' | translate }}
     </a>

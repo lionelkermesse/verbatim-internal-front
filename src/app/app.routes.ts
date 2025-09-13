@@ -7,11 +7,6 @@ export const routes: Routes = [
     redirectTo: '/sessions',
     pathMatch: 'full'
   },
-  {
-    path: '',
-    loadComponent: () => import('./feature/layouts/navbar/navbar.component').then(m => m.NavbarComponent),
-    outlet: 'navbar',
-  },
   // Authentication routes
   {
     path: 'login',
