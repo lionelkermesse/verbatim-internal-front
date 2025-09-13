@@ -1,0 +1,342 @@
+<nz-layout class="matching-detail-layout">
+  <nz-content class="matching-detail-content">
+    <!-- Breadcrumb Navigation -->
+    <nz-breadcrumb class="breadcrumb">
+      <nz-breadcrumb-item>
+        <a [routerLink]="['/sessions']">
+          {{ 'session.breadcrumb.session' | translate }}
+        </a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <a (click)="onBack()">
+          {{ matchingVersion()?.sessionIdentifier || '-' }}
+        </a>
+      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>
+        <span>{{ 'matching.detail.breadcrumb.detail' | translate }} {{ matchingVersion()?.version || '-' }}</span>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>
+
+    <!-- Header -->
+    <div class="matching-header">
+      <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
+        <nz-col [nzSpan]="16">
+          <div *ngIf="isLoading(); else headerContent" class="loading-header">
+            <nz-spin nzSize="small"></nz-spin>
+            <span class="loading-text">{{ 'matching.detail.loading' | translate }}</span>
+          </div>
+          <ng-template #headerContent>
+            <h1 nz-typography class="page-title">
+              {{ 'matching.detail.title' | translate }} {{ matchingVersion()?.version || '-' }}
+            </h1>
+            <p nz-typography nzType="secondary" class="page-subtitle">
+              {{ 'matching.detail.subtitle' | translate }}
+            </p>
+            <nz-tag [nzColor]="getStatusColor(matchingVersion()?.status || '')">
+              {{ 'matching.status.' + (matchingVersion()?.status?.toLowerCase() || 'uploaded') | translate }}
+            </nz-tag>
+          </ng-template>
+        </nz-col>
+        <nz-col [nzSpan]="8" class="header-actions">
+          <nz-space nzSize="middle">
+            <button
+              *nzSpaceItem
+              nz-button
+              nzSize="large"
+              [nzLoading]="isSaving()"
+              [disabled]="!hasChanges()"
+              (click)="onSaveMatching()"
+            >
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              {{ 'matching.detail.save' | translate }}
+            </button>
+
+            <button
+              *nzSpaceItem
+              nz-button
+              nzType="primary"
+              nzSize="large"
+              [disabled]="matchingVersion()?.status === 'VALIDATED'"
+              (click)="onValidateMatching()"
+            >
+              <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+              {{ 'matching.detail.validate' | translate }}
+            </button>
+          </nz-space>
+        </nz-col>
+      </nz-row>
+    </div>
+
+    <!-- Main Content -->
+    <nz-row [nzGutter]="[24, 24]">
+      <!-- Tree View -->
+      <nz-col [nzSpan]="14">
+        <nz-card [nzBordered]="false" class="tree-card" [nzLoading]="isLoading()">
+          <div class="tree-header">
+            <h3 nz-typography>{{ 'matching.detail.tree.title' | translate }}</h3>
+            <p nz-typography nzType="secondary">
+              {{ 'matching.detail.tree.subtitle' | translate }}
+            </p>
+          </div>
+
+          <div class="tree-container">
+            <nz-tree
+              [nzData]="treeNodes()"
+              [nzExpandedKeys]="expandedKeys()"
+              [nzSelectedKeys]="selectedKeys()"
+              (nzExpandChange)="onNodeExpand($event)"
+              (nzSelectChange)="onNodeSelect($event)"
+              nzShowLine
+              nzBlockNode
+              class="matching-tree"
+            >
+              <ng-template #nzTreeTemplate let-node let-origin="origin">
+                <div class="tree-node-content">
+                  <div class="node-header">
+                    <div class="node-title">
+                      <strong>{{ origin.title }}</strong>
+                      <nz-tag
+                        *ngIf="origin.status"
+                        [nzColor]="getMatchingStatusColor(origin.status)"
+                        nzSize="small"
+                      >
+                        {{ origin.status }}
+                      </nz-tag>
+                    </div>
+                    <div class="node-actions" *ngIf="isEditMode()">
+                      <button
+                        nz-button
+                        nzType="text"
+                        nzSize="small"
+                        (click)="onEditItem(origin); $event.stopPropagation()"
+                      >
+                        <span nz-icon nzType="edit" nzTheme="outline"></span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="node-speakers" *ngIf="origin.speakers && origin.speakers.length > 0">
+                    <nz-tag
+                      *ngFor="let speaker of origin.speakers"
+                      nzColor="blue"
+                      nzSize="small"
+                    >
+                      {{ getSpeakerDisplayName(speaker) }}
+                    </nz-tag>
+                  </div>
+
+                  <div class="node-verbatim" *ngIf="origin.verbatim">
+                    <p class="verbatim-text">{{ origin.verbatim }}</p>
+                  </div>
+                </div>
+              </ng-template>
+            </nz-tree>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <!-- Selected Item Details -->
+      <nz-col [nzSpan]="10">
+        <nz-card [nzBordered]="false" class="details-card">
+          <div *ngIf="selectedItem(); else noSelection" class="item-details">
+            <div class="details-header">
+              <h3 nz-typography>{{ 'matching.detail.selected.title' | translate }}</h3>
+              <button
+                nz-button
+                nzType="primary"
+                nzSize="small"
+                *ngIf="isEditMode()"
+                (click)="onEditItem(selectedItem()!)"
+              >
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+                {{ 'matching.detail.selected.edit' | translate }}
+              </button>
+            </div>
+
+            <nz-divider nzSize="small"></nz-divider>
+
+            <div class="detail-item">
+              <span class="detail-label">{{ 'matching.detail.selected.title' | translate }}:</span>
+              <div class="detail-value">{{ selectedItem()?.title }}</div>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">{{ 'matching.detail.selected.lineNumber' | translate }}:</span>
+              <div class="detail-value">{{ selectedItem()?.lineNumber }}</div>
+            </div>
+
+            <div class="detail-item" *ngIf="selectedItem()?.speakers && selectedItem()?.speakers!.length > 0">
+              <span class="detail-label">{{ 'matching.detail.selected.speakers' | translate }}:</span>
+              <div class="detail-value">
+                <nz-tag
+                  *ngFor="let speaker of selectedItem()?.speakers"
+                  nzColor="blue"
+                  nzSize="small"
+                >
+                  {{ getSpeakerDisplayName(speaker) }}
+                </nz-tag>
+              </div>
+            </div>
+
+            <div class="detail-item" *ngIf="selectedItem()?.verbatim">
+              <span class="detail-label">{{ 'matching.detail.selected.verbatim' | translate }}:</span>
+              <div class="detail-value verbatim-content">{{ selectedItem()?.verbatim }}</div>
+            </div>
+
+            <div class="detail-item" *ngIf="selectedItem()?.status">
+              <span class="detail-label">{{ 'matching.detail.selected.status' | translate }}:</span>
+              <div class="detail-value">
+                <nz-tag [nzColor]="getMatchingStatusColor(selectedItem()?.status || '')">
+                  {{ selectedItem()?.status }}
+                </nz-tag>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noSelection>
+            <div class="no-selection">
+              <div class="no-selection-icon">
+                <span nz-icon nzType="select" nzTheme="outline"></span>
+              </div>
+              <p nz-typography nzType="secondary">
+                {{ 'matching.detail.selected.none' | translate }}
+              </p>
+            </div>
+          </ng-template>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+
+    <!-- Edit Drawer -->
+    <nz-drawer
+      [nzVisible]="editDrawerVisible()"
+      [nzWidth]="600"
+      [nzTitle]="'matching.detail.edit.title' | translate"
+      [nzPlacement]="'right'"
+      (nzOnClose)="onCancel()"
+    >
+      <ng-container *nzDrawerContent>
+        <form nz-form [formGroup]="editForm" (ngSubmit)="onSaveChanges()">
+          <!-- Title Field -->
+          <nz-form-item>
+            <nz-form-label nzFor="title" nzRequired>
+              {{ 'matching.detail.edit.title' | translate }}
+            </nz-form-label>
+            <nz-form-control nzErrorTip="{{ 'matching.detail.edit.titleRequired' | translate }}">
+              <input
+                nz-input
+                formControlName="title"
+                id="title"
+                [placeholder]="'matching.detail.edit.titlePlaceholder' | translate"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Speakers Section -->
+          <nz-form-item>
+            <nz-form-label>{{ 'matching.detail.edit.speakers' | translate }}</nz-form-label>
+            <nz-form-control>
+              <div formArrayName="speakers">
+                <div
+                  *ngFor="let speaker of speakersFormArray.controls; let i = index"
+                  [formGroupName]="i"
+                  class="speaker-form"
+                >
+                  <nz-card nzSize="small" class="speaker-card">
+                    <div class="speaker-fields">
+                      <nz-row [nzGutter]="[8, 8]">
+                        <nz-col [nzSpan]="12">
+                          <nz-form-item>
+                            <nz-form-label>{{ 'matching.detail.edit.firstName' | translate }}</nz-form-label>
+                            <input nz-input formControlName="firstName" />
+                          </nz-form-item>
+                        </nz-col>
+                        <nz-col [nzSpan]="12">
+                          <nz-form-item>
+                            <nz-form-label>{{ 'matching.detail.edit.lastName' | translate }}</nz-form-label>
+                            <input nz-input formControlName="lastName" />
+                          </nz-form-item>
+                        </nz-col>
+                        <nz-col [nzSpan]="12">
+                          <nz-form-item>
+                            <nz-form-label>{{ 'matching.detail.edit.function' | translate }}</nz-form-label>
+                            <input nz-input formControlName="function" />
+                          </nz-form-item>
+                        </nz-col>
+                        <nz-col [nzSpan]="12">
+                          <nz-form-item>
+                            <nz-form-label>{{ 'matching.detail.edit.party' | translate }}</nz-form-label>
+                            <input nz-input formControlName="party" />
+                          </nz-form-item>
+                        </nz-col>
+                      </nz-row>
+                    </div>
+                    <div class="speaker-actions">
+                      <button
+                        nz-button
+                        nzType="text"
+                        nzDanger
+                        nzSize="small"
+                        (click)="removeSpeaker(i)"
+                      >
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                        {{ 'matching.detail.edit.removeSpeaker' | translate }}
+                      </button>
+                    </div>
+                  </nz-card>
+                </div>
+
+                <button
+                  nz-button
+                  nzType="dashed"
+                  nzBlock
+                  (click)="addSpeakerToForm()"
+                  class="add-speaker-btn"
+                >
+                  <span nz-icon nzType="plus" nzTheme="outline"></span>
+                  {{ 'matching.detail.edit.addSpeaker' | translate }}
+                </button>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Verbatim Field -->
+          <nz-form-item>
+            <nz-form-label nzFor="verbatim">
+              {{ 'matching.detail.edit.verbatim' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <textarea
+                nz-input
+                formControlName="verbatim"
+                id="verbatim"
+                [nzAutosize]="{ minRows: 4, maxRows: 12 }"
+                [placeholder]="'matching.detail.edit.verbatimPlaceholder' | translate"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Drawer Actions -->
+          <div class="drawer-actions">
+            <nz-space nzSize="middle">
+              <button *nzSpaceItem nz-button nzSize="large" (click)="onCancel()">
+                {{ 'matching.detail.edit.cancel' | translate }}
+              </button>
+              <button
+                *nzSpaceItem
+                nz-button
+                nzType="primary"
+                nzSize="large"
+                [disabled]="editForm.invalid"
+                (click)="onSaveChanges()"
+              >
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+                {{ 'matching.detail.edit.save' | translate }}
+              </button>
+            </nz-space>
+          </div>
+        </form>
+      </ng-container>
+    </nz-drawer>
+  </nz-content>
+</nz-layout>

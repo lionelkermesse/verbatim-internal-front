@@ -1,11 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 // ng-zorro imports
-import { NzUploadModule, NzUploadFile, NzUploadChangeParam } from 'ng-zorro-antd/upload';
+import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
@@ -20,8 +20,12 @@ import { NzResultModule } from 'ng-zorro-antd/result';
 import { NzStepsModule } from 'ng-zorro-antd/steps';
 
 import { SessionService } from '@chd-digital-verbatim-front/feature/entities/session/session.service';
-import { MatchingVersionService } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.service';
-import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session-chd.model';
+import {
+  MatchingVersionService
+} from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.service';
+import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session.model';
+import { NzSpinComponent } from 'ng-zorro-antd/spin';
+import { NzDividerComponent } from 'ng-zorro-antd/divider';
 
 @Component({
   selector: 'chd-matching-upload',
@@ -44,6 +48,9 @@ import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/s
     NzProgressModule,
     NzResultModule,
     NzStepsModule,
+    NzSpinComponent,
+    NzDividerComponent,
+    RouterLink,
   ],
   templateUrl: './matching-upload.component.html',
   styleUrls: ['./matching-upload.component.scss'],
@@ -75,9 +82,9 @@ export class MatchingUploadComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const sessionId = this.route.snapshot.paramMap.get('sessionId');
-    if (sessionId) {
-      this.loadSession(sessionId);
+    const sessionIdentifier = this.route.snapshot.paramMap.get('sessionIdentifier');
+    if (sessionIdentifier) {
+      this.loadSession(sessionIdentifier);
     }
   }
 
@@ -110,39 +117,10 @@ export class MatchingUploadComponent implements OnInit {
     }
 
     this.uploadedFile.set(file);
-    this.validateFile(file);
+    this.validationStatus.set('ready');
+    this.currentStep.set(1);
     return false; // Prevent automatic upload
   };
-
-  private validateFile(file: NzUploadFile): void {
-    this.isValidating.set(true);
-    this.validationStatus.set('none');
-    this.validationError.set(null);
-    this.currentStep.set(1);
-
-    const formData = new FormData();
-    formData.append('file', file as any);
-
-    this.matchingVersionService.validateVerbatimFile(formData).subscribe({
-      next: (response) => {
-        this.isValidating.set(false);
-
-        if (response.status === 'READY') {
-          this.validationStatus.set('ready');
-          this.currentStep.set(2);
-        } else {
-          this.validationStatus.set('error');
-          this.validationError.set(response.message || 'matching.upload.error.validation');
-        }
-      },
-      error: (error) => {
-        console.error('Validation error:', error);
-        this.isValidating.set(false);
-        this.validationStatus.set('error');
-        this.validationError.set('matching.upload.error.server');
-      }
-    });
-  }
 
   onStartMatching(): void {
     if (!this.uploadedFile() || this.validationStatus() !== 'ready') {
@@ -153,16 +131,15 @@ export class MatchingUploadComponent implements OnInit {
     this.currentStep.set(3);
     this.processingProgress.set(0);
 
-    const sessionId = this.session()?.id;
+    const sessionIdentifier = this.session()?.sessionIdentifier;
     const file = this.uploadedFile();
 
-    if (!sessionId || !file) {
+    if (!sessionIdentifier || !file) {
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', file as any);
-    formData.append('sessionId', sessionId.toString());
+    formData.append('verbatim', file as any);
 
     // Simulate progress updates
     const progressInterval = setInterval(() => {
@@ -172,7 +149,7 @@ export class MatchingUploadComponent implements OnInit {
       }
     }, 500);
 
-    this.matchingVersionService.createMatching(formData).subscribe({
+    this.matchingVersionService.startMatching(sessionIdentifier, formData).subscribe({
       next: (response) => {
         clearInterval(progressInterval);
         this.processingProgress.set(100);
@@ -180,9 +157,12 @@ export class MatchingUploadComponent implements OnInit {
         this.currentStep.set(4);
 
         // Navigate to matching result page
-        setTimeout(() => {
-          this.router.navigate(['/matching', response.id]);
-        }, 1000);
+        const matchingVersion = response.body;
+        if (matchingVersion) {
+          setTimeout(() => {
+            this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version]);
+          }, 1000);
+        }
       },
       error: (error) => {
         clearInterval(progressInterval);
@@ -203,13 +183,19 @@ export class MatchingUploadComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/session', this.session()?.id]);
+    const sessionIdentifier = this.session()?.sessionIdentifier;
+    if (sessionIdentifier) {
+      this.router.navigate(['/sessions', sessionIdentifier]);
+    } else {
+      this.router.navigate(['/sessions']);
+    }
   }
 
   onRetry(): void {
-    if (this.uploadedFile()) {
-      this.validateFile(this.uploadedFile()!);
-    }
+    // Reset validation status to allow retry
+    this.validationStatus.set('ready');
+    this.validationError.set(null);
+    this.currentStep.set(1);
   }
 
   get canStartMatching(): boolean {
