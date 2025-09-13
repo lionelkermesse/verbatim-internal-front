@@ -1,0 +1,92 @@
+{
+  "referential": {
+    "title": "Gestion du Référentiel",
+    "subtitle": "Gérer les fichiers de référentiel pour la configuration de correspondance verbatim",
+    "upload": {
+      "button": "Télécharger un Nouveau Fichier",
+      "title": "Télécharger un Fichier de Référentiel",
+      "subtitle": "Téléchargez un nouveau fichier JSON ou XML de référentiel",
+      "dropzone": {
+        "title": "Cliquez ou faites glisser le fichier ici",
+        "description": "Support pour les fichiers JSON et XML uniquement.",
+        "requirements": "Seuls les fichiers JSON/XML jusqu'à 10 Mo sont supportés."
+      },
+      "success": "Fichier téléchargé avec succès",
+      "error": {
+        "invalidFormat": "Seuls les fichiers JSON et XML sont acceptés",
+        "fileSize": "La taille du fichier doit être inférieure à 10 Mo",
+        "upload": "Erreur lors du téléchargement"
+      },
+      "file": {
+        "title": "Fichier de Configuration Référentiel",
+        "description": "Sélectionnez le fichier JSON ou XML contenant la configuration du référentiel."
+      },
+      "fileType": "fichier",
+      "successDescription": "Le fichier de référentiel a été téléchargé et est maintenant actif.",
+      "instructions": {
+        "title": "Instructions de Téléchargement",
+        "format": {
+          "title": "Format de Fichier",
+          "desc": "Les fichiers JSON ou XML contenant les règles de correspondance sont acceptés."
+        },
+        "size": {
+          "title": "Taille de Fichier",
+          "desc": "La taille maximale du fichier est de 10 Mo pour un traitement optimal."
+        },
+        "structure": {
+          "title": "Structure du Fichier",
+          "desc": "Les fichiers doivent contenir des règles de correspondance avec des termes verbatim, des termes d'événement et des types de correspondance."
+        }
+      },
+      "cancel": "Annuler",
+      "upload": "Télécharger le Fichier"
+    },
+    "current": {
+      "title": "Référentiel Actuel",
+      "subtitle": "Détails du fichier de référentiel actuellement actif",
+      "uploadedBy": "Téléchargé par",
+      "uploadDate": "Date de Téléchargement",
+      "format": "Format",
+      "fileSize": "Taille du Fichier",
+      "filename": "Nom du Fichier",
+      "correspondences": "Correspondances",
+      "noCorrespondences": "Aucune correspondance trouvée dans le référentiel actuel",
+      "download": "Télécharger l'Actuel",
+      "none": {
+        "title": "Aucun Référentiel Actif",
+        "description": "Aucun fichier de référentiel n'est actuellement actif. Téléchargez un nouveau fichier pour commencer."
+      }
+    },
+    "files": {
+      "title": "Tous les Fichiers de Référentiel",
+      "subtitle": "Historique de tous les fichiers de référentiel téléchargés"
+    },
+    "table": {
+      "filename": "Nom du Fichier",
+      "format": "Format",
+      "size": "Taille",
+      "uploadedBy": "Téléchargé par",
+      "uploadDate": "Date de Téléchargement",
+      "status": "Statut",
+      "actions": "Actions",
+      "verbatimTerm": "Terme Verbatim",
+      "eventTerm": "Terme d'Événement",
+      "type": "Type",
+      "similarity": "Similarité"
+    },
+    "type": {
+      "exact": "Exact",
+      "approximate": "Approximatif"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "actions": {
+      "menu": "Menu des actions de fichier",
+      "actions": "Actions",
+      "download": "Télécharger",
+      "delete": "Supprimer"
+    }
+  }
+}

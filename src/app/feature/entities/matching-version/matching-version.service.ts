@@ -72,23 +72,23 @@ export class MatchingVersionService {
   }
 
   startMatching(sessionIdentifier: string, formData: FormData): Observable<EntityResponseType> {
-    return this.http.post<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/start`, formData, {observe: 'response'})
-      .pipe(map(res => this.convertResultDtoResponse(res)));
+    return this.http.post<RestMatchingVersion>(`${this.resourceUrl}/${sessionIdentifier}/start`, formData, {observe: 'response'})
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   getMatchingVersion(sessionIdentifier: string, version: number): Observable<EntityResponseType> {
-    return this.http.get<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/${version}`, {observe: 'response'})
-      .pipe(map(res => this.convertResultDtoResponse(res)));
+    return this.http.get<RestMatchingVersion>(`${this.resourceUrl}/${sessionIdentifier}/${version}`, {observe: 'response'})
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   updateMatching(sessionIdentifier: string, updateRequest: any): Observable<EntityResponseType> {
-    return this.http.put<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/update`, updateRequest, {observe: 'response'})
-      .pipe(map(res => this.convertResultDtoResponse(res)));
+    return this.http.put<RestMatchingVersion>(`${this.resourceUrl}/${sessionIdentifier}/update`, updateRequest, {observe: 'response'})
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   validateMatching(sessionIdentifier: string, version: number): Observable<EntityResponseType> {
-    return this.http.post<{success: boolean, data: RestMatchingVersion, message: string}>(`${this.resourceUrl}/${sessionIdentifier}/${version}/validate`, {}, {observe: 'response'})
-      .pipe(map(res => this.convertResultDtoResponse(res)));
+    return this.http.post<RestMatchingVersion>(`${this.resourceUrl}/${sessionIdentifier}/${version}/validate`, {}, {observe: 'response'})
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   deleteMatchingVersion(sessionIdentifier: string, version: number): Observable<HttpResponse<{}>> {
@@ -98,12 +98,6 @@ export class MatchingVersionService {
   exportMatching(sessionIdentifier: string, version: number, format: string): Observable<Blob> {
     return this.http.get(`${this.resourceUrl}/${sessionIdentifier}/${version}/export?format=${format}`, {
       responseType: 'blob'
-    });
-  }
-
-  private convertResultDtoResponse(res: HttpResponse<{success: boolean, data: RestMatchingVersion, message: string}>): HttpResponse<IMatchingVersion> {
-    return res.clone({
-      body: res.body?.data ? this.convertDateFromServer(res.body.data) : null,
     });
   }
 

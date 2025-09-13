@@ -1,0 +1,311 @@
+@import 'src/assets/scss/vendor.scss';
+
+.referential-upload-layout {
+  background: $body-background;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.referential-upload-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.breadcrumb {
+  margin-bottom: 16px;
+
+  .ant-breadcrumb-link {
+    color: $primary-color;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      color: darken($primary-color, 10%);
+    }
+  }
+
+  .ant-breadcrumb-separator {
+    color: $text-color-secondary;
+  }
+}
+
+.upload-header {
+  margin-bottom: 24px;
+  text-align: center;
+
+  .page-title {
+    color: $primary-color;
+    font-size: 2.25rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .page-subtitle {
+    color: $text-color-secondary;
+    font-size: $font-size-lg;
+    margin: 0;
+  }
+}
+
+.upload-card,
+.instructions-card {
+  border: 1px solid $border-color-split;
+  border-radius: $card-radius;
+  box-shadow: $box-shadow-base;
+  background: $component-background;
+}
+
+.upload-card {
+  .upload-error {
+    margin-bottom: 20px;
+  }
+
+  .upload-success {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .upload-section {
+    h3 {
+      color: $heading-color;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      color: $text-color-secondary;
+      margin-bottom: 20px;
+    }
+  }
+
+  .file-upload-container {
+    margin-bottom: 20px;
+
+    .upload-dragger {
+      .ant-upload-drag {
+        border: 2px dashed $border-color-base;
+        border-radius: $border-radius-base;
+        background: $body-background;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: $primary-color;
+          background: fade-out($primary-color, 0.98);
+        }
+
+        .upload-dragger-content {
+          padding: 40px 20px;
+          text-align: center;
+
+          .upload-icon {
+            font-size: 48px;
+            color: $primary-color;
+            margin-bottom: 16px;
+          }
+
+          .upload-title {
+            color: $heading-color;
+            font-size: $font-size-lg;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+          }
+
+          .upload-description {
+            color: $text-color-secondary;
+            font-size: $font-size-base;
+            margin: 0 0 8px 0;
+          }
+
+          .upload-requirements {
+            color: $text-color-secondary;
+            font-size: $font-size-sm;
+            margin: 0;
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }
+
+  .file-info {
+    .ant-card-small {
+      border: 1px solid $border-color-split;
+      border-radius: $border-radius-base;
+    }
+
+    .file-details {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .file-icon {
+        font-size: 24px;
+        color: $info-color;
+      }
+
+      .file-content {
+        flex: 1;
+
+        .file-name {
+          font-weight: 500;
+          color: $text-color;
+          margin-bottom: 2px;
+        }
+
+        .file-size {
+          color: $text-color-secondary;
+          font-size: $font-size-sm;
+          margin-bottom: 2px;
+        }
+
+        .file-type {
+          color: $info-color;
+          font-size: $font-size-sm;
+          font-weight: 500;
+        }
+      }
+
+      .file-actions {
+        .ant-btn-text {
+          color: $text-color-secondary;
+
+          &:hover {
+            color: $error-color;
+            background: fade-out($error-color, 0.95);
+          }
+        }
+      }
+    }
+  }
+}
+
+.instructions-card {
+  h3 {
+    color: $heading-color;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+  }
+
+  .instruction-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .instruction-icon {
+      font-size: 20px;
+      color: $info-color;
+      margin-top: 2px;
+    }
+
+    .instruction-content {
+      flex: 1;
+
+      .instruction-title {
+        font-weight: 500;
+        color: $text-color;
+        margin-bottom: 4px;
+      }
+
+      .instruction-desc {
+        color: $text-color-secondary;
+        font-size: $font-size-sm;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+.action-buttons {
+  margin-top: 32px;
+  text-align: center;
+  padding: 20px 0;
+  border-top: 1px solid $border-color-split;
+
+  .ant-btn {
+    height: 44px;
+    font-size: $font-size-lg;
+    font-weight: 500;
+    min-width: 120px;
+
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+
+  .ant-btn-primary {
+    background: $primary-color;
+    border-color: $primary-color;
+    box-shadow: $box-shadow-base;
+
+    &:hover {
+      background: darken($primary-color, 8%);
+      border-color: darken($primary-color, 8%);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .referential-upload-content {
+    padding: 16px;
+  }
+
+  .upload-header {
+    .page-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  nz-row {
+    flex-direction: column;
+
+    nz-col {
+      width: 100% !important;
+    }
+  }
+
+  .instructions-card {
+    margin-top: 20px;
+  }
+
+  .action-buttons {
+    .ant-btn {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .referential-upload-content {
+    padding: 12px;
+  }
+
+  .upload-card,
+  .instructions-card {
+    border-radius: 0;
+    margin-left: -12px;
+    margin-right: -12px;
+    border-left: none;
+    border-right: none;
+  }
+
+  .file-upload-container {
+    .upload-dragger {
+      .ant-upload-drag {
+        border-radius: 0;
+      }
+    }
+  }
+}

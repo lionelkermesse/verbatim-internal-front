@@ -116,17 +116,22 @@ export class MatchingDetailComponent implements OnInit {
 
   private buildTreeNodes(): void {
     const result = this.matchingResult();
-    if (!result) return;
+    if (!result || !result.result) {
+      console.log('No matching result data available');
+      return;
+    }
 
+    console.log('Building tree nodes from result:', result.result);
     const nodes = result.result.map(item => this.itemToTreeNode(item));
     this.treeNodes.set(nodes);
+    console.log('Tree nodes built:', nodes);
   }
 
   private itemToTreeNode(item: IMatchingResultItem): NzTreeNodeOptions {
     return {
       title: item.title,
       key: item.id.toString(),
-      expanded: item.expand || false,
+      expanded: true, // Start expanded to show data
       children: item.inners?.map(inner => this.itemToTreeNode(inner)) || [],
       isLeaf: !item.inners || item.inners.length === 0,
       origin: item // Store original item data

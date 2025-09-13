@@ -18,6 +18,39 @@
   }
 }
 
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $text-color;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: $border-radius-base;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: $primary-color;
+      background: fade-out($primary-color, 0.95);
+    }
+
+    &.active {
+      color: $primary-color;
+      background: fade-out($primary-color, 0.9);
+      font-weight: 600;
+    }
+
+    .anticon {
+      font-size: 16px;
+    }
+  }
+}
+
 .navbar-actions {
   .language-selector {
     width: 80px;

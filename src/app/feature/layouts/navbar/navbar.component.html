@@ -2,6 +2,19 @@
   <div class="navbar-logo">
     <img ngSrc="/chd-logo.svg" alt="Chambre des Députés Logo" class="logo" width="203" height="32">
   </div>
+
+  <!-- Navigation Links -->
+  <nav class="navbar-nav">
+    <a [routerLink]="['/sessions']" routerLinkActive="active" class="nav-link">
+      <span nz-icon nzType="table" nzTheme="outline"></span>
+      {{ 'nav.sessions' | translate }}
+    </a>
+    <a [routerLink]="['/referential']" routerLinkActive="active" class="nav-link">
+      <span nz-icon nzType="setting" nzTheme="outline"></span>
+      {{ 'nav.referential' | translate }}
+    </a>
+  </nav>
+
   <div class="navbar-actions">
     <nz-select [(ngModel)]="selectedLanguage" (ngModelChange)="onLanguageChange($event)" class="language-selector" nzBorderless>
       <nz-option nzValue="fr" nzLabel="FR"></nz-option>
