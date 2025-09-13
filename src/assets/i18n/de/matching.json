@@ -1,0 +1,108 @@
+{
+  "matching": {
+    "upload": {
+      "title": "Verbatim-Datei hochladen",
+      "subtitle": "Eine DOCX-Datei hochladen, um ein neues Verbatim-Matching zu erstellen",
+      "breadcrumb": {
+        "upload": "Datei hochladen"
+      },
+      "steps": {
+        "upload": "Hochladen",
+        "uploadDesc": "DOCX-Datei auswählen",
+        "validate": "Validierung",
+        "validateDesc": "Dateiformat prüfen",
+        "process": "Verarbeitung",
+        "processDesc": "Matching generieren",
+        "complete": "Abgeschlossen",
+        "completeDesc": "Ergebnisse anzeigen"
+      },
+      "file": {
+        "title": "Verbatim-Dokument",
+        "description": "Wählen Sie die DOCX-Datei mit dem Verbatim-Transkript für diese Sitzung aus."
+      },
+      "dropzone": {
+        "title": "Klicken oder Datei hierher ziehen",
+        "description": "Unterstützung nur für einzelne Datei-Uploads.",
+        "requirements": "Nur DOCX-Dateien bis 50MB werden unterstützt."
+      },
+      "validating": "Datei wird validiert...",
+      "ready": "Datei ist bereit zur Verarbeitung",
+      "error": {
+        "general": "Validierung fehlgeschlagen",
+        "invalidFormat": "Nur DOCX-Dateien werden akzeptiert",
+        "fileSize": "Dateigröße muss kleiner als 50MB sein",
+        "validation": "Dateivalidierung fehlgeschlagen",
+        "server": "Serverfehler bei der Validierung",
+        "processing": "Fehler bei der Verarbeitung"
+      },
+      "retry": "Erneut versuchen",
+      "instructions": {
+        "title": "Upload-Anweisungen",
+        "format": {
+          "title": "Dateiformat",
+          "desc": "Nur Microsoft Word (.docx) Dateien werden akzeptiert."
+        },
+        "size": {
+          "title": "Dateigröße",
+          "desc": "Maximale Dateigröße ist 50MB für optimale Verarbeitung."
+        },
+        "validation": {
+          "title": "Validierung",
+          "desc": "Dateien werden automatisch auf Format und Inhaltsstruktur validiert."
+        }
+      },
+      "processing": {
+        "title": "Verbatim-Matching wird verarbeitet",
+        "description": "Das System analysiert das Dokument und generiert Matching-Ergebnisse. Dies kann einige Minuten dauern."
+      },
+      "cancel": "Abbrechen",
+      "start": "Matching starten"
+    },
+    "detail": {
+      "title": "Matching-Version",
+      "subtitle": "Verbatim-Matching-Ergebnisse anzeigen und bearbeiten",
+      "loading": "Lade Matching-Daten...",
+      "breadcrumb": {
+        "detail": "Version"
+      },
+      "save": "Änderungen speichern",
+      "validate": "Validieren",
+      "tree": {
+        "title": "Ereignishierarchie",
+        "subtitle": "Baumansicht von Ereignissen und Unter-Ereignissen mit Rednern und Verbatim-Inhalt"
+      },
+      "selected": {
+        "title": "Ereignisdetails",
+        "edit": "Bearbeiten",
+        "none": "Wählen Sie ein Ereignis aus dem Baum aus, um Details anzuzeigen",
+        "lineNumber": "Zeilennummer",
+        "speakers": "Redner",
+        "verbatim": "Verbatim-Inhalt",
+        "status": "Matching-Status"
+      },
+      "edit": {
+        "title": "Ereignis bearbeiten",
+        "titleRequired": "Titel ist erforderlich",
+        "titlePlaceholder": "Ereignistitel eingeben",
+        "speakers": "Redner",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "function": "Funktion",
+        "party": "Partei",
+        "addSpeaker": "Redner hinzufügen",
+        "removeSpeaker": "Entfernen",
+        "verbatim": "Verbatim-Inhalt",
+        "verbatimPlaceholder": "Verbatim-Text eingeben...",
+        "cancel": "Abbrechen",
+        "save": "Änderungen speichern"
+      }
+    },
+    "status": {
+      "uploaded": "Hochgeladen",
+      "processing": "In Bearbeitung",
+      "awaiting_correction": "Wartet auf Korrektur",
+      "validated": "Validiert",
+      "error": "Fehler"
+    }
+  }
+}

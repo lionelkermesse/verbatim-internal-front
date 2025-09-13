@@ -1,0 +1,38 @@
+{
+  "title": "Verbatim-Matching-System",
+  "subtitle": "Abgeordnetenkammer - Luxemburg",
+  "button": {
+    "text": "Mit SSO anmelden"
+  },
+  "initializing": "Authentifizierung wird initialisiert...",
+  "error": {
+    "description": "Authentifizierung nicht möglich. Kontaktieren Sie Ihren Systemadministrator, wenn das Problem weiterhin besteht.",
+    "retry": "Erneut versuchen"
+  },
+  "info": {
+    "message": "Sicherer Zugang erforderlich",
+    "description": "Diese Anwendung erfordert eine Authentifizierung über das Single Sign-On (SSO) System Ihrer Organisation."
+  },
+  "footer": {
+    "copyright": "© 2025 Abgeordnetenkammer - Alle Rechte vorbehalten",
+    "help": "Hilfe",
+    "contact": "Support kontaktieren"
+  },
+  "login": {
+    "title": "Anmelden",
+    "form": {
+      "password": "Passwort",
+      "password.placeholder": "Ihr Passwort",
+      "rememberme": "Angemeldet bleiben",
+      "button": "Anmelden"
+    },
+    "messages": {
+      "error": {
+        "authentication": "<strong>Anmeldung fehlgeschlagen!</strong> Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut."
+      }
+    },
+    "password": {
+      "forgot": "Haben Sie Ihr Passwort vergessen?"
+    }
+  }
+}

@@ -53,10 +53,47 @@
 
 .navbar-actions {
   .language-selector {
-    width: 80px;
+    width: 140px;
 
-    .ant-select-selection-item {
-      font-weight: 500;
+    .selected-language {
+      font-weight: 600;
+      color: $primary-color;
+      font-size: $font-size-base;
+      text-align: center;
+      display: block;
+    }
+
+    :deep(.ant-select-dropdown) {
+      min-width: 140px !important;
+      width: 140px !important;
+      max-width: 140px !important;
+
+      .ant-select-item {
+        padding: 8px 12px !important;
+        font-weight: 500;
+        color: $text-color;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border-bottom: 1px solid $border-color-split !important;
+
+        &:last-child {
+          border-bottom: none !important;
+        }
+
+        &:hover {
+          background: fade-out($primary-color, 0.95) !important;
+          color: $primary-color !important;
+        }
+
+        &.ant-select-item-option-selected {
+          background: fade-out($primary-color, 0.9) !important;
+          color: $primary-color !important;
+          font-weight: 700 !important;
+        }
+      }
     }
   }
 }

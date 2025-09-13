@@ -5,6 +5,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 @Component({
   selector: 'app-navbar',
@@ -15,6 +16,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     FormsModule,
     NzSelectModule,
     NzIconModule,
+    NzDividerModule,
     TranslateModule,
     NgOptimizedImage
   ],
@@ -35,5 +37,15 @@ export class NavbarComponent implements OnInit {
   onLanguageChange(language: string): void {
     this.selectedLanguage = language;
     this.translate.use(language);
+  }
+
+  getLanguageCode(langCode: string): string {
+    const codeMap: { [key: string]: string } = {
+      'fr': 'FR',
+      'en': 'EN',
+      'de': 'DE',
+      'lu': 'LU'
+    };
+    return codeMap[langCode] || langCode.toUpperCase();
   }
 }

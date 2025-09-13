@@ -1,0 +1,38 @@
+{
+  "title": "Verbatim-Matching-System",
+  "subtitle": "Chambre des Députés - Lëtzebuerg",
+  "button": {
+    "text": "Mat SSO umellen"
+  },
+  "initializing": "Authentifikatioun gëtt initialiséiert...",
+  "error": {
+    "description": "Authentifikatioun net méiglech. Kontaktéiert Ären Systemadministrateur wann de Problem weider besteet.",
+    "retry": "Nach emol probéieren"
+  },
+  "info": {
+    "message": "Sécher Zougang erfuerderlech",
+    "description": "Dës Applikatioun erfuerdert eng Authentifikatioun iwwer d'Single Sign-On (SSO) System vun Ärer Organisatioun."
+  },
+  "footer": {
+    "copyright": "© 2025 Chambre des Députés - All Rechter reservéiert",
+    "help": "Hëllef",
+    "contact": "Support kontaktéieren"
+  },
+  "login": {
+    "title": "Umellen",
+    "form": {
+      "password": "Passwuert",
+      "password.placeholder": "Äert Passwuert",
+      "rememberme": "Ugemellt bleiwen",
+      "button": "Umellen"
+    },
+    "messages": {
+      "error": {
+        "authentication": "<strong>Umeldung feelgeschloen!</strong> Iwwerpréift w.e.g. Är Umeldungsdaten a probéiert nach emol."
+      }
+    },
+    "password": {
+      "forgot": "Hutt Dir Äert Passwuert vergiess?"
+    }
+  }
+}
