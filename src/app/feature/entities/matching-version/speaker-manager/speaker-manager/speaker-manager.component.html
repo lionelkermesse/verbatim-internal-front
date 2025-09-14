@@ -1,0 +1,15 @@
+<nz-list [nzDataSource]="speakers" nzBordered nzSize="small">
+  <nz-list-item *ngFor="let speaker of speakers; let i = index">
+    <div class="speaker-item">
+      <span>{{ speaker.fullName }}</span>
+      <nz-space>
+        <a (click)="onEditSpeaker(speaker, i)"><i nz-icon nzType="edit"></i></a>
+        <a (click)="onRemoveSpeaker(i)"><i nz-icon nzType="delete"></i></a>
+      </nz-space>
+    </div>
+  </nz-list-item>
+</nz-list>
+<button nz-button nzType="dashed" class="add-speaker-btn" (click)="onAddSpeaker()">
+  <i nz-icon nzType="plus"></i>
+  {{ 'matching.editor.detail.addSpeaker' | translate }}
+</button>

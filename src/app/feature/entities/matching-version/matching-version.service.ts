@@ -11,6 +11,8 @@ import {
   IMatchingVersion, NewMatchingVersion
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.model';
 
+export type { IMatchingVersion };
+
 export type PartialUpdateMatchingVersion = Partial<IMatchingVersion> & Pick<IMatchingVersion, 'id'>;
 
 type RestOf<T extends IMatchingVersion | NewMatchingVersion> = Omit<T, 'createdAt' | 'validatedAt'> & {

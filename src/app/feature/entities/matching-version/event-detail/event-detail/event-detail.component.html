@@ -1,0 +1,31 @@
+<div *ngIf="event" class="event-detail-container">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSave()">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzFor="title">{{ 'matching.editor.detail.title' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <input nz-input formControlName="title" id="title" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzFor="verbatim">{{ 'matching.editor.detail.verbatim' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <textarea nz-input formControlName="verbatim" id="verbatim" [nzAutosize]="{ minRows: 3, maxRows: 10 }"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">{{ 'matching.editor.detail.speakers' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <app-speaker-manager formControlName="speakers"></app-speaker-manager>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control [nzOffset]="6" [nzSpan]="14">
+        <button nz-button nzType="primary" [disabled]="form.invalid">{{ 'matching.editor.detail.save' | translate }}</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>
+
+<div *ngIf="!event" class="no-event-selected">
+  <p>{{ 'matching.editor.detail.noEventSelected' | translate }}</p>
+</div>

@@ -1,0 +1,16 @@
+<nz-tree
+  [nzData]="treeNodes()"
+  [nzTreeTemplate]="nodeTemplate"
+  (nzClick)="onNodeClick($event)"
+></nz-tree>
+
+<ng-template #nodeTemplate let-node>
+  <div class="tree-node">
+    <span class="node-title">{{ node.title }}</span>
+    <nz-space class="node-actions">
+      <a (click)="onEdit(node.origin)"><i nz-icon nzType="edit"></i></a>
+      <a (click)="onDelete(node.origin)"><i nz-icon nzType="delete"></i></a>
+      <a (click)="onAdd(node.origin)"><i nz-icon nzType="plus"></i></a>
+    </nz-space>
+  </div>
+</ng-template>

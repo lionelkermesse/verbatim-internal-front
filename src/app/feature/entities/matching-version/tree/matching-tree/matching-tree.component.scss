@@ -1,0 +1,18 @@
+.tree-node {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.node-title {
+  flex-grow: 1;
+}
+
+.node-actions {
+  visibility: hidden;
+}
+
+.tree-node:hover .node-actions {
+  visibility: visible;
+}

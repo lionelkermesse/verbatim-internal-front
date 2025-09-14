@@ -1,0 +1,30 @@
+<div class="page-container">
+  <nz-breadcrumb>
+    <nz-breadcrumb-item><a routerLink="/sessions">{{ 'nav.sessions' | translate }}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item><a [routerLink]="['/matching', matchingVersion()?.sessionIdentifier]">{{ matchingVersion()?.sessionIdentifier }}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item>{{ 'Version ' + matchingVersion()?.version }}</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div class="page-header">
+    <h1 nz-typography>{{ 'matching.editor.title' | translate }}</h1>
+    <nz-space>
+      <button nz-button (click)="onSaveChanges()" [nzLoading]="isSaving()">{{ 'matching.editor.save' | translate }}</button>
+      <button nz-button nzType="primary" (click)="onValidate()" [nzLoading]="isSaving()">{{ 'matching.editor.validate' | translate }}</button>
+    </nz-space>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div *ngIf="isLoading()" class="spinner-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+
+  <nz-layout *ngIf="!isLoading() && matchingVersion()" class="editor-layout">
+    <nz-sider nzWidth="400px" nzTheme="light">
+      <app-matching-tree [matchingResult]="matchingVersion()?.matchingResult ?? null" (eventSelected)="onEventSelected($event)"></app-matching-tree>
+    </nz-sider>
+    <nz-content>
+      <app-event-detail [event]="selectedEvent()" (eventUpdated)="onEventUpdated($event)"></app-event-detail>
+    </nz-content>
+  </nz-layout>
+</div>

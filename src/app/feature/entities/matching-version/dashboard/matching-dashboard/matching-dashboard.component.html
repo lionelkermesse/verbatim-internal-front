@@ -1,0 +1,59 @@
+<div class="page-container">
+  <nz-breadcrumb>
+    <nz-breadcrumb-item><a routerLink="/sessions">{{ 'nav.sessions' | translate }}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item>{{ session()?.sessionIdentifier }}</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div class="page-header">
+    <h1 nz-typography>{{ 'matching.dashboard.title' | translate }}</h1>
+    <button nz-button nzType="primary" (click)="onNewMatching()">
+      <i nz-icon nzType="plus"></i>
+      {{ 'matching.dashboard.newMatch' | translate }}
+    </button>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div *ngIf="isLoading()" class="spinner-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+
+  <div *ngIf="!isLoading() && matchingVersions().length === 0" class="empty-container">
+    <nz-empty [nzNotFoundContent]="'matching.dashboard.noVersions' | translate"></nz-empty>
+  </div>
+
+  <nz-list *ngIf="!isLoading() && matchingVersions().length > 0" [nzDataSource]="matchingVersions()" nzGrid>
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" *ngFor="let item of matchingVersions()">
+        <nz-card [nzTitle]="'Version ' + item.version" [nzExtra]="extraTpl">
+          <div class="card-content">
+            <div class="chart-container">
+              <ngx-charts-pie-chart
+                [results]="getChartData(item)"
+                [legend]="false"
+                [doughnut]="true"
+                [arcWidth]="0.25">
+              </ngx-charts-pie-chart>
+            </div>
+            <div class="info-container">
+              <p><span class="label">{{ 'matching.dashboard.status' | translate }}:</span> <nz-tag *ngIf="item.status" [nzColor]="getStatusColor(item.status)">{{ item.status | translate }}</nz-tag></p>
+              <p><span class="label">{{ 'matching.dashboard.createdAt' | translate }}:</span> {{ item.createdAt | formatMediumDatetime }}</p>
+            </div>
+          </div>
+        </nz-card>
+        <ng-template #extraTpl>
+          <a nz-dropdown [nzDropdownMenu]="menu">
+            <i nz-icon nzType="ellipsis"></i>
+          </a>
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <ul nz-menu>
+              <li nz-menu-item (click)="onEditMatching(item)">{{ 'matching.dashboard.actions.edit' | translate }}</li>
+              <li nz-menu-item (click)="onDeleteMatching(item)">{{ 'matching.dashboard.actions.delete' | translate }}</li>
+              <li nz-menu-item (click)="onExportMatching(item)">{{ 'matching.dashboard.actions.export' | translate }}</li>
+            </ul>
+          </nz-dropdown-menu>
+        </ng-template>
+      </div>
+    </div>
+  </nz-list>
+</div>

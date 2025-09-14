@@ -12,15 +12,14 @@ const matchingVersionRoute: Routes = [
         title: 'matching.upload.title'
       },
       {
-        path: ':sessionIdentifier/:version',
-        loadComponent: () => import('./detail/matching-detail.component').then(m => m.MatchingDetailComponent),
-        title: 'matching.detail.title'
+        path: ':sessionIdentifier',
+        loadComponent: () => import('./dashboard/matching-dashboard/matching-dashboard.component').then(m => m.MatchingDashboardComponent),
+        title: 'matching.dashboard.title'
       },
       {
         path: ':sessionIdentifier/:version/edit',
-        loadComponent: () => import('./detail/matching-detail.component').then(m => m.MatchingDetailComponent),
-        data: { editMode: true },
-        title: 'matching.edit.title'
+        loadComponent: () => import('./editor/matching-editor/matching-editor.component').then(m => m.MatchingEditorComponent),
+        title: 'matching.editor.title'
       },
     ],
   },

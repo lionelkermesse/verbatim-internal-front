@@ -22,15 +22,20 @@
 - **1.4 Open Matching**: Clicks navigate to matching detail tree view ✓
 - **Implementation**: `src/app/feature/entities/session/` with list/detail structure
 
-### **Feature 2: Verbatim Matching (User Stories 2.1-2.7)**
+### **Feature 2: Verbatim Matching (User Stories 2.1-2.7) - NEW IMPLEMENTATION**
 - **2.1 Upload DOCX**: File validation, DOCX-only, backend validation ✓
 - **2.2 Start Processing**: Progress display, success/failure handling ✓
-- **2.3 Tree View**: Hierarchical events with title, speakers, verbatim, sub-events ✓
-- **2.4 Edit Events**: Title (required), speakers (M./Mme, names, function, party), verbatim ✓
-- **2.5 Event Structure**: Add/rearrange/delete capabilities (editing implemented) ✓
+- **2.3 Tree View**: New interactive tree view with color-coded status and inline actions ✓
+- **2.4 Edit Events**: Inline editing of event titles and verbatim, with a dedicated speaker management component ✓
+- **2.5 Event Structure**: Add/rearrange/delete capabilities through the new interactive tree view ✓
 - **2.6 Save Matching**: Stores all modifications via UpdateMatchRequest API ✓
 - **2.7 Validate Matching**: Changes status to VALIDATED, workflow complete ✓
-- **Implementation**: `src/app/feature/entities/matching-version/` with upload/detail
+- **Implementation**: `src/app/feature/entities/matching-version/` with a new component structure:
+  - `dashboard/matching-dashboard.component.ts`: Card-based dashboard for matching versions.
+  - `editor/matching-editor.component.ts`: Two-column layout for the matching editor.
+  - `tree/matching-tree.component.ts`: Interactive tree view.
+  - `event-detail/event-detail.component.ts`: Detail panel for editing events.
+  - `speaker-manager/speaker-manager.component.ts`: Component for managing speakers.
 
 ### **Feature 3: Referential Management (User Stories 3.1-3.3)**
 - **3.1 View Current**: Displays details, correspondences, upload info ✓
@@ -107,8 +112,16 @@ src/app/feature/entities/
 │   ├── matching-version.service.ts
 │   ├── upload/
 │   │   └── matching-upload.component.*
-│   ├── detail/
-│   │   └── matching-detail.component.*
+│   ├── dashboard/
+│   │   └── matching-dashboard.component.*
+│   ├── editor/
+│   │   └── matching-editor.component.*
+│   ├── tree/
+│   │   └── matching-tree.component.*
+│   ├── event-detail/
+│   │   └── event-detail.component.*
+│   ├── speaker-manager/
+│   │   └── speaker-manager.component.*
 │   └── models/
 │       └── matching-tree.model.ts
 └── referential/

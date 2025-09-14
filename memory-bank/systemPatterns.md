@@ -90,7 +90,18 @@ interface AppState {
 - Reusable across features
 - Located in shared module
 
-### Tree Component Pattern (Critical for Verbatim Matching)
+### New Matching Version Component Architecture
+
+**Objective**: To refactor the monolithic `matching-detail.component.ts` into smaller, more focused components for better maintainability and separation of concerns.
+
+**New Component Structure**:
+- `MatchingDashboardComponent`: A container component that displays a list of matching versions for a session in a card-based layout. It provides a high-level overview of each version's status and allows for quick actions like viewing, editing, or deleting a version.
+- `MatchingEditorComponent`: The main container for the matching editor. It will have a two-column layout, with the tree on the left and the detail panel on the right.
+- `MatchingTreeComponent`: A presentational component that displays the hierarchical tree of verbatim events. It will be responsible for rendering the tree, handling user interactions like node selection and expansion, and emitting events for actions like editing or deleting an event.
+- `EventDetailComponent`: A presentational component that displays the details of a selected event and allows for editing. It will contain the form for editing the event's title, verbatim, and speakers.
+- `SpeakerManagerComponent`: A presentational component for managing the speakers of an event. It will allow users to add, edit, and remove speakers.
+
+This new structure follows the container/presentational pattern and will make the matching version feature more modular and easier to develop and maintain.
 
 #### Hierarchical Data Structure
 ```typescript
