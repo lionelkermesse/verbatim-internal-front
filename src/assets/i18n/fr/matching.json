@@ -190,6 +190,14 @@
           "addFirst": "Ajouter le Premier Événement"
         }
       }
+    },
+    "views": {
+      "enhancedTree": "Arbre Amélioré",
+      "enhancedTreeDesc": "Arbre compact basé sur des cartes avec édition en ligne",
+      "flattenedCards": "Cartes Aplaties",
+      "flattenedCardsDesc": "Tous les événements au même niveau, classés par hiérarchie",
+      "nestedCards": "Cartes Imbriquées",
+      "nestedCardsDesc": "Mise en page visuelle de cartes avec structure imbriquée"
     }
   }
 }

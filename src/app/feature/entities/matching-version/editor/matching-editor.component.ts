@@ -35,7 +35,7 @@ import {
 } from '../models/matching-editor.models';
 import { IMatchingVersion } from '../matching-version-chd.model';
 
-type ViewType = 'enhanced-tree' | 'accordion' | 'nested-cards' | 'table-tree';
+type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
 
 @Component({
   selector: 'chd-matching-editor',
@@ -94,10 +94,53 @@ export class MatchingEditorComponent implements OnInit {
   // View options
   readonly viewOptions = [
     { label: 'Enhanced Tree', value: 'enhanced-tree', icon: 'node-index' },
-    { label: 'Accordion View', value: 'accordion', icon: 'menu-fold' },
-    { label: 'Nested Cards', value: 'nested-cards', icon: 'layout' },
-    { label: 'Table Tree', value: 'table-tree', icon: 'table' }
+    { label: 'Flattened Cards', value: 'flattened-cards', icon: 'unordered-list' },
+    { label: 'Nested Cards', value: 'nested-cards', icon: 'layout' }
   ];
+
+  // Computed property for current view index
+  readonly currentViewIndex = computed(() => {
+    return this.viewOptions.findIndex(opt => opt.value === this.currentViewType());
+  });
+
+  // Computed property for flattened tree nodes
+  readonly flattenedNodes = computed(() => {
+    const nodes = this.treeNodes();
+    const flattened: EnhancedTreeNode[] = [];
+
+    const flattenNode = (node: EnhancedTreeNode, parentDepth = 0) => {
+      // Add the current node with proper depth
+      const flatNode = { ...node, depth: parentDepth };
+      flattened.push(flatNode);
+
+      // Add all children recursively
+      if (node.inners && node.inners.length > 0) {
+        node.inners.forEach((child, index) => {
+          // Transform child to EnhancedTreeNode format
+          const childNode: EnhancedTreeNode = {
+            ...child,
+            index: index,
+            depth: parentDepth + 1,
+            isExpanded: false,
+            isSelected: false,
+            isDragSource: false,
+            isDragTarget: false,
+            hasChildren: !!(child.inners && child.inners.length > 0),
+            actions: []
+          } as unknown as EnhancedTreeNode;
+
+          flattenNode(childNode, parentDepth + 1);
+        });
+      }
+    };
+
+    // Process all root nodes
+    nodes.forEach(rootNode => {
+      flattenNode(rootNode, 0);
+    });
+
+    return flattened;
+  });
 
   ngOnInit(): void {
     const sessionIdentifier = this.route.snapshot.paramMap.get('sessionIdentifier');
@@ -119,8 +162,11 @@ export class MatchingEditorComponent implements OnInit {
     }
   }
 
-  onViewTypeChange(viewType: ViewType): void {
-    this.currentViewType.set(viewType);
+  onViewTypeChange(selectedIndex: number): void {
+    const selectedOption = this.viewOptions[selectedIndex];
+    if (selectedOption) {
+      this.currentViewType.set(selectedOption.value as ViewType);
+    }
   }
 
   onNodeSelect(event: TreeSelectionEvent): void {
@@ -248,9 +294,8 @@ export class MatchingEditorComponent implements OnInit {
     const viewType = this.currentViewType();
     switch (viewType) {
       case 'enhanced-tree': return 'Enhanced Tree View';
-      case 'accordion': return 'Accordion View';
+      case 'flattened-cards': return 'Flattened Cards View';
       case 'nested-cards': return 'Nested Cards View';
-      case 'table-tree': return 'Table Tree View';
       default: return 'Tree View';
     }
   }
@@ -258,10 +303,9 @@ export class MatchingEditorComponent implements OnInit {
   getCurrentViewDescription(): string {
     const viewType = this.currentViewType();
     switch (viewType) {
-      case 'enhanced-tree': return 'Modern card-based tree with inline editing';
-      case 'accordion': return 'Collapsible accordion panels for easy navigation';
+      case 'enhanced-tree': return 'Compact card-based tree with inline editing';
+      case 'flattened-cards': return 'All events at same level, ordered by hierarchy';
       case 'nested-cards': return 'Visual card layout with nested structure';
-      case 'table-tree': return 'Table format with expandable hierarchy';
       default: return 'Hierarchical view of events';
     }
   }

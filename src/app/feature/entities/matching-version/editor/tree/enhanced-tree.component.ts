@@ -39,7 +39,7 @@ export class EnhancedTreeComponent {
   readonly treeNodes = input.required<EnhancedTreeNode[]>();
   readonly canEdit = input<boolean>(false);
   readonly inlineEditMode = input<boolean>(true);
-  
+
   // Outputs
   readonly onNodeSelect = output<TreeSelectionEvent>();
   readonly onNodeExpand = output<{ node: EnhancedTreeNode; expanded: boolean }>();
@@ -66,14 +66,15 @@ export class EnhancedTreeComponent {
 
   private flattenNodes(nodes: EnhancedTreeNode[]): EnhancedTreeNode[] {
     const result: EnhancedTreeNode[] = [];
-    
+
     for (const node of nodes) {
       result.push(node);
-      if (node.isExpanded && node.inners && node.inners.length > 0) {
+      // Show all child events regardless of expansion state, just like flattened view
+      if (node.inners && node.inners.length > 0) {
         result.push(...this.flattenNodes(node.inners as EnhancedTreeNode[]));
       }
     }
-    
+
     return result;
   }
 
@@ -92,7 +93,7 @@ export class EnhancedTreeComponent {
 
   onToggleExpansion(node: EnhancedTreeNode): void {
     const newExpanded = !node.isExpanded;
-    
+
     this.onNodeExpand.emit({
       node,
       expanded: newExpanded
@@ -105,25 +106,25 @@ export class EnhancedTreeComponent {
 
   startInlineEdit(node: EnhancedTreeNode, field: 'title' | 'verbatim'): void {
     if (!this.canEdit() || !this.inlineEditMode()) return;
-    
+
     const originalValue = field === 'title' ? node.title : (node.verbatim || '');
-    
+
     this.editingState.set({
       nodeId: node.id,
       field,
       originalValue
     });
-    
+
     this.editingValue.set(originalValue);
   }
 
   commitEdit(): void {
     const state = this.editingState();
     if (!state.nodeId || !state.field) return;
-    
+
     const node = this.findNodeById(state.nodeId);
     if (!node) return;
-    
+
     const newValue = this.editingValue();
     if (newValue !== state.originalValue) {
       this.onInlineEdit.emit({
@@ -132,7 +133,7 @@ export class EnhancedTreeComponent {
         value: newValue
       });
     }
-    
+
     this.cancelEdit();
   }
 

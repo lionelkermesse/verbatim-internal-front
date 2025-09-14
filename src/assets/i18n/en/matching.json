@@ -190,6 +190,14 @@
           "addFirst": "Add First Event"
         }
       }
+    },
+    "views": {
+      "enhancedTree": "Enhanced Tree",
+      "enhancedTreeDesc": "Compact card-based tree with inline editing",
+      "flattenedCards": "Flattened Cards",
+      "flattenedCardsDesc": "All events at same level, ordered by hierarchy",
+      "nestedCards": "Nested Cards",
+      "nestedCardsDesc": "Visual card layout with nested structure"
     }
   }
 }

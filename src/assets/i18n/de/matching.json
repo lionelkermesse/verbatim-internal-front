@@ -69,7 +69,13 @@
       "validate": "Validieren",
       "tree": {
         "title": "Ereignishierarchie",
-        "subtitle": "Baumansicht von Ereignissen und Unter-Ereignissen mit Rednern und Verbatim-Inhalt"
+        "subtitle": "Baumansicht von Ereignissen und Unter-Ereignissen mit Rednern und Verbatim-Inhalt",
+        "addEvent": "Ereignis hinzufügen",
+        "addInner": "Unter-Ereignis hinzufügen",
+        "edit": "Bearbeiten",
+        "moveUp": "Nach oben verschieben",
+        "moveDown": "Nach unten verschieben",
+        "delete": "Löschen"
       },
       "selected": {
         "title": "Ereignisdetails",
@@ -103,6 +109,95 @@
       "awaiting_correction": "Wartet auf Korrektur",
       "validated": "Validiert",
       "error": "Fehler"
+    },
+    "dashboard": {
+      "title": "Dashboard für Matching-Versionen",
+      "subtitle": "Alle Matching-Versionen für die Sitzung verwalten",
+      "version": "Version",
+      "breadcrumb": {
+        "versions": "Matching-Versionen"
+      },
+      "actions": {
+        "refresh": "Aktualisieren",
+        "createNew": "Neue Version erstellen",
+        "view": "Anzeigen",
+        "edit": "Bearbeiten",
+        "more": "Weitere Aktionen",
+        "export": "Exportieren",
+        "duplicate": "Duplizieren",
+        "delete": "Löschen"
+      },
+      "stats": {
+        "total": "Gesamtversionen",
+        "validated": "Validiert",
+        "draft": "Entwurf",
+        "error": "Fehler"
+      },
+      "search": {
+        "placeholder": "Versionen suchen..."
+      },
+      "filter": {
+        "placeholder": "Nach Status filtern",
+        "all": "Alle",
+        "draft": "Entwurf",
+        "validated": "Validiert",
+        "error": "Fehler"
+      },
+      "sort": {
+        "version": "Version",
+        "created": "Erstellungsdatum",
+        "status": "Status",
+        "progress": "Fortschritt"
+      },
+      "view": {
+        "grid": "Rasteransicht",
+        "list": "Listenansicht",
+        "compact": "Kompakte Ansicht"
+      },
+      "results": {
+        "showing": "Zeige",
+        "of": "von",
+        "versions": "Versionen"
+      },
+      "loading": "Lade Matching-Versionen...",
+      "error": {
+        "title": "Fehler beim Laden der Versionen",
+        "retry": "Erneut versuchen"
+      },
+      "empty": {
+        "title": "Keine Matching-Versionen",
+        "description": "Erstellen Sie Ihre erste Matching-Version, um zu beginnen.",
+        "createFirst": "Erste Version erstellen"
+      },
+      "noResults": {
+        "title": "Keine Ergebnisse gefunden",
+        "description": "Versuchen Sie, Ihre Such- oder Filterkriterien anzupassen.",
+        "clearFilters": "Filter löschen"
+      },
+      "matchingProgress": "Matching-Fortschritt",
+      "totalEvents": "Gesamte Ereignisse",
+      "matched": "Zugeordnet",
+      "conflicts": "Konflikte",
+      "events": "Ereignisse"
+    },
+    "editor": {
+      "speakers": "Redner",
+      "verbatim": "Verbatim-Inhalt",
+      "tree": {
+        "empty": {
+          "title": "Keine Ereignisse gefunden",
+          "description": "Beginnen Sie mit dem Hinzufügen Ihres ersten Ereignisses, um den Matching-Prozess zu starten.",
+          "addFirst": "Erstes Ereignis hinzufügen"
+        }
+      }
+    },
+    "views": {
+      "enhancedTree": "Erweiterter Baum",
+      "enhancedTreeDesc": "Kompakter kartenbasierter Baum mit Inline-Bearbeitung",
+      "flattenedCards": "Abgeflachte Karten",
+      "flattenedCardsDesc": "Alle Ereignisse auf derselben Ebene, nach Hierarchie geordnet",
+      "nestedCards": "Verschachtelte Karten",
+      "nestedCardsDesc": "Visuelles Kartenlayout mit verschachtelter Struktur"
     }
   }
 }

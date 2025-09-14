@@ -1,44 +1,45 @@
 <div class="enhanced-tree">
-  <div 
+  <div
     *ngFor="let node of displayNodes(); trackBy: trackByNode"
     class="tree-node"
     [class.selected]="node.isSelected"
     [class.expanded]="node.isExpanded"
     [class.has-children]="node.hasChildren"
     [style.margin-left.px]="node.depth * 24">
-    
+
     <!-- Node Card -->
-    <nz-card 
+    <nz-card
       [nzHoverable]="true"
       [nzSize]="'small'"
       [nzBordered]="true"
       class="node-card">
-      
+
       <div class="node-content" (click)="onNodeClick(node)">
         <!-- Expansion Toggle -->
         <div class="node-header">
           <div class="expand-section">
-            <button 
+            <button
               *ngIf="node.hasChildren"
-              nz-button 
-              nzType="text" 
+              nz-button
+              nzType="text"
               nzSize="small"
               class="expand-toggle"
               (click)="onToggleExpansion(node); $event.stopPropagation()">
               <span nz-icon [nzType]="node.isExpanded ? 'caret-down' : 'caret-right'" nzTheme="fill"></span>
             </button>
             <div *ngIf="!node.hasChildren" class="expand-spacer"></div>
-            
+
             <div class="depth-indicator" [style.width.px]="node.depth * 2"></div>
           </div>
 
-          <!-- Node Title and Status -->
-          <div class="title-section">
-            <div class="node-title" 
+        <!-- Compact Title, Status, Line on same line -->
+        <div class="title-section">
+          <div class="compact-header-line">
+            <div class="node-title"
                  [class.editable]="canEdit() && inlineEditMode()"
                  (dblclick)="startInlineEdit(node, 'title')">
               <span *ngIf="!isEditingTitle(node)" class="title-text">{{ node.title }}</span>
-              <input 
+              <input
                 *ngIf="isEditingTitle(node)"
                 nz-input
                 [value]="editingValue()"
@@ -51,7 +52,7 @@
                 #titleInput
               />
             </div>
-            
+
             <div class="status-section">
               <nz-tag [nzColor]="getStatusColor(node.status || 'UNMATCHED')" nzSize="small">
                 {{ node.status || 'UNMATCHED' }}
@@ -59,14 +60,15 @@
               <span class="line-number">Line {{ node.lineNumber || 0 }}</span>
             </div>
           </div>
+        </div>
 
           <!-- Node Actions -->
           <div class="node-actions" *ngIf="canEdit()">
             <nz-space nzSize="small">
-              <button 
+              <button
                 *ngFor="let action of getVisibleActions(node)"
-                nz-button 
-                nzType="text" 
+                nz-button
+                nzType="text"
                 nzSize="small"
                 [disabled]="action.disabled"
                 [nz-tooltip]="action.tooltip"
@@ -79,27 +81,28 @@
           </div>
         </div>
 
-        <!-- Speakers Section -->
+        <!-- Speakers Section - Compact layout on same line -->
         <div class="speakers-section" *ngIf="node.speakers && node.speakers.length > 0">
-          <nz-divider nzSize="small"></nz-divider>
-          <div class="speakers-label">
-            <span nz-icon nzType="team" nzTheme="outline"></span>
-            <span>{{ 'matching.editor.speakers' | translate }}</span>
-          </div>
-          <div class="speakers-list">
-            <nz-tag 
-              *ngFor="let speaker of node.speakers"
-              nzColor="blue"
-              nzSize="small"
-              class="speaker-tag">
-              <span nz-icon nzType="user" nzTheme="outline"></span>
-              {{ getSpeakerDisplayName(speaker) }}
-            </nz-tag>
+          <div class="speakers-compact-line">
+            <span class="speakers-label">
+              <span nz-icon nzType="team" nzTheme="outline"></span>
+              {{ 'matching.editor.speakers' | translate }}:
+            </span>
+            <div class="speakers-list">
+              <nz-tag
+                *ngFor="let speaker of node.speakers"
+                nzColor="blue"
+                nzSize="small"
+                class="speaker-tag">
+                <span nz-icon nzType="user" nzTheme="outline"></span>
+                {{ getSpeakerDisplayName(speaker) }}
+              </nz-tag>
+            </div>
           </div>
         </div>
 
         <!-- Verbatim Section -->
-        <div class="verbatim-section" 
+        <div class="verbatim-section"
              *ngIf="node.verbatim"
              [class.editable]="canEdit() && inlineEditMode()"
              (dblclick)="startInlineEdit(node, 'verbatim')">
@@ -110,7 +113,7 @@
           </div>
           <div class="verbatim-content">
             <p *ngIf="!isEditingVerbatim(node)" class="verbatim-text">{{ node.verbatim }}</p>
-            <textarea 
+            <textarea
               *ngIf="isEditingVerbatim(node)"
               nz-input
               [value]="editingValue()"
@@ -135,10 +138,10 @@
     <span nz-icon nzType="file-text" nzTheme="outline" class="empty-icon"></span>
     <h4>{{ 'matching.editor.tree.empty.title' | translate }}</h4>
     <p>{{ 'matching.editor.tree.empty.description' | translate }}</p>
-    <button 
+    <button
       *ngIf="canEdit()"
-      nz-button 
-      nzType="primary" 
+      nz-button
+      nzType="primary"
       (click)="onActionClick({ type: 'add-child', icon: 'plus', tooltip: 'Add event', visible: true, disabled: false }, $any({ id: 0 }))">
       <span nz-icon nzType="plus" nzTheme="outline"></span>
       {{ 'matching.editor.tree.empty.addFirst' | translate }}
