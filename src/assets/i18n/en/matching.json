@@ -109,6 +109,87 @@
       "awaiting_correction": "Awaiting Correction",
       "validated": "Validated",
       "error": "Error"
+    },
+    "dashboard": {
+      "title": "Matching Versions Dashboard",
+      "subtitle": "Manage all matching versions for session",
+      "version": "Version",
+      "breadcrumb": {
+        "versions": "Matching Versions"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "createNew": "Create New Version",
+        "view": "View",
+        "edit": "Edit",
+        "more": "More Actions",
+        "export": "Export",
+        "duplicate": "Duplicate",
+        "delete": "Delete"
+      },
+      "stats": {
+        "total": "Total Versions",
+        "validated": "Validated",
+        "draft": "Draft",
+        "error": "Error"
+      },
+      "search": {
+        "placeholder": "Search versions..."
+      },
+      "filter": {
+        "placeholder": "Filter by status",
+        "all": "All",
+        "draft": "Draft",
+        "validated": "Validated",
+        "error": "Error"
+      },
+      "sort": {
+        "version": "Version",
+        "created": "Created Date",
+        "status": "Status",
+        "progress": "Progress"
+      },
+      "view": {
+        "grid": "Grid View",
+        "list": "List View",
+        "compact": "Compact View"
+      },
+      "results": {
+        "showing": "Showing",
+        "of": "of",
+        "versions": "versions"
+      },
+      "loading": "Loading matching versions...",
+      "error": {
+        "title": "Failed to Load Versions",
+        "retry": "Retry"
+      },
+      "empty": {
+        "title": "No Matching Versions",
+        "description": "Create your first matching version to get started.",
+        "createFirst": "Create First Version"
+      },
+      "noResults": {
+        "title": "No Results Found",
+        "description": "Try adjusting your search or filter criteria.",
+        "clearFilters": "Clear Filters"
+      },
+      "matchingProgress": "Matching Progress",
+      "totalEvents": "Total Events",
+      "matched": "Matched",
+      "conflicts": "Conflicts",
+      "events": "Events"
+    },
+    "editor": {
+      "speakers": "Speakers",
+      "verbatim": "Verbatim Content",
+      "tree": {
+        "empty": {
+          "title": "No Events Found",
+          "description": "Start by adding your first event to begin the matching process.",
+          "addFirst": "Add First Event"
+        }
+      }
     }
   }
 }

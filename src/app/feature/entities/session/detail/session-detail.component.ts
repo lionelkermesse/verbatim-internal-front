@@ -127,14 +127,14 @@ export class SessionDetailComponent implements OnInit {
   onViewMatching(matchingVersion: IMatchingVersion): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
     if (sessionIdentifier && matchingVersion.version) {
-      this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version]);
+      this.router.navigate(['/matching/editor', sessionIdentifier, matchingVersion.version]);
     }
   }
 
   onEditMatching(matchingVersion: IMatchingVersion): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
     if (sessionIdentifier && matchingVersion.version) {
-      this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version, 'edit']);
+      this.router.navigate(['/matching/editor', sessionIdentifier, matchingVersion.version, 'edit']);
     }
   }
 

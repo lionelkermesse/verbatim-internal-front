@@ -105,10 +105,91 @@
     },
     "status": {
       "uploaded": "Téléchargé",
-      "processing": "En traitement",
+      "processing": "En cours de traitement",
       "awaiting_correction": "En attente de correction",
       "validated": "Validé",
       "error": "Erreur"
+    },
+    "dashboard": {
+      "title": "Tableau de Bord des Versions de Correspondance",
+      "subtitle": "Gérer toutes les versions de correspondance pour la session",
+      "version": "Version",
+      "breadcrumb": {
+        "versions": "Versions de Correspondance"
+      },
+      "actions": {
+        "refresh": "Actualiser",
+        "createNew": "Créer Nouvelle Version",
+        "view": "Voir",
+        "edit": "Modifier",
+        "more": "Plus d'Actions",
+        "export": "Exporter",
+        "duplicate": "Dupliquer",
+        "delete": "Supprimer"
+      },
+      "stats": {
+        "total": "Total des Versions",
+        "validated": "Validées",
+        "draft": "Brouillon",
+        "error": "Erreur"
+      },
+      "search": {
+        "placeholder": "Rechercher des versions..."
+      },
+      "filter": {
+        "placeholder": "Filtrer par statut",
+        "all": "Tous",
+        "draft": "Brouillon",
+        "validated": "Validées",
+        "error": "Erreur"
+      },
+      "sort": {
+        "version": "Version",
+        "created": "Date de Création",
+        "status": "Statut",
+        "progress": "Progrès"
+      },
+      "view": {
+        "grid": "Vue Grille",
+        "list": "Vue Liste",
+        "compact": "Vue Compacte"
+      },
+      "results": {
+        "showing": "Affichage de",
+        "of": "sur",
+        "versions": "versions"
+      },
+      "loading": "Chargement des versions de correspondance...",
+      "error": {
+        "title": "Échec du Chargement des Versions",
+        "retry": "Réessayer"
+      },
+      "empty": {
+        "title": "Aucune Version de Correspondance",
+        "description": "Créez votre première version de correspondance pour commencer.",
+        "createFirst": "Créer la Première Version"
+      },
+      "noResults": {
+        "title": "Aucun Résultat Trouvé",
+        "description": "Essayez d'ajuster vos critères de recherche ou de filtre.",
+        "clearFilters": "Effacer les Filtres"
+      },
+      "matchingProgress": "Progrès de Correspondance",
+      "totalEvents": "Total des Événements",
+      "matched": "Correspondus",
+      "conflicts": "Conflits",
+      "events": "Événements"
+    },
+    "editor": {
+      "speakers": "Intervenants",
+      "verbatim": "Contenu Verbatim",
+      "tree": {
+        "empty": {
+          "title": "Aucun Événement Trouvé",
+          "description": "Commencez par ajouter votre premier événement pour commencer le processus de correspondance.",
+          "addFirst": "Ajouter le Premier Événement"
+        }
+      }
     }
   }
 }

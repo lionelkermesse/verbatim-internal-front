@@ -1,0 +1,712 @@
+@import 'src/assets/scss/vendor.scss';
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $body-background;
+  overflow-x: hidden;
+
+  .matching-editor-layout {
+    min-height: 100vh;
+    background: $body-background;
+
+    .editor-content {
+      padding: 0;
+      background: $body-background;
+      overflow-y: auto;
+      max-height: calc(100vh - #{$layout-header-height});
+    }
+  }
+
+  // Breadcrumb styling
+  .breadcrumb {
+    padding: 16px 24px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 0;
+
+    ::ng-deep .ant-breadcrumb {
+      font-size: 14px;
+
+      a {
+        color: $primary-color;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: lighten($primary-color, 10%);
+        }
+      }
+    }
+  }
+
+  // Header section
+  .editor-header {
+    padding: 24px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 24px;
+
+    .header-info {
+      .loading-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .loading-text {
+          color: #8c8c8c;
+          font-size: 16px;
+        }
+      }
+
+      .page-title {
+        margin: 0 0 12px 0;
+        color: #262626;
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        ::ng-deep .ant-tag {
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .progress-section {
+        .progress-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+
+          .progress-label {
+            font-size: 14px;
+            color: #595959;
+            font-weight: 500;
+          }
+
+          .progress-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: $info-color;
+          }
+        }
+
+        .progress-bar {
+          width: 300px;
+
+          ::ng-deep .ant-progress-line {
+            .ant-progress-bg {
+              border-radius: 4px;
+            }
+          }
+        }
+      }
+    }
+
+    // Segmented control styling
+    ::ng-deep .ant-segmented {
+      background: #f5f5f5;
+      border: 1px solid $border-color-base;
+      border-radius: $border-radius-base;
+
+      .ant-segmented-item {
+        font-size: 13px;
+        font-weight: 500;
+
+        &.ant-segmented-item-selected {
+          background: $info-color;
+          color: $white;
+          border-radius: $border-radius-sm;
+        }
+      }
+    }
+
+    button {
+      height: 40px;
+      font-weight: $btn-font-weight;
+
+      &[nzSize="small"] {
+        height: 32px;
+      }
+
+      &[nz-button][nzType="primary"] {
+        background: $primary-color;
+        border: none;
+        box-shadow: $box-shadow-base;
+
+        &:hover {
+          background: lighten($primary-color, 5%);
+          box-shadow: 0 4px 12px rgba(229, 0, 0, 0.3);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  // Main editor area
+  .editor-main {
+    padding: 0 24px 24px 24px;
+
+    .tree-container {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+      min-height: 600px;
+
+      .tree-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px 24px 16px 24px;
+        border-bottom: 1px solid #f0f0f0;
+
+        .tree-title {
+          h3 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .anticon {
+              color: $info-color;
+            }
+          }
+
+          p {
+            margin: 0;
+            font-size: 14px;
+            color: #8c8c8c;
+          }
+        }
+      }
+
+      // Configuration panel
+      .config-panel {
+        padding: 0 24px 16px 24px;
+
+        .config-card {
+          background: #fafafa;
+          border: 1px solid #f0f0f0;
+
+          .config-options {
+            .config-item {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+
+              label {
+                font-size: 14px;
+                color: #595959;
+                font-weight: 500;
+              }
+            }
+          }
+        }
+      }
+
+      // View content area
+      .view-content {
+        padding: 24px;
+        min-height: 500px;
+
+        // Accordion view
+        .accordion-view {
+          ::ng-deep .ant-collapse {
+            background: transparent;
+            border: none;
+
+            .ant-collapse-item {
+              border: 1px solid #f0f0f0;
+              border-radius: 8px;
+              margin-bottom: 12px;
+              background: #fff;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              .ant-collapse-header {
+                padding: 16px 20px;
+                background: #fafafa;
+                border-radius: 8px 8px 0 0;
+                font-weight: 500;
+
+                .ant-collapse-arrow {
+                  color: $info-color;
+                }
+              }
+
+              .ant-collapse-content {
+                .ant-collapse-content-box {
+                  padding: 20px;
+                }
+              }
+            }
+          }
+        }
+
+        // Nested cards view
+        .nested-cards-view {
+          .event-card-container {
+            margin-bottom: 16px;
+
+            .event-card {
+              border-radius: 8px;
+              border: 1px solid #f0f0f0;
+              transition: all 0.3s ease;
+
+              &:hover {
+                border-color: #d9d9d9;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                transform: translateY(-2px);
+              }
+
+              &.selected {
+                border-color: $primary-color;
+                box-shadow: 0 4px 12px rgba(229, 0, 0, 0.2);
+              }
+
+              .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+
+                .title-status {
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+
+                  .event-title {
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #262626;
+                  }
+                }
+
+                .line-number {
+                  font-size: 12px;
+                  color: #8c8c8c;
+                  font-family: monospace;
+                  background: #f5f5f5;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                }
+              }
+
+              .card-content {
+                .speakers,
+                .verbatim {
+                  margin-bottom: 12px;
+
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+
+                  .section-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    color: #595959;
+                    font-weight: 500;
+                    margin-bottom: 8px;
+                  }
+
+                  .verbatim-text {
+                    margin: 0;
+                    padding: 12px;
+                    background: #fafafa;
+                    border-radius: 6px;
+                    border-left: 3px solid #d9d9d9;
+                    font-style: italic;
+                    line-height: 1.6;
+                    color: #595959;
+                  }
+                }
+              }
+
+              .child-events {
+                margin-top: 16px;
+
+                .children-header {
+                  margin-bottom: 12px;
+
+                  .children-title {
+                    font-size: 14px;
+                    color: #595959;
+                    font-weight: 500;
+                  }
+                }
+
+                .children-list {
+                  .child-card {
+                    padding: 12px;
+                    border: 1px solid #f0f0f0;
+                    border-radius: 6px;
+                    margin-bottom: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                      border-color: #d9d9d9;
+                      background: #fafafa;
+                    }
+
+                    &.selected {
+                      border-color: $primary-color;
+                      background: rgba(229, 0, 0, 0.06);
+                    }
+
+                    .child-header {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-bottom: 8px;
+
+                      .child-title {
+                        font-weight: 500;
+                        color: #262626;
+                      }
+                    }
+
+                    .child-verbatim {
+                      margin: 0;
+                      font-size: 13px;
+                      color: #8c8c8c;
+                      font-style: italic;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Table tree view
+        .table-tree-view {
+          .table-header {
+            padding: 16px 20px;
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px 8px 0 0;
+
+            .table-columns {
+              display: grid;
+              grid-template-columns: 2fr 1.5fr 1fr 80px 120px;
+              gap: 16px;
+              font-weight: 600;
+              color: #262626;
+              font-size: 14px;
+
+              &:not(:has(.col-actions)) {
+                grid-template-columns: 2fr 1.5fr 1fr 80px;
+              }
+            }
+          }
+
+          .table-body {
+            border: 1px solid #f0f0f0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+
+            .table-row {
+              border-bottom: 1px solid #f0f0f0;
+              cursor: pointer;
+              transition: background-color 0.2s ease;
+
+              &:hover {
+                background: #fafafa;
+              }
+
+              &.selected {
+                background: rgba(229, 0, 0, 0.06);
+                border-left: 3px solid $primary-color;
+              }
+
+              &:last-child {
+                border-bottom: none;
+              }
+
+              .row-content {
+                display: grid;
+                grid-template-columns: 2fr 1.5fr 1fr 80px 120px;
+                gap: 16px;
+                align-items: center;
+                padding: 12px 20px;
+
+                &:not(:has(.col-actions)) {
+                  grid-template-columns: 2fr 1.5fr 1fr 80px;
+                }
+
+                .col-title {
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+
+                  .expand-toggle {
+                    flex-shrink: 0;
+                  }
+
+                  .title-text {
+                    font-weight: 500;
+                    color: #262626;
+                  }
+                }
+
+                .col-speakers {
+                  // nz-space styles handled by ng-zorro
+                }
+
+                .col-status {
+                  // nz-tag styles handled by ng-zorro
+                }
+
+                .col-line {
+                  font-family: monospace;
+                  color: #8c8c8c;
+                  font-size: 13px;
+                }
+
+                .col-actions {
+                  // nz-space styles handled by ng-zorro
+                }
+              }
+
+              .verbatim-row {
+                padding: 0 20px 12px 20px;
+
+                .verbatim-content {
+                  .verbatim-text {
+                    margin: 0;
+                    padding: 12px;
+                    background: #fafafa;
+                    border-radius: 6px;
+                    border-left: 3px solid #d9d9d9;
+                    font-style: italic;
+                    line-height: 1.6;
+                    color: #595959;
+                    font-size: 13px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Detail panel
+    .detail-panel {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+
+      .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px 0 24px;
+
+        h3 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #262626;
+        }
+      }
+
+      .detail-content {
+        padding: 0 24px 20px 24px;
+
+        .detail-item {
+          margin-bottom: 16px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .detail-label {
+            display: block;
+            font-size: 13px;
+            color: #8c8c8c;
+            font-weight: 500;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .detail-value {
+            font-size: 14px;
+            color: #262626;
+            line-height: 1.5;
+
+            &.verbatim-content {
+              padding: 12px;
+              background: #fafafa;
+              border-radius: 6px;
+              border-left: 3px solid #d9d9d9;
+              font-style: italic;
+              color: #595959;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  :host {
+    .editor-main {
+      .tree-container {
+        .view-content {
+          .table-tree-view {
+            .table-header,
+            .table-body {
+              .table-columns,
+              .row-content {
+                grid-template-columns: 2fr 1fr 1fr;
+
+                .col-speakers,
+                .col-line,
+                .col-actions {
+                  display: none;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    .editor-header {
+      padding: 16px;
+
+      .header-info {
+        .page-title {
+          font-size: 20px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .progress-section {
+          .progress-bar {
+            width: 100%;
+          }
+        }
+      }
+
+      ::ng-deep .ant-col {
+        &:first-child {
+          margin-bottom: 16px;
+        }
+      }
+
+      ::ng-deep .ant-segmented {
+        .ant-segmented-item {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .editor-main {
+      padding: 0 16px 16px 16px;
+
+      .tree-container {
+        .tree-header {
+          padding: 16px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .view-content {
+          padding: 16px;
+
+          .nested-cards-view {
+            .event-card {
+              ::ng-deep .ant-card-body {
+                padding: 16px;
+              }
+
+              .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+              }
+            }
+          }
+        }
+      }
+
+      .detail-panel {
+        margin-top: 16px;
+      }
+    }
+  }
+}
+
+// Force light theme - CHD branding
+:host {
+  // Override any dark theme preferences
+  color-scheme: light !important;
+
+  // Ensure all backgrounds are white/light
+  .matching-editor-layout,
+  .editor-content,
+  .breadcrumb,
+  .editor-header,
+  .tree-container,
+  .detail-panel {
+    background: $component-background !important;
+    color: $text-color !important;
+  }
+
+  // Ensure enhanced tree component area is white
+  .view-content {
+    background: $component-background !important;
+
+    .enhanced-tree-view {
+      background: $component-background !important;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  :host {
+    .editor-header {
+      .ant-space {
+        display: none;
+      }
+    }
+
+    .breadcrumb {
+      display: none;
+    }
+
+    .detail-panel {
+      .detail-header {
+        button {
+          display: none;
+        }
+      }
+    }
+  }
+}
