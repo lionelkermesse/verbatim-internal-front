@@ -70,9 +70,11 @@ export class EnhancedTreeComponent {
     const result: EnhancedTreeNode[] = [];
 
     for (const node of nodes) {
+      // Always include the node itself
       result.push(node);
-      // Show all child events regardless of expansion state, just like flattened view
-      if (node.inners && node.inners.length > 0) {
+
+      // Include children only when the node is expanded
+      if (node.isExpanded && node.inners && node.inners.length > 0) {
         result.push(...this.flattenNodes(node.inners as EnhancedTreeNode[]));
       }
     }

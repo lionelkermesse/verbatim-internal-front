@@ -11,6 +11,13 @@
   margin: 0 auto;
 }
 
+// Ensure on big screens the session list has a minimum width of 1200px
+@media (min-width: 1200px) {
+  .session-content {
+    min-width: 1200px;
+  }
+}
+
 .session-header {
   margin-bottom: 24px;
 

@@ -22,8 +22,6 @@
     "login": {
       "title": "Se connecter",
       "form": {
-        "password": "Mot de passe",
-        "password.placeholder": "Votre mot de passe",
         "rememberme": "Se souvenir de moi",
         "button": "Se connecter"
       },

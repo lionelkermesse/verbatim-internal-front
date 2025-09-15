@@ -56,4 +56,10 @@ export class NavbarComponent implements OnInit {
     const url = this.router.url || '';
     return url.startsWith('/sessions') || url.startsWith('/matching');
   }
+
+  // Hide navigation menus on login page
+  isLoginRoute(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/login');
+  }
 }

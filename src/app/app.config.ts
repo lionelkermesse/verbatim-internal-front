@@ -76,7 +76,7 @@ const ngZorroConfig: NzConfig = {
   message: {nzTop: 64},
   notification: {nzTop: 64},
   theme: {
-    primaryColor: '#305a8f',
+    primaryColor: '#852e3f', // This is the same color as the $primary-color in vendor.scss
   },
 };
 

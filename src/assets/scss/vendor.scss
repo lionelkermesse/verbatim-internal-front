@@ -114,3 +114,8 @@ button[nzType="primary"] {
     color: $white !important;
   }
 }
+
+:root {
+  --ant-primary-color: #{$primary-color};
+}
+

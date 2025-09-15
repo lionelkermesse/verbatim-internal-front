@@ -4,7 +4,7 @@
   </div>
 
   <!-- Navigation Links -->
-  <nav class="navbar-nav">
+  <nav class="navbar-nav" *ngIf="!isLoginRoute()">
     <a [routerLink]="['/sessions']" class="nav-link" [class.active]="isSessionsActive()">
       <span nz-icon nzType="table" nzTheme="outline"></span>
       {{ 'nav.sessions' | translate }}
