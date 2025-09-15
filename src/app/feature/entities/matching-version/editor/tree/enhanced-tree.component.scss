@@ -367,6 +367,13 @@
       }
     }
   }
+
+  // Tree controls: force primary color for expand/collapse icons
+  ::ng-deep .ant-tree-switcher,
+  ::ng-deep .ant-tree-switcher-icon,
+  ::ng-deep .ant-collapse-arrow {
+    color: $primary-color !important;
+  }
 }
 
 // Responsive design

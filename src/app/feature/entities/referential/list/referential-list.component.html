@@ -79,6 +79,16 @@
                     nz-button
                     nzType="link"
                     nzSize="small"
+                    class="mr-2"
+                    (click)="onDownloadFile(currentReferential()!)"
+                  >
+                    <span nz-icon nzType="download" nzTheme="outline"></span>
+                    {{ 'referential.current.download' | translate }}
+                  </button>
+                  <button
+                    nz-button
+                    nzType="link"
+                    nzSize="small"
                     (click)="toggleRawContent()"
                   >
                     <span nz-icon [nzType]="showRawContent() ? 'table' : 'code'" nzTheme="outline"></span>
@@ -130,18 +140,6 @@
                   nzShowIcon
                 ></nz-alert>
               </ng-template>
-            </div>
-
-            <!-- Download Current -->
-            <div class="download-actions">
-              <button
-                nz-button
-                nzType="default"
-                (click)="onDownloadFile(currentReferential()!)"
-              >
-                <span nz-icon nzType="download" nzTheme="outline"></span>
-                {{ 'referential.current.download' | translate }}
-              </button>
             </div>
           </div>
 

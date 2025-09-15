@@ -69,11 +69,17 @@
     justify-content: flex-end;
     align-items: flex-start;
 
-    .ant-btn-primary {
-      height: 44px;
-      font-size: $font-size-lg;
-      font-weight: 500;
+    .ant-btn-primary, button[nzType="primary"] {
+      background: $primary-color !important;
+      border-color: $primary-color !important;
+      color: $white !important;
       box-shadow: $box-shadow-base;
+
+      &:hover, &:focus {
+        background: lighten($primary-color, 5%) !important;
+        border-color: lighten($primary-color, 5%) !important;
+        color: $white !important;
+      }
 
       .anticon {
         margin-right: 8px;

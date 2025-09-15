@@ -138,11 +138,13 @@
         background: $primary-color;
         border: none;
         box-shadow: $box-shadow-base;
+        color: $white !important;
 
         &:hover {
           background: lighten($primary-color, 5%);
           box-shadow: 0 4px 12px rgba(229, 0, 0, 0.3);
           transform: translateY(-1px);
+          color: $white !important;
         }
       }
     }
