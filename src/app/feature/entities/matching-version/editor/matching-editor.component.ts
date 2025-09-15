@@ -24,7 +24,9 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzInputModule } from 'ng-zorro-antd/input';
 
 // Components
-import { EnhancedTreeComponent } from './tree/enhanced-tree.component';
+import { EnhancedTreeComponent } from './view/tree/enhanced-tree.component';
+import { FlattenedViewComponent } from './view/flattened/flattened-view.component';
+import { NestedViewComponent } from './view/nested/nested-view.component';
 import { MatchingVersionService } from '../matching-version.service';
 import {
   EnhancedTreeNode,
@@ -63,7 +65,9 @@ type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
     NzProgressModule,
     NzCollapseModule,
     NzInputModule,
-    EnhancedTreeComponent
+    EnhancedTreeComponent,
+    FlattenedViewComponent,
+    NestedViewComponent
   ],
   templateUrl: './matching-editor.component.html',
   styleUrls: ['./matching-editor.component.scss']
@@ -132,7 +136,7 @@ export class MatchingEditorComponent implements OnInit {
             index: index,
             depth: parentDepth + 1,
             isExpanded: false,
-            isSelected: false,
+            isSelected: !!child.isSelected,
             isDragSource: false,
             isDragTarget: false,
             hasChildren: !!(child.inners && child.inners.length > 0),

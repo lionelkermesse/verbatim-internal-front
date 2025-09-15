@@ -1,0 +1,8 @@
+{
+  "matchingStatus": {
+    "AUTOMATICALLY_MATCHED": "Apparié automatiquement",
+    "MANUALLY_MATCHED": "Apparié manuellement",
+    "UNMATCHED": "Non apparié",
+    "MATCHING_CONFLICT": "Conflit de correspondance"
+  }
+}

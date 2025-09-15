@@ -183,6 +183,7 @@
     "editor": {
       "speakers": "Intervenants",
       "verbatim": "Contenu Verbatim",
+      "line": "Ligne",
       "view": {
         "enhancedTree": {
           "title": "Vue Arborescente Améliorée",

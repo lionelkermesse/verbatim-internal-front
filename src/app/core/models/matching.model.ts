@@ -25,6 +25,7 @@ export interface IMatchingResultItem {
   status: keyof typeof MatchingStatus | null;
   level: number;
   expand: boolean;
+  isSelected?: boolean;
 }
 
 export interface IMatchingResult {

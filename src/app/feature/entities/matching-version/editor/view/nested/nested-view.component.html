@@ -1,0 +1,62 @@
+<div class="nested-cards-view">
+  <!-- Recursive template for rendering nested nodes -->
+  <ng-template #nestedNodeTemplate let-node="node" let-depth="depth">
+    <div class="event-card-container" [style.margin-left.px]="depth * 20">
+      <nz-card
+        [nzHoverable]="true"
+        [class.selected]="node.isSelected"
+        [class.nested-level]="depth > 0"
+        class="event-card"
+        (click)="onSelect(node)">
+
+        <div class="card-header">
+          <div class="title-status">
+            <h4 class="event-title">{{ node.title }}</h4>
+            <nz-tag [nzColor]="statusColorFn(node.status || 'UNMATCHED')">
+              {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
+            </nz-tag>
+          </div>
+          <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
+        </div>
+
+        <div class="card-content">
+          <div class="speakers" *ngIf="node.speakers && node.speakers.length > 0">
+            <div class="section-label">
+              <span nz-icon nzType="team" nzTheme="outline"></span>
+              {{ 'matching.editor.speakers' | translate }}
+            </div>
+            <nz-space nzSize="small" nzWrap>
+              <ng-container *ngFor="let speaker of node.speakers">
+                <nz-tag
+                  *nzSpaceItem
+                  nzColor="blue">
+                  {{ speaker.fullName || (speaker.firstName + ' ' + speaker.lastName) }}
+                </nz-tag>
+              </ng-container>
+            </nz-space>
+          </div>
+
+          <div class="verbatim" *ngIf="node.verbatim">
+            <div class="section-label">
+              <span nz-icon nzType="message" nzTheme="outline"></span>
+              {{ 'matching.editor.verbatim' | translate }}
+            </div>
+            <p class="verbatim-text">{{ node.verbatim }}</p>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Recursively render children -->
+    <ng-container *ngIf="node.inners && node.inners.length > 0">
+      <ng-container *ngFor="let child of node.inners">
+        <ng-container *ngTemplateOutlet="nestedNodeTemplate; context: { node: child, depth: depth + 1 }"></ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-template>
+
+  <!-- Render root nodes -->
+  <ng-container *ngFor="let node of nodes">
+    <ng-container *ngTemplateOutlet="nestedNodeTemplate; context: { node: node, depth: 0 }"></ng-container>
+  </ng-container>
+</div>

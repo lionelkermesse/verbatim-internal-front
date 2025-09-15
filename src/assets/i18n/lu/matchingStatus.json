@@ -1,0 +1,8 @@
+{
+  "matchingStatus": {
+    "AUTOMATICALLY_MATCHED": "Automatesch zougedeelt",
+    "MANUALLY_MATCHED": "Manuell zougedeelt",
+    "UNMATCHED": "Net zougedeelt",
+    "MATCHING_CONFLICT": "Zoudeelungskonflikt"
+  }
+}

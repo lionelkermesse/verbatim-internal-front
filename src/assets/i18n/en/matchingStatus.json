@@ -1,0 +1,8 @@
+{
+  "matchingStatus": {
+    "AUTOMATICALLY_MATCHED": "Automatically matched",
+    "MANUALLY_MATCHED": "Manually matched",
+    "UNMATCHED": "Unmatched",
+    "MATCHING_CONFLICT": "Matching conflict"
+  }
+}

@@ -125,7 +125,7 @@
 
             <td class="version-status">
               <nz-tag [nzColor]="getStatusColor(version.status || 'UPLOADED')">
-                {{ ('session.status.' + (version.status?.toLowerCase() || 'uploaded')) | translate }}
+                {{ ('versionStatus.' + (version.status || 'UPLOADED')) | translate | titlecase}}
               </nz-tag>
             </td>
 

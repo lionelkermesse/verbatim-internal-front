@@ -54,10 +54,10 @@
             </div>
 
             <div class="status-section">
-              <nz-tag [nzColor]="getStatusColor(node.status || 'UNMATCHED')" nzSize="small">
-                {{ node.status || 'UNMATCHED' }}
+              <nz-tag [nzColor]="getStatusColor(node.status || 'UNMATCHED')">
+                {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
               </nz-tag>
-              <span class="line-number">Line {{ node.lineNumber || 0 }}</span>
+              <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
             </div>
           </div>
         </div>
@@ -92,7 +92,6 @@
               <nz-tag
                 *ngFor="let speaker of node.speakers"
                 nzColor="blue"
-                nzSize="small"
                 class="speaker-tag">
                 <span nz-icon nzType="user" nzTheme="outline"></span>
                 {{ getSpeakerDisplayName(speaker) }}
@@ -106,7 +105,9 @@
              *ngIf="node.verbatim"
              [class.editable]="canEdit() && inlineEditMode()"
              (dblclick)="startInlineEdit(node, 'verbatim')">
-          <nz-divider nzSize="small"></nz-divider>
+
+          <nz-divider/>
+
           <div class="verbatim-label">
             <span nz-icon nzType="message" nzTheme="outline"></span>
             <span>{{ 'matching.editor.verbatim' | translate }}</span>

@@ -1,0 +1,8 @@
+{
+  "matchingStatus": {
+    "AUTOMATICALLY_MATCHED": "Automatisch zugeordnet",
+    "MANUALLY_MATCHED": "Manuell zugeordnet",
+    "UNMATCHED": "Nicht zugeordnet",
+    "MATCHING_CONFLICT": "Zuordnungskonflikt"
+  }
+}

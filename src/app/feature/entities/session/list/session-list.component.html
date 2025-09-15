@@ -81,7 +81,7 @@
             <!-- Status will be derived from matching versions -->
             @if (session.status) {
               <nz-tag [nzColor]="getStatusColor(session.status)">
-                {{ ('versionStatus.' + session.status) | translate }}
+                {{ 'versionStatus.' + session.status | translate | titlecase }}
               </nz-tag>
             } @else {
               <strong>{{ '-' }}</strong>

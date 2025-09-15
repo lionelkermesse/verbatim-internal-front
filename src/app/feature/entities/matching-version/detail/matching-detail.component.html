@@ -33,7 +33,7 @@
               {{ 'matching.detail.subtitle' | translate }}
             </p>
             <nz-tag [nzColor]="getStatusColor(matchingVersion()?.status || '')">
-              {{ 'matching.status.' + (matchingVersion()?.status?.toLowerCase() || 'uploaded') | translate }}
+              {{ ('matchingStatus.' + (matchingVersion()?.status || 'UPLOADED')) | translate | titlecase}}
             </nz-tag>
           </ng-template>
         </nz-col>
@@ -114,7 +114,6 @@
                       <nz-tag
                         *ngIf="origin.status"
                         [nzColor]="getMatchingStatusColor(origin.status)"
-                        nzSize="small"
                       >
                         {{ origin.status }}
                       </nz-tag>
@@ -180,7 +179,6 @@
                     <nz-tag
                       *ngFor="let speaker of origin.speakers"
                       nzColor="blue"
-                      nzSize="small"
                     >
                       {{ getSpeakerDisplayName(speaker) }}
                     </nz-tag>
@@ -214,7 +212,7 @@
               </button>
             </div>
 
-            <nz-divider nzSize="small"></nz-divider>
+            <nz-divider/>
 
             <div class="detail-item">
               <span class="detail-label">{{ 'matching.detail.selected.title' | translate }}:</span>
@@ -232,7 +230,6 @@
                 <nz-tag
                   *ngFor="let speaker of selectedItem()?.speakers"
                   nzColor="blue"
-                  nzSize="small"
                 >
                   {{ getSpeakerDisplayName(speaker) }}
                 </nz-tag>

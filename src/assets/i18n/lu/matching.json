@@ -2,7 +2,7 @@
   "matching": {
     "upload": {
       "title": "Verbatim Fichier eroplueden",
-      "subtitle": "En DOCX Fichier eroplueden fir en neie verbatim matching ze kreéieren",
+      "subtitle": "En DOCX Fichier eroplueden fir en neie Verbatim-Transkript ze kreéieren",
       "breadcrumb": {
         "upload": "Fichier eroplueden"
       },
@@ -18,7 +18,7 @@
       },
       "file": {
         "title": "Verbatim Dokument",
-        "description": "Wielt den DOCX Fichier mat dem verbatim Transkript fir dës Sëtzung.",
+        "description": "Wielt den DOCX Fichier mam Verbatim-Transkript fir dës Sëtzung.",
         "sizeUnit": "MB"
       },
       "dropzone": {
@@ -37,18 +37,72 @@
         "processing": "Feeler bei der Veraarbechtung"
       },
       "retry": "Nach eng Kéier probéieren",
+      "instructions": {
+        "title": "Instruktiounen fir den Upload",
+        "format": {
+          "title": "Fichierformat",
+          "desc": "Nëmmen Microsoft Word (.docx) Fichieren ginn akzeptéiert."
+        },
+        "size": {
+          "title": "Fichiersgréisst",
+          "desc": "Maximal Fichiersgréisst ass 50MB fir eng optimal Veraarbechtung."
+        },
+        "validation": {
+          "title": "Validéierung",
+          "desc": "D'Fichiere ginn automatesch op Format an Inhaltsstruktur iwwerpréift."
+        }
+      },
+      "processing": {
+        "title": "Verbatim-Matching gëtt veraarbecht",
+        "description": "De System analyséiert d'Dokument a generéiert Matching-Resultater. Dëst kann e puer Minutten daueren."
+      },
       "cancel": "Ofbriechen",
       "start": "Matching starten"
     },
     "detail": {
       "title": "Matching-Versioun",
-      "subtitle": "Verbatim matching Resultater ukucken an änneren",
+      "subtitle": "Verbatim-Matching Resultater ukucken an änneren",
       "loading": "Matching Donnéeën lueden...",
       "breadcrumb": {
         "detail": "Versioun"
       },
       "save": "Ännerungen späicheren",
-      "validate": "Validéieren"
+      "validate": "Validéieren",
+      "tree": {
+        "title": "Evenementer-Hierarchie",
+        "subtitle": "Bam-Usiicht vun den Evenementer an Ënnerevenementer mat Spriecher a Verbatim-Inhalt",
+        "addEvent": "Evenement dobäisetzen",
+        "addInner": "Ënnerevenement dobäisetzen",
+        "edit": "Änneren",
+        "moveUp": "No uewen réckelen",
+        "moveDown": "No ënnen réckelen",
+        "delete": "Läschen"
+      },
+      "selected": {
+        "title": "Evenement-Detailer",
+        "edit": "Änneren",
+        "none": "Wielt en Evenement am Bam fir d'Detailer ze gesinn",
+        "lineNumber": "Linnennummer",
+        "speakers": "Spriecher",
+        "verbatim": "Verbatim Inhalt",
+        "status": "Zoudeelungsstatus"
+      },
+      "edit": {
+        "title": "Evenement änneren",
+        "titleRequired": "Titel ass erfuerderlech",
+        "titlePlaceholder": "Gitt den Evenementtitel an",
+        "speakers": "Spriecher",
+        "firstName": "Virnumm",
+        "lastName": "Numm",
+        "function": "Funktioun",
+        "party": "Partei",
+        "addSpeaker": "Spriecher dobäisetzen",
+        "removeSpeaker": "Ewechhuelen",
+        "verbatim": "Verbatim Inhalt",
+        "verbatimPlaceholder": "Verbatim Text aginn...",
+        "cancel": "Ofbriechen",
+        "save": "Ännerungen späicheren"
+      }
     },
     "status": {
       "uploaded": "Eropgelueden",
@@ -57,9 +111,80 @@
       "validated": "Validéiert",
       "error": "Feeler"
     },
+    "dashboard": {
+      "title": "Iwwersiicht vun de Matching-Versiounen",
+      "subtitle": "All Matching-Versiounen vun der Sëtzung verwalten",
+      "version": "Versioun",
+      "breadcrumb": {
+        "versions": "Matching-Versiounen"
+      },
+      "actions": {
+        "refresh": "Aktualiséieren",
+        "createNew": "Nei Versioun uleeën",
+        "view": "Ukucken",
+        "edit": "Änneren",
+        "more": "Méi Aktiounen",
+        "export": "Exportéieren",
+        "duplicate": "Duplizéieren",
+        "delete": "Läschen"
+      },
+      "stats": {
+        "total": "Total Versiounen",
+        "validated": "Validéiert",
+        "draft": "Entworf",
+        "error": "Feeler"
+      },
+      "search": {
+        "placeholder": "No Versiounen sichen..."
+      },
+      "filter": {
+        "placeholder": "No Status filteren",
+        "all": "All",
+        "draft": "Entworf",
+        "validated": "Validéiert",
+        "error": "Feeler"
+      },
+      "sort": {
+        "version": "Versioun",
+        "created": "Erstellungsdatum",
+        "status": "Status",
+        "progress": "Fortschrëtt"
+      },
+      "view": {
+        "grid": "Raster-Usiicht",
+        "list": "Lëscht-Usiicht",
+        "compact": "Kompakt Usiicht"
+      },
+      "results": {
+        "showing": "Weist",
+        "of": "vun",
+        "versions": "Versiounen"
+      },
+      "loading": "Matching-Versiounen lueden...",
+      "error": {
+        "title": "Versiounen konnten net geluede ginn",
+        "retry": "Nach eng Kéier probéieren"
+      },
+      "empty": {
+        "title": "Keng Matching-Versiounen",
+        "description": "Leet Är éischt Matching-Versioun un fir unzefänken.",
+        "createFirst": "Éischt Versioun uleeën"
+      },
+      "noResults": {
+        "title": "Keng Resultater fonnt",
+        "description": "Probéiert Är Sich- oder Filterkriterien unzepassen.",
+        "clearFilters": "Filtere läschen"
+      },
+      "matchingProgress": "Matching-Fortschrëtt",
+      "totalEvents": "Total Evenementer",
+      "matched": "Zougedeelt",
+      "conflicts": "Konflikter",
+      "events": "Evenementer"
+    },
     "editor": {
       "speakers": "Spriecher",
       "verbatim": "Verbatim Inhalt",
+      "line": "Linn",
       "view": {
         "enhancedTree": {
           "title": "Verbessert Bam-Usiicht",
@@ -81,6 +206,14 @@
           "addFirst": "Éischten Evenement dobäisetzen"
         }
       }
+    },
+    "views": {
+      "enhancedTree": "Verbessert Bam-Usiicht",
+      "enhancedTreeDesc": "Kompakt kaarte-baséiert Bam mat Inline-Änneren",
+      "flattenedCards": "Flaach Kaarten",
+      "flattenedCardsDesc": "All Evenementer op der selwechter Niveau, no Hierarchie sortéiert",
+      "nestedCards": "Verschachtelt Kaarten",
+      "nestedCardsDesc": "Visuellt Kaarten-Layout mat verschachtelter Struktur"
     }
   }
 }

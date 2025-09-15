@@ -1,0 +1,86 @@
+<div class="flattened-cards-view">
+  <div *ngFor="let node of nodes; trackBy: trackByNode" class="flattened-card-container">
+    <nz-card
+      [nzHoverable]="true"
+      [class.selected]="node.isSelected"
+      [class.root-event]="node.depth === 0"
+      [class.child-event]="node.depth > 0"
+      class="flattened-card"
+      (click)="onSelect(node)">
+
+      <div class="card-header">
+        <!-- Compact single-line layout: [expand] [title] [status] [line] [actions] -->
+        <div class="header-line">
+<!--          <div class="expand-section">-->
+<!--            <button-->
+<!--              *ngIf="node.hasChildren"-->
+<!--              nz-button-->
+<!--              nzType="text"-->
+<!--              nzSize="small"-->
+<!--              class="expand-toggle"-->
+<!--              (click)="onExpand(node); $event.stopPropagation()">-->
+<!--              <span nz-icon [nzType]="node.isExpanded ? 'minus-square' : 'plus-square'" nzTheme="outline"></span>-->
+<!--            </button>-->
+<!--            <div *ngIf="!node.hasChildren" class="expand-spacer"></div>-->
+<!--          </div>-->
+
+          <div class="title-section">
+            <span class="event-title">{{ node.title }}</span>
+          </div>
+
+          <div class="status-section">
+            <nz-tag [nzColor]="statusColorFn(node.status || 'UNMATCHED')">
+              {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
+            </nz-tag>
+            <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
+          </div>
+
+          <div class="actions-section" *ngIf="canEdit">
+            <nz-space nzSize="small">
+              <ng-container *ngFor="let action of actionProvider(node)">
+                <button
+                  *nzSpaceItem
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  [disabled]="action.disabled"
+                  [nz-tooltip]="action.tooltip"
+                  (click)="onAction(action, node, $event)">
+                  <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+            </nz-space>
+          </div>
+        </div>
+
+        <!-- Speakers on same line as label -->
+        <div class="speakers-line" *ngIf="node.speakers && node.speakers.length > 0">
+          <span class="speakers-label">
+            <span nz-icon nzType="team" nzTheme="outline"></span>
+            {{ 'matching.editor.speakers' | translate }}:
+          </span>
+          <nz-space nzSize="small" nzWrap>
+            <ng-container *ngFor="let speaker of node.speakers">
+              <nz-tag
+                *nzSpaceItem
+                nzColor="blue">
+                {{ speaker.fullName || (speaker.firstName + ' ' + speaker.lastName) }}
+              </nz-tag>
+            </ng-container>
+          </nz-space>
+        </div>
+      </div>
+
+      <!-- Verbatim section -->
+      <div class="card-content" *ngIf="node.verbatim">
+        <div class="verbatim-section">
+          <div class="verbatim-label">
+            <span nz-icon nzType="message" nzTheme="outline"></span>
+            {{ 'matching.editor.verbatim' | translate }}
+          </div>
+          <p class="verbatim-text">{{ node.verbatim }}</p>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>

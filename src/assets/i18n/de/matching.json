@@ -85,7 +85,7 @@
         "lineNumber": "Zeilennummer",
         "speakers": "Redner",
         "verbatim": "Verbatim-Inhalt",
-        "status": "Matching-Status"
+        "status": "Zuordnungsstatus"
       },
       "edit": {
         "title": "Ereignis bearbeiten",
@@ -184,6 +184,7 @@
     "editor": {
       "speakers": "Redner",
       "verbatim": "Verbatim-Inhalt",
+      "line": "Zeile",
       "view": {
         "enhancedTree": {
           "title": "Erweiterte Baumansicht",
