@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadComponent: () => import('./feature/login/login.component').then(m => m.LoginComponent),
     title: 'login.title'
   },
+  // Home route (will redirect to sessions for authenticated users)
+  {
+    path: 'home',
+    loadComponent: () => import('./feature/home/home.component').then(m => m.default)
+  },
   {
     path: 'auth',
     children: [
@@ -26,26 +31,25 @@ export const routes: Routes = [
 
   // Protected routes
   {
-    path: 'sessions',
+    path: '',
     // canActivate: [UserRouteAccessService],
-    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session.routes'),
+    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/entity.routes'),
   },
-  {
-    path: 'matching',
-    // canActivate: [UserRouteAccessService],
-    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.routes'),
-  },
-  {
-    path: 'referential',
-    // canActivate: [UserRouteAccessService],
-    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/referential/referential.routes'),
-  },
-  // Home route (will redirect to sessions for authenticated users)
-  {
-    path: 'home',
-    loadComponent: () => import('./feature/home/home.component').then(m => m.default)
-  },
-
+  // {
+  //   path: 'sessions',
+  //   // canActivate: [UserRouteAccessService],
+  //   loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session.routes'),
+  // },
+  // {
+  //   path: 'matching',
+  //   // canActivate: [UserRouteAccessService],
+  //   loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.routes'),
+  // },
+  // {
+  //   path: 'referential',
+  //   // canActivate: [UserRouteAccessService],
+  //   loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/referential/referential.routes'),
+  // },
   // Access denied page - temporary simple component
   {
     path: 'accessdenied',

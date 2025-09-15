@@ -13,8 +13,10 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 
-import { EnhancedTreeNode, TreeSelectionEvent, TreeNodeAction } from '../../models/matching-editor.models';
 import { ISpeaker } from '@chd-digital-verbatim-front/core/models';
+import {
+  EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent
+} from '@chd-digital-verbatim-front/feature/entities/matching-version/editor/matching-editor.models';
 
 @Component({
   selector: 'chd-enhanced-tree',

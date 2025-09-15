@@ -1,12 +1,12 @@
 {
   "global": {
-    "title": "VerbatimMatching",
+    "title": "Verbatim Matching",
     "menu": {
       "home": "Home",
       "entities": {
         "main": "Entities",
-        "sessionChd": "Session",
-        "matchingVersionChd": "Matching Version"
+        "session": "Session",
+        "matchingVersion": "Matching Version"
       },
       "account": {
         "main": "Account",

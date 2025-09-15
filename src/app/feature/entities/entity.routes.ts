@@ -2,16 +2,19 @@ import {Routes} from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'session',
-    data: {pageTitle: 'verbatimMatchingApp.session.home.title'},
-    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session-chd.routes'),
+    path: 'sessions',
+    data: {pageTitle: 'session.title'},
+    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session.routes'),
   },
   {
-    path: 'matching-version',
-    data: {pageTitle: 'verbatimMatchingApp.matchingVersion.home.title'},
-    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.routes'),
+    path: 'referential',
+    data: {pageTitle: 'referential.title'},
+    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/referential/referential.routes'),
   },
-  /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
+  {
+    path: 'matching',
+    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.routes'),
+  },
 ];
 
 export default routes;

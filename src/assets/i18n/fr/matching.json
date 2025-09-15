@@ -84,7 +84,7 @@
         "lineNumber": "Numéro de Ligne",
         "speakers": "Intervenants",
         "verbatim": "Contenu Verbatim",
-        "status": "Statut de Correspondance"
+        "status": "Statut"
       },
       "edit": {
         "title": "Modifier l'Événement",

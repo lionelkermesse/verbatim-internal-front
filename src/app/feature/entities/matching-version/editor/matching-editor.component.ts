@@ -1,7 +1,6 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -25,15 +24,16 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 
 // Components
 import { EnhancedTreeComponent } from './tree/enhanced-tree.component';
-import { MatchingEditorStateService } from '../services/matching-editor-state.service';
 import { MatchingVersionService } from '../matching-version.service';
 import {
   EnhancedTreeNode,
-  TreeSelectionEvent,
+  MatchingEditorConfig,
   TreeNodeAction,
-  MatchingEditorConfig
-} from '../models/matching-editor.models';
-import { IMatchingVersion } from '../matching-version-chd.model';
+  TreeSelectionEvent
+} from '../editor/matching-editor.models';
+import {
+  MatchingEditorStateService
+} from '@chd-digital-verbatim-front/feature/entities/matching-version/editor/matching-editor-state.service';
 
 type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
 

@@ -1,21 +1,20 @@
-import { Injectable, computed, signal, inject } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import {
-  MatchingEditorState,
-  EnhancedTreeNode,
-  VersionCardData,
-  MatchingStats,
-  TreeNodeAction,
+  DonutChartData,
   DragDropOperation,
+  EditorAction,
+  EnhancedTreeNode,
   InlineEditState,
   MatchingEditorConfig,
-  EditorAction,
-  UndoRedoState,
+  MatchingEditorState,
+  MatchingStats,
   MatchingValidation,
+  TreeNodeAction,
+  UndoRedoState,
   ValidationError,
   ValidationWarning,
-  DonutChartData,
-  MatchingProgressData
-} from '../models/matching-editor.models';
+  VersionCardData
+} from '../editor/matching-editor.models';
 import { IMatchingResult, IMatchingResultItem, ISpeaker } from '@chd-digital-verbatim-front/core/models';
 import { IMatchingVersion } from '../matching-version-chd.model';
 import { MatchingVersionService } from '../matching-version.service';
