@@ -156,11 +156,11 @@ export class MatchingUploadComponent implements OnInit {
         this.isProcessing.set(false);
         this.currentStep.set(4);
 
-        // Navigate to matching result page
+        // Navigate to matching editor page
         const matchingVersion = response.body;
         if (matchingVersion) {
           setTimeout(() => {
-            this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version]);
+            this.router.navigate(['/matching/editor', sessionIdentifier, matchingVersion.version]);
           }, 1000);
         }
       },

@@ -104,7 +104,7 @@ export class MatchingEditorComponent implements OnInit {
     return [
       { label: this.translate.instant('matching.editor.view.enhancedTree.title'), value: 'enhanced-tree' as ViewType, icon: 'node-index' },
       { label: this.translate.instant('matching.editor.view.flattened.title'), value: 'flattened-cards' as ViewType, icon: 'unordered-list' },
-      { label: this.translate.instant('matching.editor.view.nested.title'), value: 'nested-cards' as ViewType, icon: 'layout' }
+      // { label: this.translate.instant('matching.editor.view.nested.title'), value: 'nested-cards' as ViewType, icon: 'layout' }
     ];
   }
 

@@ -18,7 +18,8 @@
       },
       "file": {
         "title": "Verbatim-Dokument",
-        "description": "Wählen Sie die DOCX-Datei mit dem Verbatim-Transkript für diese Sitzung aus."
+        "description": "Wählen Sie die DOCX-Datei mit dem Verbatim-Transkript für diese Sitzung aus.",
+        "sizeUnit": "MB"
       },
       "dropzone": {
         "title": "Klicken oder Datei hierher ziehen",

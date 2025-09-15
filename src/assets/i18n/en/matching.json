@@ -18,7 +18,8 @@
       },
       "file": {
         "title": "Verbatim Document",
-        "description": "Select the DOCX file containing the verbatim transcript for this session."
+        "description": "Select the DOCX file containing the verbatim transcript for this session.",
+        "sizeUnit": "MB"
       },
       "dropzone": {
         "title": "Click or drag file to upload",
