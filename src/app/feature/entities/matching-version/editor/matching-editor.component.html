@@ -396,11 +396,6 @@
                 <div class="detail-value">{{ selectedItem()?.title }}</div>
               </div>
 
-              <div class="detail-item">
-                <span class="detail-label">{{ 'matching.detail.selected.lineNumber' | translate }}:</span>
-                <div class="detail-value">{{ selectedItem()?.lineNumber || 0 }}</div>
-              </div>
-
               <div class="detail-item" *ngIf="selectedItem()?.speakers && selectedItem()?.speakers!.length > 0">
                 <span class="detail-label">{{ 'matching.detail.selected.speakers' | translate }}:</span>
                 <div class="detail-value">
@@ -417,18 +412,25 @@
                 </div>
               </div>
 
+              <!-- Status and Line Number: labels on first row, values on second row -->
+              <div class="detail-item status-line-container">
+                <div class="status-line-wrapper">
+                  <div class="status-labels-row">
+                    <span class="detail-label">{{ 'matching.detail.selected.status' | translate }}:</span>
+                    <span class="detail-label">{{ 'matching.detail.selected.lineNumber' | translate }}:</span>
+                  </div>
+                  <div class="status-values-row">
+                    <nz-tag [nzColor]="getStatusColor(selectedItem()?.status || 'UNMATCHED')">
+                      {{ selectedItem()?.status || 'UNMATCHED' }}
+                    </nz-tag>
+                    <span class="detail-value">{{ selectedItem()?.lineNumber || 0 }}</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="detail-item" *ngIf="selectedItem()?.verbatim">
                 <span class="detail-label">{{ 'matching.detail.selected.verbatim' | translate }}:</span>
                 <div class="detail-value verbatim-content">{{ selectedItem()?.verbatim }}</div>
-              </div>
-
-              <div class="detail-item" *ngIf="selectedItem()?.status">
-                <span class="detail-label">{{ 'matching.detail.selected.status' | translate }}:</span>
-                <div class="detail-value">
-                  <nz-tag [nzColor]="getStatusColor(selectedItem()?.status || 'UNMATCHED')">
-                    {{ selectedItem()?.status || 'UNMATCHED' }}
-                  </nz-tag>
-                </div>
               </div>
             </div>
           </nz-card>
