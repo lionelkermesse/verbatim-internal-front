@@ -1,0 +1,10 @@
+{
+  "versionStatus": {
+    "null": "-",
+    "UPLOADED": "Eropgelueden",
+    "PROCESSING": "Am Gange",
+    "AWAITING_CORRECTION": "Waart op Korrektur",
+    "VALIDATED": "Validéiert",
+    "ERROR": "Feeler"
+  }
+}

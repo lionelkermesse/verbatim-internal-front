@@ -19,6 +19,7 @@ import {
 import { routes } from './app.routes';
 import { en_US, fr_FR, de_DE, NZ_I18N, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { isPlatformBrowser, registerLocaleData } from '@angular/common';
+import lu_LU from './config/ng-zorro-lu_LU';
 import en from '@angular/common/locales/en';
 import fr from '@angular/common/locales/fr';
 import de from '@angular/common/locales/de';
@@ -50,7 +51,7 @@ import {
 registerLocaleData(en);
 registerLocaleData(fr);
 registerLocaleData(de);
-registerLocaleData(lu);
+registerLocaleData(lu, 'lu');
 const routerFeatures: RouterFeatures[] = [
   withComponentInputBinding(),
   withNavigationErrorHandler((e: NavigationError) => {
@@ -127,7 +128,7 @@ export const appConfig: ApplicationConfig = {
           case 'de':
             return de_DE;
           case 'lu':
-            return fr_FR; // Use French for Luxembourgish as fallback
+            return lu_LU;
           default:
             return fr_FR;
         }

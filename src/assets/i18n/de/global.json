@@ -1,0 +1,80 @@
+{
+  "global": {
+    "title": "Verbatim Matching",
+    "menu": {
+      "home": "Startseite",
+      "entities": {
+        "main": "Entitäten",
+        "session": "Sitzung",
+        "matchingVersion": "Matching-Version"
+      },
+      "account": {
+        "main": "Konto",
+        "settings": "Einstellungen",
+        "password": "Passwort",
+        "sessions": "Sitzungen",
+        "login": "Anmelden",
+        "logout": "Abmelden",
+        "register": "Registrieren"
+      },
+      "language": "Sprache"
+    },
+    "messages": {
+      "info": {
+        "authenticated": {
+          "prefix": "Wenn Sie sich ",
+          "link": "anmelden",
+          "suffix": " möchten, können Sie die Standard-Konten verwenden:<br/>- Administrator (Anmeldung=\"admin\" und Passwort=\"admin\") <br/>- Benutzer (Anmeldung=\"user\" und Passwort=\"user\")."
+        }
+      }
+    },
+    "ribbon": {
+      "dev": "Entwicklung"
+    },
+    "item-count": "Zeige {{first}} - {{second}} von {{total}} Elementen."
+  },
+  "entity": {
+    "action": {
+      "addblob": "Blob hinzufügen",
+      "addimage": "Bild hinzufügen",
+      "back": "Zurück",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "open": "Öffnen",
+      "save": "Speichern",
+      "view": "Anzeigen",
+      "show": "{{otherEntity}} anzeigen"
+    },
+    "detail": {
+      "field": "Feld",
+      "value": "Wert"
+    },
+    "delete": {
+      "title": "Löschvorgang bestätigen"
+    },
+    "filters": {
+      "set": "Folgende Filter sind gesetzt",
+      "clear": "Filter löschen",
+      "clearAll": "Alle Filter löschen"
+    }
+  },
+  "error": {
+    "internalServerError": "Interner Serverfehler",
+    "server.not.reachable": "Server nicht erreichbar",
+    "url.not.found": "Nicht gefunden",
+    "NotNull": "Feld {{ fieldName }} darf nicht leer sein!",
+    "Size": "Feld {{ fieldName }} erfüllt nicht die Min/Max-Größenanforderungen!",
+    "userexists": "Anmeldename bereits verwendet!",
+    "emailexists": "E-Mail wird bereits verwendet!",
+    "idexists": "Eine neue {{ entityName }} kann nicht bereits eine ID haben",
+    "idnull": "Ungültige ID",
+    "idinvalid": "Ungültige ID",
+    "idnotfound": "ID kann nicht gefunden werden",
+    "file": {
+      "could.not.extract": "Datei konnte nicht extrahiert werden",
+      "not.image": "Datei sollte ein Bild sein, wurde aber als \"{{ fileType }}\" erkannt"
+    }
+  },
+  "footer": "Das ist Ihr Footer"
+}

@@ -71,6 +71,12 @@
       "empty": {
         "message": "Keine Matching-Versionen gefunden",
         "description": "Diese Sitzung hat noch keine Matching-Versionen. Erstellen Sie ein neues Matching, um zu beginnen."
+      },
+      "deleteConfirm": {
+        "title": "Sind Sie sicher, dass Sie diese Matching-Version löschen möchten?",
+        "content": "Dadurch wird die Matching-Version {{version}} dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "okText": "Löschen",
+        "cancelText": "Abbrechen"
       }
     }
   }

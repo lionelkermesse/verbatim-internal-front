@@ -183,6 +183,20 @@
     "editor": {
       "speakers": "Redner",
       "verbatim": "Verbatim-Inhalt",
+      "view": {
+        "enhancedTree": {
+          "title": "Erweiterte Baumansicht",
+          "description": "Kompakter kartenbasierter Baum mit Inline-Bearbeitung"
+        },
+        "flattened": {
+          "title": "Abgeflachte Kartenansicht",
+          "description": "Alle Ereignisse auf derselben Ebene, nach Hierarchie geordnet"
+        },
+        "nested": {
+          "title": "Verschachtelte Kartenansicht",
+          "description": "Visuelles Kartenlayout mit verschachtelter Struktur"
+        }
+      },
       "tree": {
         "empty": {
           "title": "Keine Ereignisse gefunden",

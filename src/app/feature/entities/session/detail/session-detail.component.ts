@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // ng-zorro imports
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -20,6 +20,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { SessionService } from '@chd-digital-verbatim-front/feature/entities/session/session.service';
@@ -56,6 +57,7 @@ import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/s
     NzEmptyModule,
     NzDropDownModule,
     NzMenuModule,
+    NzModalModule,
     NzSpinModule,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe
@@ -68,6 +70,8 @@ export class SessionDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly sessionService = inject(SessionService);
   private readonly matchingVersionService = inject(MatchingVersionService);
+  private readonly modal = inject(NzModalService);
+  private readonly translate = inject(TranslateService);
 
   // Component state
   readonly session = signal<ISession | null>(null);
@@ -140,17 +144,27 @@ export class SessionDetailComponent implements OnInit {
 
   onDeleteMatching(matchingVersion: IMatchingVersion): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
-    if (sessionIdentifier && matchingVersion.version) {
-      this.matchingVersionService.deleteMatchingVersion(sessionIdentifier, matchingVersion.version).subscribe({
-        next: () => {
-          // Reload matching versions after successful delete
-          this.loadMatchingVersions(sessionIdentifier);
-        },
-        error: (error) => {
-          console.error('Error deleting matching version:', error);
-        }
-      });
-    }
+    if (!sessionIdentifier || !matchingVersion.version) return;
+
+    this.modal.confirm({
+      nzTitle: this.translate.instant('session.detail.deleteConfirm.title'),
+      nzContent: this.translate.instant('session.detail.deleteConfirm.content', { version: matchingVersion.version }),
+      nzOkText: this.translate.instant('session.detail.deleteConfirm.okText'),
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzCancelText: this.translate.instant('session.detail.deleteConfirm.cancelText'),
+      nzOnOk: () => {
+        this.matchingVersionService.deleteMatchingVersion(sessionIdentifier, matchingVersion.version!).subscribe({
+          next: () => {
+            // Reload matching versions after successful delete
+            this.loadMatchingVersions(sessionIdentifier);
+          },
+          error: (error) => {
+            console.error('Error deleting matching version:', error);
+          }
+        });
+      }
+    });
   }
 
   onExportMatching(matchingVersion: IMatchingVersion): void {

@@ -72,6 +72,12 @@
       "empty": {
         "message": "Aucune version de correspondance trouvée",
         "description": "Cette session n'a pas encore de versions de correspondance. Créez une nouvelle correspondance pour commencer."
+      },
+      "deleteConfirm": {
+        "title": "Êtes-vous sûr de vouloir supprimer cette version du matching ?",
+        "content": "Ceci supprimera définitivement la version {{version}} du matching. Cette action est irréversible.",
+        "okText": "Supprimer",
+        "cancelText": "Annuler"
       }
     }
   }

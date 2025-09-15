@@ -1,0 +1,103 @@
+{
+  "referential": {
+    "title": "Referential Gestioun",
+    "subtitle": "Referential Fichieren fir verbatim matching Konfiguratioun verwalten",
+    "tabs": {
+      "current": "Aktuell Referential",
+      "allFiles": "All Fichieren"
+    },
+    "upload": {
+      "button": "Neien Fichier eroplueden",
+      "title": "Referential Fichier eroplueden",
+      "subtitle": "En neien JSON oder XML referential Fichier eroplueden",
+      "dropzone": {
+        "title": "Klickt oder zitt de Fichier fir eropzelueden",
+        "description": "Ënnerstëtzung nëmmen fir JSON an XML Fichieren.",
+        "requirements": "Nëmmen JSON/XML Fichieren bis 10MB ginn ënnerstëtzt."
+      },
+      "success": "Fichier erfollegräich eropgelueden",
+      "error": {
+        "invalidFormat": "Nëmmen JSON an XML Fichieren ginn akzeptéiert",
+        "fileSize": "Fichiersgréisst muss manner wéi 10MB sinn",
+        "upload": "Feeler beim Eroplueden"
+      },
+      "file": {
+        "title": "Referential Konfiguratiounsfichier",
+        "description": "Wielt den JSON oder XML Fichier mat der referential Konfiguratioun."
+      },
+      "fileType": "Fichier",
+      "successDescription": "De referential Fichier gouf eropgelueden an ass elo aktiv.",
+      "instructions": {
+        "title": "Eroplueden Instruktiounen",
+        "format": {
+          "title": "Fichierformat",
+          "desc": "JSON oder XML Fichieren mat Korrespondenz-Regelen ginn akzeptéiert."
+        },
+        "size": {
+          "title": "Fichiersgréisst",
+          "desc": "Maximal Fichiersgréisst ass 10MB fir optimal Veraarbechtung."
+        },
+        "structure": {
+          "title": "Fichierstruktur",
+          "desc": "Fichieren sollen Korrespondenz-Regelen mat verbatim Begrëffer, Event Begrëffer an Match Typen enthalen."
+        }
+      },
+      "cancel": "Ofbriechen",
+      "upload": "Fichier eroplueden"
+    },
+    "current": {
+      "title": "Aktuell Referential",
+      "subtitle": "Detailer vum aktuell aktiven referential Fichier",
+      "uploadedBy": "Eropgelueden vum",
+      "uploadDate": "Eroplueden Datum",
+      "format": "Format",
+      "fileSize": "Fichiersgréisst",
+      "filename": "Fichiersnumm",
+      "similarityThreshold": "Ähnlechkeetsgrenz",
+      "correspondences": "Korrespondenzen",
+      "noCorrespondences": "Keng Korrespondenzen am aktuellen referential fonnt",
+      "download": "Aktuell eroflueden",
+      "showTable": "Tabell weisen",
+      "showRaw": "Raw Inhalt weisen",
+      "none": {
+        "title": "Kee aktiven Referential",
+        "description": "Kee referential Fichier ass aktuell aktiv. Luet en neien Fichier erop fir unzefänken."
+      }
+    },
+    "preview": {
+      "title": "Raw Inhalt Prevue"
+    },
+    "files": {
+      "title": "All Referential Fichieren",
+      "subtitle": "Histaire vun all eropgeluedenen referential Fichieren"
+    },
+    "table": {
+      "filename": "Fichiersnumm",
+      "format": "Format",
+      "size": "Gréisst",
+      "uploadedBy": "Eropgelueden vum",
+      "uploadDate": "Eroplueden Datum",
+      "status": "Status",
+      "actions": "Aktiounen",
+      "verbatimTerm": "Verbatim Begrëff",
+      "eventTerm": "Event Begrëff",
+      "type": "Typ",
+      "similarity": "Ähnlechkeet"
+    },
+    "type": {
+      "exact": "Exakt",
+      "approximate": "Approximativ"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "actions": {
+      "menu": "Fichier Aktiounen Menu",
+      "actions": "Aktiounen",
+      "download": "Eroflueden",
+      "preview": "Raw Inhalt Prevue",
+      "delete": "Läschen"
+    }
+  }
+}

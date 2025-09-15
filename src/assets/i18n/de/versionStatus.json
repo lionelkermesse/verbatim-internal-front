@@ -1,0 +1,10 @@
+{
+  "versionStatus": {
+    "null": "-",
+    "UPLOADED": "Hochgeladen",
+    "PROCESSING": "In Bearbeitung",
+    "AWAITING_CORRECTION": "Wartet auf Korrektur",
+    "VALIDATED": "Validiert",
+    "ERROR": "Fehler"
+  }
+}

@@ -65,7 +65,7 @@
       "breadcrumb": {
         "detail": "Version"
       },
-      "save": "Sauvegarder les Modifications",
+      "save": "Sauvegarder",
       "validate": "Valider",
       "tree": {
         "title": "Hiérarchie des Événements",
@@ -100,7 +100,7 @@
         "verbatim": "Contenu Verbatim",
         "verbatimPlaceholder": "Saisir le texte verbatim...",
         "cancel": "Annuler",
-        "save": "Sauvegarder les Modifications"
+        "save": "Sauvegarder"
       }
     },
     "status": {
@@ -183,6 +183,20 @@
     "editor": {
       "speakers": "Intervenants",
       "verbatim": "Contenu Verbatim",
+      "view": {
+        "enhancedTree": {
+          "title": "Vue Arborescente Améliorée",
+          "description": "Arbre compact basé sur des cartes avec édition en ligne"
+        },
+        "flattened": {
+          "title": "Vue Cartes Aplaties",
+          "description": "Tous les événements au même niveau, classés par hiérarchie"
+        },
+        "nested": {
+          "title": "Vue Cartes Imbriquées",
+          "description": "Mise en page visuelle de cartes avec structure imbriquée"
+        }
+      },
       "tree": {
         "empty": {
           "title": "Aucun Événement Trouvé",

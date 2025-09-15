@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -26,7 +26,10 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 export class NavbarComponent implements OnInit {
   selectedLanguage: string;
 
-  constructor(private translate: TranslateService) {
+  constructor(
+    private translate: TranslateService,
+    private router: Router,
+  ) {
     // Set default language
     this.selectedLanguage = this.translate.currentLang || 'fr';
   }
@@ -47,5 +50,10 @@ export class NavbarComponent implements OnInit {
       'lu': 'LU'
     };
     return codeMap[langCode] || langCode.toUpperCase();
+  }
+
+  isSessionsActive(): boolean {
+    const url = this.router.url || '';
+    return url.startsWith('/sessions') || url.startsWith('/matching');
   }
 }

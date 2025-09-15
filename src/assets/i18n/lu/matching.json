@@ -1,0 +1,85 @@
+{
+  "matching": {
+    "upload": {
+      "title": "Verbatim Fichier eroplueden",
+      "subtitle": "En DOCX Fichier eroplueden fir en neie verbatim matching ze kreéieren",
+      "breadcrumb": {
+        "upload": "Fichier eroplueden"
+      },
+      "steps": {
+        "upload": "Eroplueden",
+        "uploadDesc": "DOCX Fichier wielen",
+        "validate": "Validéieren",
+        "validateDesc": "Fichierformat iwwerpréiwen",
+        "process": "Veraarbechten",
+        "processDesc": "Matching generéieren",
+        "complete": "Fäerdeg",
+        "completeDesc": "Resultater weisen"
+      },
+      "file": {
+        "title": "Verbatim Dokument",
+        "description": "Wielt den DOCX Fichier mat dem verbatim Transkript fir dës Sëtzung."
+      },
+      "dropzone": {
+        "title": "Klickt oder zitt de Fichier hei op",
+        "description": "Ënnerstëtzung nëmmen fir eenzel Fichier-Uploads.",
+        "requirements": "Nëmmen DOCX Fichieren bis 50MB ginn ënnerstëtzt."
+      },
+      "validating": "Fichier gëtt validéiert...",
+      "ready": "Fichier ass prett fir d'Veraarbechtung",
+      "error": {
+        "general": "Validéierung fehlgeschloen",
+        "invalidFormat": "Nëmmen DOCX Fichieren ginn akzeptéiert",
+        "fileSize": "Fichiersgréisst muss manner wéi 50MB sinn",
+        "validation": "Fichiervalidéierung fehlgeschloen",
+        "server": "Serverfeeler bei der Validéierung",
+        "processing": "Feeler bei der Veraarbechtung"
+      },
+      "retry": "Nach eng Kéier probéieren",
+      "cancel": "Ofbriechen",
+      "start": "Matching starten"
+    },
+    "detail": {
+      "title": "Matching-Versioun",
+      "subtitle": "Verbatim matching Resultater ukucken an änneren",
+      "loading": "Matching Donnéeën lueden...",
+      "breadcrumb": {
+        "detail": "Versioun"
+      },
+      "save": "Ännerungen späicheren",
+      "validate": "Validéieren"
+    },
+    "status": {
+      "uploaded": "Eropgelueden",
+      "processing": "Am Gange",
+      "awaiting_correction": "Waart op Korrektur",
+      "validated": "Validéiert",
+      "error": "Feeler"
+    },
+    "editor": {
+      "speakers": "Spriecher",
+      "verbatim": "Verbatim Inhalt",
+      "view": {
+        "enhancedTree": {
+          "title": "Verbessert Bam-Usiicht",
+          "description": "Kompakt kaarte-baséiert Bam mat Inline-Änneren"
+        },
+        "flattened": {
+          "title": "Flaach Kaarten-Usiicht",
+          "description": "All Evenementer op der selwechter Niveau, no Hierarchie sortéiert"
+        },
+        "nested": {
+          "title": "Verschachtelt Kaarten-Usiicht",
+          "description": "Visuellt Kaarten-Layout mat verschachtelter Struktur"
+        }
+      },
+      "tree": {
+        "empty": {
+          "title": "Keng Evenementer fonnt",
+          "description": "Fänkt un andeems Dir Ären éischten Evenement dobäisetzt fir de Matching-Prozess ze starten.",
+          "addFirst": "Éischten Evenement dobäisetzen"
+        }
+      }
+    }
+  }
+}

@@ -108,7 +108,7 @@
       }
     }
 
-    // Segmented control styling
+    // Segmented control styling (selected state handled by global.scss)
     ::ng-deep .ant-segmented {
       background: #f5f5f5;
       border: 1px solid $border-color-base;
@@ -117,12 +117,6 @@
       .ant-segmented-item {
         font-size: 13px;
         font-weight: 500;
-
-        &.ant-segmented-item-selected {
-          background: $info-color;
-          color: $white;
-          border-radius: $border-radius-sm;
-        }
       }
     }
 

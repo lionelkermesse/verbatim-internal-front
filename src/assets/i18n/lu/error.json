@@ -1,0 +1,14 @@
+{
+  "error": {
+    "title": "Feeler Säit!",
+    "http": {
+      "400": "Schlecht Ufro.",
+      "403": "Dir sidd net berechtegt op dës Säit ze goen.",
+      "404": "Dës Säit existéiert net.",
+      "405": "Dat HTTP Verb dat Dir benotzt hutt gëtt net ënnerstëtzt fir dës URL.",
+      "500": "Internen Server Feeler."
+    },
+    "concurrencyFailure": "En aneren Benotzer huet dës Donnéeën zur selwechter Zäit wéi Dir geännert. Är Ännerungen goufen ofgeleent.",
+    "validation": "Validatiounsfeeler um Server."
+  }
+}

@@ -183,6 +183,20 @@
     "editor": {
       "speakers": "Speakers",
       "verbatim": "Verbatim Content",
+      "view": {
+        "enhancedTree": {
+          "title": "Enhanced Tree View",
+          "description": "Compact card-based tree with inline editing"
+        },
+        "flattened": {
+          "title": "Flattened Cards View",
+          "description": "All events at same level, ordered by hierarchy"
+        },
+        "nested": {
+          "title": "Nested Cards View",
+          "description": "Visual card layout with nested structure"
+        }
+      },
       "tree": {
         "empty": {
           "title": "No Events Found",

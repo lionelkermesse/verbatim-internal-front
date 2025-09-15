@@ -1,0 +1,14 @@
+{
+  "error": {
+    "title": "Fehlerseite!",
+    "http": {
+      "400": "Fehlerhafte Anfrage.",
+      "403": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen.",
+      "404": "Die Seite existiert nicht.",
+      "405": "Das verwendete HTTP-Verb wird für diese URL nicht unterstützt.",
+      "500": "Interner Serverfehler."
+    },
+    "concurrencyFailure": "Ein anderer Benutzer hat diese Daten zur gleichen Zeit wie Sie geändert. Ihre Änderungen wurden abgelehnt.",
+    "validation": "Validierungsfehler auf dem Server."
+  }
+}

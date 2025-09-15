@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // ng-zorro imports
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -21,6 +21,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 // Components
 import { EnhancedTreeComponent } from './tree/enhanced-tree.component';
@@ -61,12 +62,14 @@ type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
     NzDividerModule,
     NzProgressModule,
     NzCollapseModule,
+    NzInputModule,
     EnhancedTreeComponent
   ],
   templateUrl: './matching-editor.component.html',
   styleUrls: ['./matching-editor.component.scss']
 })
 export class MatchingEditorComponent implements OnInit {
+  private readonly translate = inject(TranslateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly stateService = inject(MatchingEditorStateService);
@@ -80,6 +83,9 @@ export class MatchingEditorComponent implements OnInit {
   // View state
   readonly currentViewType = signal<ViewType>('enhanced-tree');
   readonly showConfig = signal<boolean>(false);
+  readonly detailEditMode = signal<boolean>(false);
+  readonly editingTitle = signal<string>('');
+  readonly editingVerbatim = signal<string>('');
 
   // State from service
   readonly state = this.stateService.state;
@@ -92,11 +98,15 @@ export class MatchingEditorComponent implements OnInit {
   readonly canEdit = this.stateService.canEdit;
 
   // View options
-  readonly viewOptions = [
-    { label: 'Enhanced Tree', value: 'enhanced-tree', icon: 'node-index' },
-    { label: 'Flattened Cards', value: 'flattened-cards', icon: 'unordered-list' },
-    { label: 'Nested Cards', value: 'nested-cards', icon: 'layout' }
-  ];
+  viewOptions = this.buildViewOptions();
+
+  private buildViewOptions() {
+    return [
+      { label: this.translate.instant('matching.editor.view.enhancedTree.title'), value: 'enhanced-tree' as ViewType, icon: 'node-index' },
+      { label: this.translate.instant('matching.editor.view.flattened.title'), value: 'flattened-cards' as ViewType, icon: 'unordered-list' },
+      { label: this.translate.instant('matching.editor.view.nested.title'), value: 'nested-cards' as ViewType, icon: 'layout' }
+    ];
+  }
 
   // Computed property for current view index
   readonly currentViewIndex = computed(() => {
@@ -143,6 +153,11 @@ export class MatchingEditorComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // Rebuild segmented options when language changes
+    this.translate.onLangChange.subscribe(() => {
+      this.viewOptions = this.buildViewOptions();
+    });
+
     const sessionIdentifier = this.route.snapshot.paramMap.get('sessionIdentifier');
     const version = this.route.snapshot.paramMap.get('version');
     const editMode = this.route.snapshot.data['editMode'] || false;
@@ -203,8 +218,34 @@ export class MatchingEditorComponent implements OnInit {
   }
 
   onEditItem(node: EnhancedTreeNode): void {
-    // For now, just select the item - could open a detail panel
+    // Select the item and enable edit mode
     this.stateService.selectItem(node.id);
+    this.detailEditMode.set(true);
+    // Initialize editing values
+    this.editingTitle.set(node.title || '');
+    this.editingVerbatim.set(node.verbatim || '');
+  }
+
+  onSaveDetailEdit(): void {
+    const selectedItem = this.selectedItem();
+    if (!selectedItem) return;
+
+    // Update the item through state service
+    this.stateService.updateItemField(selectedItem.id, 'title', this.editingTitle());
+    this.stateService.updateItemField(selectedItem.id, 'verbatim', this.editingVerbatim());
+
+    // Exit edit mode
+    this.detailEditMode.set(false);
+  }
+
+  onCancelDetailEdit(): void {
+    // Reset editing values and exit edit mode
+    const selectedItem = this.selectedItem();
+    if (selectedItem) {
+      this.editingTitle.set(selectedItem.title || '');
+      this.editingVerbatim.set(selectedItem.verbatim || '');
+    }
+    this.detailEditMode.set(false);
   }
 
   onSave(): void {
@@ -293,20 +334,20 @@ export class MatchingEditorComponent implements OnInit {
   getCurrentViewTitle(): string {
     const viewType = this.currentViewType();
     switch (viewType) {
-      case 'enhanced-tree': return 'Enhanced Tree View';
-      case 'flattened-cards': return 'Flattened Cards View';
-      case 'nested-cards': return 'Nested Cards View';
-      default: return 'Tree View';
+      case 'enhanced-tree': return 'matching.editor.view.enhancedTree.title';
+      case 'flattened-cards': return 'matching.editor.view.flattened.title';
+      case 'nested-cards': return 'matching.editor.view.nested.title';
+      default: return 'matching.editor.view.enhancedTree.title';
     }
   }
 
   getCurrentViewDescription(): string {
     const viewType = this.currentViewType();
     switch (viewType) {
-      case 'enhanced-tree': return 'Compact card-based tree with inline editing';
-      case 'flattened-cards': return 'All events at same level, ordered by hierarchy';
-      case 'nested-cards': return 'Visual card layout with nested structure';
-      default: return 'Hierarchical view of events';
+      case 'enhanced-tree': return 'matching.editor.view.enhancedTree.description';
+      case 'flattened-cards': return 'matching.editor.view.flattened.description';
+      case 'nested-cards': return 'matching.editor.view.nested.description';
+      default: return 'matching.editor.view.enhancedTree.description';
     }
   }
 

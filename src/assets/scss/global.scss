@@ -72,6 +72,31 @@ p {
   }
 }
 
+// Segmented control styling (view mode selector) - use primary color with no flicker
+.ant-segmented {
+  .ant-segmented-thumb {
+    background: $primary-color !important;
+    border-color: $primary-color !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .ant-segmented-thumb-motion {
+    color: $white !important;
+    background: $primary-color !important;
+    border-color: $primary-color !important;
+  }
+
+  .ant-segmented-item {
+    transition: color 0.2s ease !important;
+
+    &.ant-segmented-item-selected {
+      color: $white !important;
+      background: $primary-color !important;
+      border-color: $primary-color !important;
+    }
+  }
+}
+
 .ant-btn {
   padding: 8px 20px;
   height: auto;

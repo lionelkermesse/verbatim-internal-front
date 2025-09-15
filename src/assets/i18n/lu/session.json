@@ -71,6 +71,12 @@
       "empty": {
         "message": "Keng Matching-Versiounen fonnt",
         "description": "Dës Sessioun huet nach keng Matching-Versiounen. Erstellt een neie Matching fir unzefänken."
+      },
+      "deleteConfirm": {
+        "title": "Sidd Dir sécher, datt Dir dës Matching-Versioun läsche wëllt?",
+        "content": "Dëst läscht d'Versioun {{version}} vum Matching dauerhaft. Dës Aktioun kann net réckgängeg gemaach ginn.",
+        "okText": "Läschen",
+        "cancelText": "Ofbriechen"
       }
     }
   }

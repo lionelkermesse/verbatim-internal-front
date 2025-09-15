@@ -1,0 +1,80 @@
+{
+  "global": {
+    "title": "Verbatim Matching",
+    "menu": {
+      "home": "Heem",
+      "entities": {
+        "main": "Entitéiten",
+        "session": "Sëtzung",
+        "matchingVersion": "Matching-Versioun"
+      },
+      "account": {
+        "main": "Kont",
+        "settings": "Astellungen",
+        "password": "Passwuert",
+        "sessions": "Sëtzungen",
+        "login": "Umellen",
+        "logout": "Ofmellen",
+        "register": "Registréieren"
+      },
+      "language": "Sprooch"
+    },
+    "messages": {
+      "info": {
+        "authenticated": {
+          "prefix": "Wann Dir Iech ",
+          "link": "umellen",
+          "suffix": " wëllt, kënnt Dir déi standard Konten benotzen:<br/>- Administrator (Login=\"admin\" a Passwuert=\"admin\") <br/>- Benotzer (Login=\"user\" a Passwuert=\"user\")."
+        }
+      }
+    },
+    "ribbon": {
+      "dev": "Entwécklung"
+    },
+    "item-count": "Weist {{first}} - {{second}} vu {{total}} Elementer."
+  },
+  "entity": {
+    "action": {
+      "addblob": "Blob dobäisetzen",
+      "addimage": "Bild dobäisetzen",
+      "back": "Zréck",
+      "cancel": "Ofbriechen",
+      "delete": "Läschen",
+      "edit": "Änneren",
+      "open": "Opmaachen",
+      "save": "Späicheren",
+      "view": "Weisen",
+      "show": "{{otherEntity}} weisen"
+    },
+    "detail": {
+      "field": "Feld",
+      "value": "Wäert"
+    },
+    "delete": {
+      "title": "Läschoperatioun confirméieren"
+    },
+    "filters": {
+      "set": "Folgend Filteren sinn agestallt",
+      "clear": "Filter läschen",
+      "clearAll": "All Filteren läschen"
+    }
+  },
+  "error": {
+    "internalServerError": "Internen Serverfeeler",
+    "server.not.reachable": "Server net erreichbar",
+    "url.not.found": "Net fonnt",
+    "NotNull": "Feld {{ fieldName }} däerf net eidel sinn!",
+    "Size": "Feld {{ fieldName }} erfëllt net d'Min/Max-Gréisst Ufuerderungen!",
+    "userexists": "Login-Numm gëtt schonn benotzt!",
+    "emailexists": "E-Mail gëtt schonn benotzt!",
+    "idexists": "Eng nei {{ entityName }} kann net schonn eng ID hunn",
+    "idnull": "Ongëlteg ID",
+    "idinvalid": "Ongëlteg ID",
+    "idnotfound": "ID kann net fonnt ginn",
+    "file": {
+      "could.not.extract": "Fichier konnt net extrahéiert ginn",
+      "not.image": "Fichier sollt e Bild sinn, gouf awer als \"{{ fileType }}\" erkannt"
+    }
+  },
+  "footer": "Dëst ass Ären Footer"
+}

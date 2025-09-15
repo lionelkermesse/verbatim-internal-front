@@ -107,6 +107,8 @@ module.exports = async (config, options, targetOptions) => {
         groupBy: [
           {pattern: './src/assets/i18n/fr/*.json', fileName: './i18n/fr.json'},
           {pattern: './src/assets/i18n/en/*.json', fileName: './i18n/en.json'},
+          {pattern: './src/assets/i18n/de/*.json', fileName: './i18n/de.json'},
+          {pattern: './src/assets/i18n/lu/*.json', fileName: './i18n/lu.json'},
         ],
       },
     }),

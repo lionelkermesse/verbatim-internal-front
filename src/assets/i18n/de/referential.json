@@ -2,6 +2,10 @@
   "referential": {
     "title": "Referenzdaten-Verwaltung",
     "subtitle": "Referenzdateien für Verbatim-Matching-Konfiguration verwalten",
+    "tabs": {
+      "current": "Aktuelle Referenzdaten",
+      "allFiles": "Alle Referenzdateien"
+    },
     "upload": {
       "button": "Neue Datei hochladen",
       "title": "Referenzdatei hochladen",

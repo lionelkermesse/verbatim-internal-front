@@ -72,6 +72,12 @@
       "empty": {
         "message": "No matching versions found",
         "description": "This session has no matching versions yet. Create a new matching to get started."
+      },
+      "deleteConfirm": {
+        "title": "Are you sure you want to delete this matching version?",
+        "content": "This will permanently delete matching version {{version}}. This action cannot be undone.",
+        "okText": "Delete",
+        "cancelText": "Cancel"
       }
     }
   }

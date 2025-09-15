@@ -5,7 +5,7 @@
 
   <!-- Navigation Links -->
   <nav class="navbar-nav">
-    <a [routerLink]="['/sessions']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="nav-link">
+    <a [routerLink]="['/sessions']" class="nav-link" [class.active]="isSessionsActive()">
       <span nz-icon nzType="table" nzTheme="outline"></span>
       {{ 'nav.sessions' | translate }}
     </a>
