@@ -249,9 +249,18 @@
                       <li nz-menu-divider></li>
                       <li
                         nz-menu-item
+                        (click)="onSetDefaultFile(file)"
+                        [nzDisabled]="file.isActive || isSettingDefault() === file.id"
+                      >
+                        <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+                        {{ 'referential.actions.setDefault' | translate }}
+                      </li>
+                      <li nz-menu-divider></li>
+                      <li
+                        nz-menu-item
                         nzDanger
                         (click)="onDeleteFile(file)"
-                        [class.disabled]="file.isActive"
+                        [nzDisabled]="file.isActive"
                       >
                         <span nz-icon nzType="delete" nzTheme="outline"></span>
                         {{ 'referential.actions.delete' | translate }}

@@ -52,4 +52,9 @@ export class ReferentialService {
   getCurrentReferential(): Observable<EntityResponseType> {
     return this.http.get<IReferentialFile>(`${this.resourceUrl}/current`, { observe: 'response' });
   }
+
+  // Set referential file as default
+  setDefault(id: number): Observable<EntityResponseType> {
+    return this.http.put<IReferentialFile>(`${this.resourceUrl}/${id}/default`, {}, { observe: 'response' });
+  }
 }

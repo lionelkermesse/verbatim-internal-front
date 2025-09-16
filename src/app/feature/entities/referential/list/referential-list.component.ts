@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // ng-zorro imports
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -20,11 +20,12 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
 import { ReferentialService } from '../referential.service';
 import { IReferentialFile, IReferentialContent } from '../models/referential.model';
+import { AlertService } from '@chd-digital-verbatim-front/core/util/alert.service';
 
 @Component({
   selector: 'chd-referential-list',
@@ -57,6 +58,9 @@ import { IReferentialFile, IReferentialContent } from '../models/referential.mod
 export class ReferentialListComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly referentialService = inject(ReferentialService);
+  private readonly modalService = inject(NzModalService);
+  private readonly alertService = inject(AlertService);
+  private readonly translate = inject(TranslateService);
 
   // Component state
   readonly currentReferential = signal<IReferentialFile | null>(null);
@@ -69,6 +73,7 @@ export class ReferentialListComponent implements OnInit {
   readonly previewModalVisible = signal<boolean>(false);
   readonly previewFile = signal<IReferentialFile | null>(null);
   readonly selectedTabIndex = signal<number>(0);
+  readonly isSettingDefault = signal<number | null>(null);
 
   ngOnInit(): void {
     this.loadCurrentReferential();
@@ -135,8 +140,54 @@ export class ReferentialListComponent implements OnInit {
     });
   }
 
+  onSetDefaultFile(file: IReferentialFile): void {
+    this.isSettingDefault.set(file.id);
+
+    this.referentialService.setDefault(file.id).subscribe({
+      next: () => {
+        // Reload both lists to ensure current content is refreshed
+        this.loadCurrentReferential();
+        this.loadAllFiles();
+        this.alertService.addAlert({
+          type: 'success',
+          translationKey: 'referential.actions.setDefaultSuccess',
+        });
+        this.isSettingDefault.set(null);
+      },
+      error: (error) => {
+        console.error('Error setting file as default:', error);
+        this.alertService.addAlert({
+          type: 'danger',
+          translationKey: 'referential.actions.setDefaultError',
+        });
+        this.isSettingDefault.set(null);
+      }
+    });
+  }
+
   onDeleteFile(file: IReferentialFile): void {
-    // TODO: Add confirmation modal
+    // Guard: Prevent deletion of active referential
+    if (file.isActive) {
+      this.alertService.addAlert({
+        type: 'warning',
+        translationKey: 'referential.actions.cannotDeleteActive',
+      });
+      return;
+    }
+
+    // Confirmation modal
+    this.modalService.confirm({
+      nzTitle: this.translate.instant('referential.confirm.deleteTitle'),
+      nzContent: this.translate.instant('referential.confirm.deleteContent'),
+      nzOkText: this.translate.instant('entity.action.delete'),
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => this.confirmDeleteFile(file),
+      nzCancelText: this.translate.instant('entity.action.cancel')
+    });
+  }
+
+  private confirmDeleteFile(file: IReferentialFile): void {
     this.referentialService.deleteFile(file.id).subscribe({
       next: () => {
         // Reload files after deletion
@@ -145,9 +196,17 @@ export class ReferentialListComponent implements OnInit {
         if (this.currentReferential()?.id === file.id) {
           this.loadCurrentReferential();
         }
+        this.alertService.addAlert({
+          type: 'success',
+          translationKey: 'entity.action.deleted',
+        });
       },
       error: (error) => {
         console.error('Error deleting file:', error);
+        this.alertService.addAlert({
+          type: 'danger',
+          translationKey: 'error.http.500',
+        });
       }
     });
   }

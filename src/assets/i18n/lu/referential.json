@@ -93,11 +93,19 @@
       "inactive": "Inaktiv"
     },
     "actions": {
-      "menu": "Fichier Aktiounen Menu",
+      "menu": "Datei-Aktiounsmenü",
       "actions": "Aktiounen",
       "download": "Eroflueden",
-      "preview": "Raw Inhalt Prevue",
+      "preview": "Rohdaten Visuell",
+      "setDefault": "Als Standard festleeën",
+      "setDefaultSuccess": "Standard-Referential aktualiséiert",
+      "setDefaultError": "Feeler beim Festleeën vum Standard-Referential",
+      "cannotDeleteActive": "Aktiven (Standard) Referential kann net geläscht ginn",
       "delete": "Läschen"
+    },
+    "confirm": {
+      "deleteTitle": "Datei läschen",
+      "deleteContent": "Sidd Dir sécher datt Dir dës Datei läsche wëllt?"
     }
   }
 }

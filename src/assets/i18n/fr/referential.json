@@ -93,11 +93,19 @@
       "inactive": "Inactif"
     },
     "actions": {
-      "menu": "Menu des actions de fichier",
+      "menu": "Menu d'actions du fichier",
       "actions": "Actions",
       "download": "Télécharger",
-      "preview": "Aperçu du Contenu Brut",
+      "preview": "Aperçu du contenu brut",
+      "setDefault": "Définir par défaut",
+      "setDefaultSuccess": "Référentiel par défaut mis à jour",
+      "setDefaultError": "Échec de la définition du référentiel par défaut",
+      "cannotDeleteActive": "Impossible de supprimer le référentiel actif (par défaut)",
       "delete": "Supprimer"
+    },
+    "confirm": {
+      "deleteTitle": "Supprimer le fichier",
+      "deleteContent": "Êtes-vous sûr de vouloir supprimer ce fichier ?"
     }
   }
 }

@@ -97,7 +97,15 @@
       "actions": "Actions",
       "download": "Download",
       "preview": "Preview Raw Content",
+      "setDefault": "Set as default",
+      "setDefaultSuccess": "Default referential updated",
+      "setDefaultError": "Failed to set referential as default",
+      "cannotDeleteActive": "Cannot delete the active (default) referential",
       "delete": "Delete"
+    },
+    "confirm": {
+      "deleteTitle": "Delete file",
+      "deleteContent": "Are you sure you want to delete this file?"
     }
   }
 }

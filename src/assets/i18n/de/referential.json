@@ -93,11 +93,19 @@
       "inactive": "Inaktiv"
     },
     "actions": {
-      "menu": "Dateiaktionen-Menü",
+      "menu": "Datei-Aktionsmenü",
       "actions": "Aktionen",
       "download": "Herunterladen",
-      "preview": "Rohdaten-Vorschau",
+      "preview": "Rohen Inhalt Vorschau",
+      "setDefault": "Als Standard festlegen",
+      "setDefaultSuccess": "Standard-Referential aktualisiert",
+      "setDefaultError": "Fehler beim Festlegen des Standard-Referentials",
+      "cannotDeleteActive": "Aktives (Standard) Referential kann nicht gelöscht werden",
       "delete": "Löschen"
+    },
+    "confirm": {
+      "deleteTitle": "Datei löschen",
+      "deleteContent": "Sind Sie sicher, dass Sie diese Datei löschen möchten?"
     }
   }
 }
