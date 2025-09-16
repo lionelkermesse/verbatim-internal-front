@@ -12,7 +12,7 @@
         <div class="card-header">
           <div class="title-status">
             <h4 class="event-title">{{ node.title }}</h4>
-            <nz-tag [nzColor]="statusColorFn(node.status || 'UNMATCHED')">
+            <nz-tag [nzColor]="statusColorFn()(node.status || 'UNMATCHED')">
               {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
             </nz-tag>
           </div>
@@ -56,7 +56,7 @@
   </ng-template>
 
   <!-- Render root nodes -->
-  <ng-container *ngFor="let node of nodes">
+  <ng-container *ngFor="let node of nodes()">
     <ng-container *ngTemplateOutlet="nestedNodeTemplate; context: { node: node, depth: 0 }"></ng-container>
   </ng-container>
 </div>

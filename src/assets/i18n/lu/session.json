@@ -1,9 +1,17 @@
 {
   "session": {
-    "title": "Sessioune",
-    "subtitle": "Verbatim-Matching-Sessioune geréieren",
+    "title": "Sessiounen",
+    "subtitle": "Parlamentaresch Sessiounen an hir Behandlung verwalten",
     "search": {
-      "placeholder": "Sessioune no Kennung oder Datum sichen..."
+      "placeholder": "Sichen no Sessiouns-Identifikateur oder Datum...",
+      "dateRange": {
+        "label": "Datumsbereich",
+        "placeholder": "Datumsbereich wielen",
+        "defaultHint": "Weist Sessiounen vun de leschten 7 Deeg"
+      },
+      "apply": "Uwenden",
+      "reset": "Zerécksetzen",
+      "invalidRange": "Ongültegen Datumsbereich"
     },
     "table": {
       "identifier": "Sessiouns-Kennung",

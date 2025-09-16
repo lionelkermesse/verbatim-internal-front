@@ -26,6 +26,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { MatchingVersionService } from '../matching-version.service';
 import { IMatchingVersion } from '../matching-version-chd.model';
 import { VersionStatus, IMatchingResult, IMatchingResultItem, ISpeaker } from '@chd-digital-verbatim-front/core/models';
+import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
 
 @Component({
   selector: 'chd-matching-detail',
@@ -71,6 +72,7 @@ export class MatchingDetailComponent implements OnInit {
   readonly isEditMode = signal<boolean>(false);
   readonly hasChanges = signal<boolean>(false);
   readonly isSaving = signal<boolean>(false);
+  readonly getStatusColor = getStatusColor;
 
   // Edit drawer state
   readonly editDrawerVisible = signal<boolean>(false);
@@ -350,17 +352,6 @@ export class MatchingDetailComponent implements OnInit {
 
   getSpeakerDisplayName(speaker: ISpeaker): string {
     return speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
-  }
-
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'UPLOADED': return 'purple';
-      case 'PROCESSING': return 'blue';
-      case 'AWAITING_CORRECTION': return 'orange';
-      case 'VALIDATED': return 'green';
-      case 'ERROR': return 'red';
-      default: return 'default';
-    }
   }
 
   getMatchingStatusColor(status: string): string {

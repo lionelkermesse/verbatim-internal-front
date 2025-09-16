@@ -13,3 +13,14 @@ export interface ISession {
 }
 
 export type NewSession = Omit<ISession, 'id'> & { id: null };
+
+export interface ISessionPage {
+  content: ISession[];
+  totalElements: number;
+  totalPages: number;
+  number: number; // 0-based page number
+  size: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+}

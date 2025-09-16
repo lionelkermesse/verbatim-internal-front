@@ -17,6 +17,7 @@ import { ISpeaker } from '@chd-digital-verbatim-front/core/models';
 import {
   EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/editor/matching-editor.models';
+import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
 
 @Component({
   selector: 'chd-enhanced-tree',
@@ -41,6 +42,9 @@ export class EnhancedTreeComponent {
   readonly treeNodes = input.required<EnhancedTreeNode[]>();
   readonly canEdit = input<boolean>(false);
   readonly inlineEditMode = input<boolean>(true);
+
+  // Utils
+  readonly getStatusColor = getStatusColor;
 
   // Outputs
   readonly onNodeSelect = output<TreeSelectionEvent>();
@@ -168,16 +172,6 @@ export class EnhancedTreeComponent {
     return node.actions.filter(action => action.visible && !action.disabled);
   }
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'AUTOMATICALLY_MATCHED': return 'green';
-      case 'MANUALLY_MATCHED': return 'blue';
-      case 'UNMATCHED': return 'orange';
-      case 'MATCHING_CONFLICT': return 'red';
-      default: return 'default';
-    }
-  }
-
   getSpeakerDisplayName(speaker: ISpeaker): string {
     return speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
   }
@@ -196,4 +190,5 @@ export class EnhancedTreeComponent {
     }
     return null;
   }
+
 }

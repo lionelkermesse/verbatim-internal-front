@@ -1,9 +1,17 @@
 {
   "session": {
     "title": "Sessions",
-    "subtitle": "Gérer les sessions de correspondance verbatim",
+    "subtitle": "Gérer les sessions parlementaires et leur traitement",
     "search": {
-      "placeholder": "Rechercher par identifiant ou date de session..."
+      "placeholder": "Rechercher par identifiant de session ou date...",
+      "dateRange": {
+        "label": "Plage de dates",
+        "placeholder": "Sélectionner une plage de dates",
+        "defaultHint": "Affichage des sessions des 7 derniers jours"
+      },
+      "apply": "Appliquer",
+      "reset": "Réinitialiser",
+      "invalidRange": "Plage de dates invalide"
     },
     "table": {
       "identifier": "Identifiant de Session",

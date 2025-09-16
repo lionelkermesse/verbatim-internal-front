@@ -2,41 +2,81 @@
   <nz-content class="session-content">
     <!-- Page Header -->
     <div class="session-header">
-      <nz-row [nzGutter]="[16, 16]" nzAlign="middle" nzJustify="space-between">
-        <nz-col [nzSpan]="12">
-          <h1 nz-typography class="page-title">
-            {{ 'session.title' | translate }}
-          </h1>
-          <p nz-typography nzType="secondary" class="page-subtitle">
-            {{ 'session.subtitle' | translate }}
-          </p>
-        </nz-col>
-        <nz-col [nzSpan]="12" class="header-actions">
-          <!-- Search Input -->
-          <nz-input-group nzSuffixIcon="search" class="search-input">
-            <input
-              type="text"
-              nz-input
-              [placeholder]="'session.search.placeholder' | translate"
-              [(ngModel)]="searchTerm"
-              (ngModelChange)="onSearch()"
-            />
-          </nz-input-group>
-        </nz-col>
-      </nz-row>
+      <h1 nz-typography class="page-title">
+        {{ 'session.title' | translate }}
+      </h1>
+      <p nz-typography nzType="secondary" class="page-subtitle">
+        {{ 'session.subtitle' | translate }}
+      </p>
     </div>
 
     <!-- Sessions Table -->
     <nz-card [nzBordered]="false" class="sessions-card">
+      <!-- Search Controls -->
+      <div class="search-controls" style="margin-bottom: 16px;">
+        <nz-row [nzGutter]="[16, 16]" nzAlign="middle">
+          <nz-col [nzSpan]="16">
+            <div class="date-range-section">
+              <span>{{ 'session.search.dateRange.label' | translate }}</span>
+              <nz-space nzSize="small" style="margin-left: 8px;">
+                <nz-range-picker
+                  *nzSpaceItem
+                  [(ngModel)]="dateRangeModel"
+                  (ngModelChange)="onDateRangeModelChange($event)"
+                  [nzFormat]="'dd-MM-yyyy'"
+                  class="date-range-picker"
+                />
+                <button
+                  *nzSpaceItem
+                  nz-button
+                  nzType="primary"
+                  nzSize="small"
+                  [disabled]="!isRangeValid()"
+                  (click)="onApplyRange()"
+                >
+                  {{ 'session.search.apply' | translate }}
+                </button>
+                <button
+                  *nzSpaceItem
+                  nz-button
+                  nzSize="small"
+                  (click)="onResetRange()"
+                >
+                  {{ 'session.search.reset' | translate }}
+                </button>
+              </nz-space>
+            </div>
+            <p class="search-hint" style="margin: 4px 0 0 0; font-size: 12px; color: #999;">
+              {{ 'session.search.dateRange.defaultHint' | translate }}
+            </p>
+          </nz-col>
+          <nz-col [nzSpan]="8">
+            <div class="text-search-section">
+              <!-- Search Input -->
+              <nz-input-group nzSuffixIcon="search" class="search-input">
+                <input
+                  type="text"
+                  nz-input
+                  [placeholder]="'session.search.placeholder' | translate"
+                  [(ngModel)]="searchTerm"
+                  (ngModelChange)="onSearch()"
+                />
+              </nz-input-group>
+            </div>
+          </nz-col>
+        </nz-row>
+      </div>
       <nz-table
         #sessionsTable
         [nzData]="filteredSessions()"
         [nzLoading]="isLoading()"
-        [nzPageSize]="pageSize"
+        [nzPageSize]="pageSize()"
         [nzPageIndex]="pageIndex()"
         (nzPageIndexChange)="onPageIndexChange($event)"
+        (nzPageSizeChange)="onPageSizeChange($event)"
         [nzShowSizeChanger]="true"
         [nzPageSizeOptions]="[10, 20, 50]"
+        [nzTotal]="total()"
         nzShowPagination
         nzSize="middle"
         class="sessions-table"

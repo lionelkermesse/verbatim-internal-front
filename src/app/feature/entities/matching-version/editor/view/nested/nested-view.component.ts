@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -25,10 +25,10 @@ import { EnhancedTreeNode, TreeSelectionEvent } from '../../matching-editor.mode
   styleUrls: ['./nested-view.component.scss']
 })
 export class NestedViewComponent {
-  @Input() nodes: EnhancedTreeNode[] = [];
-  @Input() statusColorFn: (status: string) => string = () => 'default';
+  nodes = input<EnhancedTreeNode[]>([]);
+  statusColorFn = input<(status: string) => string>(() => 'default');
 
-  @Output() nodeSelect = new EventEmitter<TreeSelectionEvent>();
+  nodeSelect = output<TreeSelectionEvent>();
 
   onSelect(node: EnhancedTreeNode): void {
     this.nodeSelect.emit({ selectedNode: node, previousNode: null, selectionSource: 'click' });

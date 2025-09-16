@@ -37,6 +37,7 @@ import {
 import {
   MatchingEditorStateService
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/editor/matching-editor-state.service';
+import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
 
 type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
 
@@ -79,13 +80,16 @@ export class MatchingEditorComponent implements OnInit {
   private readonly stateService = inject(MatchingEditorStateService);
   private readonly matchingVersionService = inject(MatchingVersionService);
 
+  // Utils
+  readonly getStatusColor = getStatusColor;
+
   // Route parameters
   readonly sessionIdentifier = signal<string>('');
   readonly version = signal<number>(0);
   readonly isEditMode = signal<boolean>(false);
 
   // View state
-  readonly currentViewType = signal<ViewType>('enhanced-tree');
+  readonly currentViewType = signal<ViewType>('flattened-cards');
   readonly showConfig = signal<boolean>(false);
   readonly detailEditMode = signal<boolean>(false);
   readonly editingTitle = signal<string>('');
@@ -106,8 +110,8 @@ export class MatchingEditorComponent implements OnInit {
 
   private buildViewOptions() {
     return [
-      { label: this.translate.instant('matching.editor.view.enhancedTree.title'), value: 'enhanced-tree' as ViewType, icon: 'node-index' },
       { label: this.translate.instant('matching.editor.view.flattened.title'), value: 'flattened-cards' as ViewType, icon: 'unordered-list' },
+      { label: this.translate.instant('matching.editor.view.enhancedTree.title'), value: 'enhanced-tree' as ViewType, icon: 'node-index' },
       // { label: this.translate.instant('matching.editor.view.nested.title'), value: 'nested-cards' as ViewType, icon: 'layout' }
     ];
   }
@@ -139,7 +143,7 @@ export class MatchingEditorComponent implements OnInit {
             isSelected: !!child.isSelected,
             isDragSource: false,
             isDragTarget: false,
-            hasChildren: !!(child.inners && child.inners.length > 0),
+            hasChildren: (child.inners && child.inners.length > 0),
             actions: []
           } as unknown as EnhancedTreeNode;
 
@@ -303,26 +307,6 @@ export class MatchingEditorComponent implements OnInit {
 
   onConfigChange(partialConfig: Partial<MatchingEditorConfig>): void {
     this.stateService.updateConfig(partialConfig);
-  }
-
-  getStatusColor(status: string): string {
-    // Supports both version-level statuses and item-level matching statuses
-    switch (status) {
-      // Version statuses
-      case 'UPLOADED': return 'purple';
-      case 'PROCESSING': return 'blue';
-      case 'AWAITING_CORRECTION': return 'orange';
-      case 'VALIDATED': return 'green';
-      case 'ERROR': return 'red';
-
-      // Item (event) matching statuses
-      case 'AUTOMATICALLY_MATCHED': return 'green';
-      case 'MANUALLY_MATCHED': return 'blue';
-      case 'UNMATCHED': return 'orange';
-      case 'MATCHING_CONFLICT': return 'red';
-
-      default: return 'default';
-    }
   }
 
   getProgressPercentage(): number {

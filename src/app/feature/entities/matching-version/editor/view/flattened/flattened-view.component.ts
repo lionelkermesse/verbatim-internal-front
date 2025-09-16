@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -29,14 +29,14 @@ import { EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent } from '../../matc
   styleUrls: ['./flattened-view.component.scss']
 })
 export class FlattenedViewComponent {
-  @Input() nodes: EnhancedTreeNode[] = [];
-  @Input() canEdit: boolean = false;
-  @Input() statusColorFn: (status: string) => string = () => 'default';
-  @Input() actionProvider: (node: EnhancedTreeNode) => TreeNodeAction[] = () => [];
+  nodes = input<EnhancedTreeNode[]>([]);
+  canEdit = input<boolean>(false);
+  statusColorFn = input<(status: string) => string>(() => 'default');
+  actionProvider = input<(node: EnhancedTreeNode) => TreeNodeAction[]>(() => []);
 
-  @Output() nodeSelect = new EventEmitter<TreeSelectionEvent>();
-  @Output() nodeExpand = new EventEmitter<{ node: EnhancedTreeNode; expanded: boolean }>();
-  @Output() nodeAction = new EventEmitter<{ action: TreeNodeAction; node: EnhancedTreeNode }>();
+  nodeSelect = output<TreeSelectionEvent>();
+  nodeExpand = output<{ node: EnhancedTreeNode; expanded: boolean }>();
+  nodeAction = output<{ action: TreeNodeAction; node: EnhancedTreeNode }>();
 
   trackByNode(index: number, node: EnhancedTreeNode): number {
     return node.id;

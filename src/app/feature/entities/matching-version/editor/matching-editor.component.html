@@ -183,6 +183,18 @@
 
             <!-- View Content -->
             <div class="view-content">
+              <!-- Flattened Cards View -->
+              <chd-flattened-view
+                *ngIf="currentViewType() === 'flattened-cards'"
+                [nodes]="flattenedNodes()"
+                [canEdit]="canEdit()"
+                [statusColorFn]="getStatusColor.bind(this)"
+                [actionProvider]="getVisibleActions.bind(this)"
+                (nodeSelect)="onNodeSelect($event)"
+                (nodeExpand)="onNodeExpand($event)"
+                (nodeAction)="onNodeAction($event)">
+              </chd-flattened-view>
+
               <!-- Enhanced Tree View -->
               <div *ngIf="currentViewType() === 'enhanced-tree'" class="enhanced-tree-view">
                 <chd-enhanced-tree
@@ -195,18 +207,6 @@
                   (onInlineEdit)="onInlineEdit($event)">
                 </chd-enhanced-tree>
               </div>
-
-              <!-- Flattened Cards View -->
-              <chd-flattened-view
-                *ngIf="currentViewType() === 'flattened-cards'"
-                [nodes]="flattenedNodes()"
-                [canEdit]="canEdit()"
-                [statusColorFn]="getStatusColor.bind(this)"
-                [actionProvider]="getVisibleActions.bind(this)"
-                (nodeSelect)="onNodeSelect($event)"
-                (nodeExpand)="onNodeExpand($event)"
-                (nodeAction)="onNodeAction($event)">
-              </chd-flattened-view>
 
               <!-- Nested Cards View with Recursive Template -->
               <chd-nested-view

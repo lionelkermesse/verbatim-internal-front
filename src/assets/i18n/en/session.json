@@ -1,9 +1,17 @@
 {
   "session": {
     "title": "Sessions",
-    "subtitle": "Manage verbatim matching sessions",
+    "subtitle": "Manage parliamentary sessions and their processing",
     "search": {
-      "placeholder": "Search sessions by identifier or date..."
+      "placeholder": "Search by session identifier or date...",
+      "dateRange": {
+        "label": "Date range",
+        "placeholder": "Select date range",
+        "defaultHint": "Showing sessions from the last 7 days"
+      },
+      "apply": "Apply",
+      "reset": "Reset",
+      "invalidRange": "Invalid date range"
     },
     "table": {
       "identifier": "Session Identifier",

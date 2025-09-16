@@ -34,6 +34,7 @@ import {
 import FormatMediumDatetimePipe from '@chd-digital-verbatim-front/shared/pipes/date/format-medium-datetime.pipe';
 import FormatMediumDatePipe from '@chd-digital-verbatim-front/shared/pipes/date/format-medium-date.pipe';
 import { ISession } from '@chd-digital-verbatim-front/feature/entities/session/session.model';
+import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
 
 @Component({
   selector: 'chd-session-detail',
@@ -72,6 +73,9 @@ export class SessionDetailComponent implements OnInit {
   private readonly matchingVersionService = inject(MatchingVersionService);
   private readonly modal = inject(NzModalService);
   private readonly translate = inject(TranslateService);
+
+  // Utils
+  readonly getStatusColor = getStatusColor;
 
   // Component state
   readonly session = signal<ISession | null>(null);
@@ -191,18 +195,8 @@ export class SessionDetailComponent implements OnInit {
     this.router.navigate(['/sessions']);
   }
 
-  getStatusColor(status: keyof typeof VersionStatus): string {
-    switch (status) {
-      case 'UPLOADED': return 'purple';
-      case 'PROCESSING': return 'blue';
-      case 'AWAITING_CORRECTION': return 'orange';
-      case 'VALIDATED': return 'green';
-      case 'ERROR': return 'red';
-      default: return 'default';
-    }
-  }
-
   onPageIndexChange(pageIndex: number): void {
     this.pageIndex.set(pageIndex);
   }
+
 }
