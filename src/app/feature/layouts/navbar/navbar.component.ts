@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { StateStorageService } from '@chd-digital-verbatim-front/core/auth/state-storage.service';
 
 @Component({
   selector: 'app-navbar',
@@ -29,9 +30,14 @@ export class NavbarComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private router: Router,
+    private stateStorage: StateStorageService,
   ) {
-    // Set default language
-    this.selectedLanguage = this.translate.currentLang || 'fr';
+    // Initialize language from stored locale or current translate language, default to 'fr'
+    const stored = this.stateStorage.getLocale();
+    this.selectedLanguage = stored || this.translate.currentLang || 'fr';
+    if (stored && this.translate.currentLang !== stored) {
+      this.translate.use(stored);
+    }
   }
 
   ngOnInit(): void {
@@ -40,6 +46,8 @@ export class NavbarComponent implements OnInit {
   onLanguageChange(language: string): void {
     this.selectedLanguage = language;
     this.translate.use(language);
+    // Persist selection so TranslationModule can restore it on reload
+    this.stateStorage.storeLocale(language);
   }
 
   getLanguageCode(langCode: string): string {
