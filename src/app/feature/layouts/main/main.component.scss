@@ -12,8 +12,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  // Add margin bottom to account for footer height
-  margin-bottom: 0; // Footer will be in normal flow now
+  margin-bottom: 0;
 }
 
 .container-fluid {
@@ -22,7 +21,7 @@
   flex-direction: column;
   padding: 0;
 
-  .card.jh-card {
+  .card {
     flex: 1;
     border: none;
     border-radius: 0;
@@ -30,7 +29,7 @@
     background: $body-background;
     box-shadow: none;
     padding: 0;
-    min-height: calc(100vh - 64px - 60px); // Account for navbar and footer
+    min-height: calc(100vh - 64px - 60px);
   }
 }
 

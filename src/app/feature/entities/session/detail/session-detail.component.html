@@ -47,7 +47,7 @@
 
     <!-- Session Details Card -->
     <nz-card [nzBordered]="false" class="session-info-card" [nzLoading]="isLoadingSession()">
-      <nz-descriptions nzTitle="{{ 'session.detail.info.title' | translate }}" nzBordered [nzColumn]="2">
+      <nz-descriptions nzSize="small" nzTitle="{{ 'session.detail.info.title' | translate }}" nzBordered [nzColumn]="2">
         <nz-descriptions-item [nzTitle]="'session.detail.info.identifier' | translate">
           {{ session()?.sessionIdentifier || '-' }}
         </nz-descriptions-item>
@@ -88,7 +88,7 @@
           [nzPageSizeOptions]="[10, 20, 50]"
           [nzNoResult]="noResultTemplate"
           nzShowPagination
-          nzSize="middle"
+          nzSize="small"
           class="matching-versions-table"
         >
           <!-- Table Header -->

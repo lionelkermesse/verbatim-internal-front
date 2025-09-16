@@ -43,7 +43,7 @@
 
           <div *ngIf="currentReferential(); else noCurrentReferential" class="current-referential-info">
             <!-- Current Referential Details -->
-            <nz-descriptions nzBordered [nzColumn]="2" class="referential-details">
+            <nz-descriptions nzSize="small" nzBordered [nzColumn]="2" class="referential-details">
               <nz-descriptions-item [nzTitle]="'referential.current.uploadedBy' | translate">
                 {{ currentReferential()?.createdBy || '-' }}
               </nz-descriptions-item>
@@ -108,7 +108,7 @@
               <div *ngIf="!showRawContent() && currentReferential()?.rules?.correspondences && currentReferential()!.rules.correspondences.length > 0; else noCorrespondences">
                 <nz-table
                   [nzData]="currentReferential()?.rules?.correspondences || []"
-                  nzSize="middle"
+                  nzSize="small"
                   [nzPageSize]="10"
                   class="correspondences-table"
                 >
@@ -175,7 +175,7 @@
           <nz-table
             [nzData]="allFiles()"
             [nzLoading]="isLoadingFiles()"
-            nzSize="middle"
+            nzSize="small"
             [nzPageSize]="10"
             class="files-table"
           >

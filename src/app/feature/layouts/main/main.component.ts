@@ -13,6 +13,7 @@ import {NavbarComponent} from '@chd-digital-verbatim-front/feature/layouts/navba
   selector: 'chd-main',
   standalone: true,
   templateUrl: './main.component.html',
+  styleUrls: ['./main.component.scss'],
   providers: [AppPageTitleStrategy],
   imports: [RouterOutlet, FooterComponent, PageRibbonComponent, NavbarComponent],
 })

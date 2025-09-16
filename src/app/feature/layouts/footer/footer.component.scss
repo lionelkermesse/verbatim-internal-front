@@ -2,8 +2,6 @@
 
 // :host is used to target the host element of this component (chd-footer)
 :host {
-  // This ensures that the host element itself doesn't interfere with layout
-  // if it were, for example, an inline element by default.
   display: block;
 
   ::ng-deep nz-footer {
