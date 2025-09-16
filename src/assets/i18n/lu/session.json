@@ -31,7 +31,8 @@
       "view": "Detailer weisen",
       "edit": "Änneren",
       "delete": "Läschen",
-      "new": "Nei Matching"
+      "new": "Neie Matching",
+      "createMatching": "Matching erstellen"
     },
     "empty": {
       "message": "Keng Sessioune fonnt",

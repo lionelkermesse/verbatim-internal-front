@@ -114,16 +114,16 @@
                 >
                   <thead>
                     <tr>
-                      <th>{{ 'referential.table.verbatimTerm' | translate }}</th>
-                      <th>{{ 'referential.table.eventTerm' | translate }}</th>
-                      <th>{{ 'referential.table.type' | translate }}</th>
+                      <th nzAlign="center">{{ 'referential.table.verbatimTerm' | translate }}</th>
+                      <th nzAlign="center">{{ 'referential.table.eventTerm' | translate }}</th>
+                      <th nzAlign="center">{{ 'referential.table.type' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let correspondence of currentReferential()?.rules?.correspondences">
                       <td class="verbatim-term">{{ correspondence.verbatim_term }}</td>
                       <td class="event-term">{{ correspondence.event_term }}</td>
-                      <td class="correspondence-type">
+                      <td nzAlign="center" class="correspondence-type">
                         <nz-tag [nzColor]="correspondence.type === 'exact' ? 'green' : 'orange'">
                           {{ 'referential.type.' + correspondence.type | translate }}
                         </nz-tag>
@@ -181,12 +181,12 @@
           >
             <thead>
               <tr>
-                <th>{{ 'referential.table.filename' | translate }}</th>
-                <th>{{ 'referential.table.format' | translate }}</th>
-                <th>{{ 'referential.table.size' | translate }}</th>
-                <th>{{ 'referential.table.uploadedBy' | translate }}</th>
-                <th>{{ 'referential.table.uploadDate' | translate }}</th>
-                <th>{{ 'referential.table.status' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.filename' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.format' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.size' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.uploadedBy' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.uploadDate' | translate }}</th>
+                <th nzAlign="center">{{ 'referential.table.status' | translate }}</th>
                 <th nzAlign="center">{{ 'referential.table.actions' | translate }}</th>
               </tr>
             </thead>

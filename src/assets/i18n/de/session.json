@@ -31,7 +31,8 @@
       "view": "Details anzeigen",
       "edit": "Bearbeiten",
       "delete": "Löschen",
-      "new": "Neues Matching"
+      "new": "Neues Matching",
+      "createMatching": "Matching erstellen"
     },
     "empty": {
       "message": "Keine Sitzungen gefunden",

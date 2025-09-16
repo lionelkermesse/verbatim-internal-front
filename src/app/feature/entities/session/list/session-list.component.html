@@ -14,13 +14,14 @@
     <nz-card [nzBordered]="false" class="sessions-card">
       <!-- Search Controls -->
       <div class="search-controls" style="margin-bottom: 16px;">
-        <nz-row [nzGutter]="[16, 16]" nzAlign="middle">
+        <nz-row [nzGutter]="[16, 16]" nzAlign="top">
           <nz-col [nzSpan]="16">
             <div class="date-range-section">
               <span>{{ 'session.search.dateRange.label' | translate }}</span>
               <nz-space nzSize="small" style="margin-left: 8px;">
                 <nz-range-picker
                   *nzSpaceItem
+                  [nzSize]="'large'"
                   [(ngModel)]="dateRangeModel"
                   (ngModelChange)="onDateRangeModelChange($event)"
                   [nzFormat]="'dd-MM-yyyy'"
@@ -53,10 +54,11 @@
           <nz-col [nzSpan]="8">
             <div class="text-search-section">
               <!-- Search Input -->
-              <nz-input-group nzSuffixIcon="search" class="search-input">
+              <nz-input-group nzSuffixIcon="search" class="search-input" [nzSize]="'large'">
                 <input
                   type="text"
                   nz-input
+                  nzSize="large"
                   [placeholder]="'session.search.placeholder' | translate"
                   [(ngModel)]="searchTerm"
                   (ngModelChange)="onSearch()"
@@ -76,6 +78,7 @@
         (nzPageSizeChange)="onPageSizeChange($event)"
         [nzShowSizeChanger]="true"
         [nzPageSizeOptions]="[10, 20, 50]"
+        [nzNoResult]="noResultTemplate"
         [nzTotal]="total()"
         nzShowPagination
         nzSize="middle"
@@ -84,16 +87,16 @@
         <!-- Table Header -->
         <thead>
         <tr>
-          <th nzColumnKey="sessionIdentifier" nzShowSort>
+          <th nzAlign="center" nzColumnKey="sessionIdentifier" nzShowSort>
             {{ 'session.table.identifier' | translate }}
           </th>
-          <th nzColumnKey="sessionDate" nzShowSort>
+          <th nzAlign="center" nzColumnKey="sessionDate" nzShowSort>
             {{ 'session.table.date' | translate }}
           </th>
-          <th>
+          <th nzAlign="center">
             {{ 'session.table.status' | translate }}
           </th>
-          <th>
+          <th nzAlign="center" >
             {{ 'session.table.version' | translate }}
           </th>
           <th nzAlign="center">
@@ -135,19 +138,33 @@
             </div>
           </td>
 
-          <td nzAlign="center" class="session-actions">
+          <td nzAlign="left" class="session-actions">
             <nz-space nzSize="small">
-              <button
-                nz-button
-                *nzSpaceItem
-                nzType="link"
-                nzSize="small"
-                (click)="onSessionClick(session); $event.stopPropagation()"
-                [title]="'session.actions.view' | translate"
-              >
-                <span nz-icon nzType="eye" nzTheme="outline"></span>
-                {{ 'session.actions.view' | translate }}
-              </button>
+              @if (session.latestVersion) {
+                <button
+                  nz-button
+                  *nzSpaceItem
+                  nzType="link"
+                  nzSize="small"
+                  (click)="onSessionClick(session); $event.stopPropagation()"
+                  [title]="'session.actions.view' | translate"
+                >
+                  <span nz-icon nzType="eye" nzTheme="outline"></span>
+                  {{ 'session.actions.view' | translate }}
+                </button>
+              } @else {
+                <button
+                  nz-button
+                  *nzSpaceItem
+                  nzType="link"
+                  nzSize="small"
+                  (click)="onCreateMatching(session); $event.stopPropagation()"
+                  [title]="'session.actions.createMatching' | translate"
+                >
+                  <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+                  {{ 'session.actions.createMatching' | translate }}
+                </button>
+              }
             </nz-space>
           </td>
         </tr>
@@ -155,7 +172,7 @@
       </nz-table>
 
       <!-- Empty State -->
-      <div *ngIf="!isLoading() && filteredSessions().length === 0" class="empty-state">
+      <ng-template  #noResultTemplate>
         <nz-empty
           [nzNotFoundContent]="'session.empty.message' | translate"
           [nzNotFoundFooter]="emptyFooterTemplate"
@@ -166,7 +183,7 @@
             </p>
           </ng-template>
         </nz-empty>
-      </div>
+      </ng-template>
     </nz-card>
   </nz-content>
 </nz-layout>

@@ -69,20 +69,6 @@
     <nz-divider></nz-divider>
 
     <nz-card [nzBordered]="false" class="matching-versions-card">
-      @if (!isLoadingVersions() && matchingVersions().length === 0) {
-        <!-- Empty State -->
-        <div class="empty-state">
-          <nz-empty
-            [nzNotFoundContent]="emptyFooterTemplate"
-          >
-            <ng-template #emptyFooterTemplate>
-              <p nz-typography nzType="secondary">
-                {{ 'session.detail.empty.description' | translate }}
-              </p>
-            </ng-template>
-          </nz-empty>
-        </div>
-      } @else {
         <!-- Matching Versions Table -->
         <div class="card-header">
           <h2 nz-typography>{{ 'session.detail.matchingVersions.title' | translate }}</h2>
@@ -100,6 +86,7 @@
           (nzPageIndexChange)="onPageIndexChange($event)"
           [nzShowSizeChanger]="true"
           [nzPageSizeOptions]="[10, 20, 50]"
+          [nzNoResult]="noResultTemplate"
           nzShowPagination
           nzSize="middle"
           class="matching-versions-table"
@@ -107,11 +94,11 @@
           <!-- Table Header -->
           <thead>
           <tr>
-            <th>{{ 'session.detail.table.version' | translate }}</th>
-            <th>{{ 'session.detail.table.status' | translate }}</th>
-            <th>{{ 'session.detail.table.createdBy' | translate }}</th>
-            <th>{{ 'session.detail.table.createdDate' | translate }}</th>
-            <th>{{ 'session.detail.table.validatedBy' | translate }}</th>
+            <th nzAlign="center">{{ 'session.detail.table.version' | translate }}</th>
+            <th nzAlign="center">{{ 'session.detail.table.status' | translate }}</th>
+            <th nzAlign="center">{{ 'session.detail.table.createdBy' | translate }}</th>
+            <th nzAlign="center">{{ 'session.detail.table.createdDate' | translate }}</th>
+            <th nzAlign="center">{{ 'session.detail.table.validatedBy' | translate }}</th>
             <th nzAlign="center">{{ 'session.detail.table.actions' | translate }}</th>
           </tr>
           </thead>
@@ -199,7 +186,17 @@
           </tr>
           </tbody>
         </nz-table>
-      }
+
+        <!-- Empty State -->
+        <ng-template  #noResultTemplate>
+          <nz-empty [nzNotFoundContent]="emptyFooterTemplate">
+            <ng-template #emptyFooterTemplate>
+              <p nz-typography nzType="secondary">
+                {{ 'session.detail.empty.description' | translate }}
+              </p>
+            </ng-template>
+          </nz-empty>
+        </ng-template>
     </nz-card>
   </nz-content>
 </nz-layout>

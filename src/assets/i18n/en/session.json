@@ -32,7 +32,8 @@
       "view": "View Details",
       "edit": "Edit",
       "delete": "Delete",
-      "new": "New Matching"
+      "new": "New Matching",
+      "createMatching": "Create Matching"
     },
     "empty": {
       "message": "No sessions found",

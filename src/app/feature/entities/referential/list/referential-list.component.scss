@@ -146,6 +146,10 @@
 }
 
 .files-table {
+  .ant-table-tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
   .ant-table-thead > tr > th {
     background: $table-header-bg;
     color: $table-header-color;

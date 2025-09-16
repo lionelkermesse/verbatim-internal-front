@@ -128,7 +128,9 @@ export class SessionDetailComponent implements OnInit {
   onNewMatching(): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
     if (sessionIdentifier) {
-      this.router.navigate(['/matching/upload', sessionIdentifier]);
+      this.router.navigate(['/matching/upload', sessionIdentifier], {
+        state: { returnUrl: this.router.url }
+      });
     }
   }
 

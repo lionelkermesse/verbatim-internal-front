@@ -207,6 +207,12 @@ export class SessionListComponent implements OnInit {
     this.router.navigate(['/sessions', session.sessionIdentifier]);
   }
 
+  onCreateMatching(session: ISession): void {
+    this.router.navigate(['/matching/upload', session.sessionIdentifier], {
+      state: { returnUrl: this.router.url }
+    });
+  }
+
   onPageIndexChange(pageIndex: number): void {
     this.fetchPage(pageIndex);
   }

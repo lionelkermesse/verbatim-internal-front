@@ -29,10 +29,11 @@
       "error": "Erreur"
     },
     "actions": {
-      "view": "Voir les détails",
+      "view": "Voir détails",
       "edit": "Modifier",
       "delete": "Supprimer",
-      "new": "Nouvelle correspondance"
+      "new": "Nouveau matching",
+      "createMatching": "Créer un matching"
     },
     "empty": {
       "message": "Aucune session trouvée",

@@ -72,6 +72,9 @@ export class MatchingUploadComponent implements OnInit {
   readonly processingProgress = signal<number>(0);
   readonly currentStep = signal<number>(0);
 
+  // Navigation
+  private returnUrl: string | null = null;
+
   // Form
   uploadForm: FormGroup;
 
@@ -86,6 +89,11 @@ export class MatchingUploadComponent implements OnInit {
     if (sessionIdentifier) {
       this.loadSession(sessionIdentifier);
     }
+
+    // Read return URL from navigation state or query params
+    const nav = this.router.getCurrentNavigation();
+    const state = nav?.extras?.state || window.history.state;
+    this.returnUrl = state?.returnUrl ?? this.route.snapshot.queryParamMap.get('returnTo') ?? null;
   }
 
   private loadSession(sessionId: string): void {
@@ -183,11 +191,16 @@ export class MatchingUploadComponent implements OnInit {
   }
 
   onCancel(): void {
-    const sessionIdentifier = this.session()?.sessionIdentifier;
-    if (sessionIdentifier) {
-      this.router.navigate(['/sessions', sessionIdentifier]);
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
     } else {
-      this.router.navigate(['/sessions']);
+      // Fallback to session detail or sessions list
+      const sessionIdentifier = this.session()?.sessionIdentifier;
+      if (sessionIdentifier) {
+        this.router.navigate(['/sessions', sessionIdentifier]);
+      } else {
+        this.router.navigate(['/sessions']);
+      }
     }
   }
 
