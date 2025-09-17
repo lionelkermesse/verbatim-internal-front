@@ -35,7 +35,7 @@ export interface MatchingStats {
 }
 
 export interface TreeNodeAction {
-  type: 'edit' | 'delete' | 'add-child' | 'move-up' | 'move-down' | 'duplicate';
+  type: 'edit' | 'delete' | 'add-child' | 'move-up' | 'move-down' | 'duplicate' | 'set-as-root';
   icon: string;
   tooltip: string;
   visible: boolean;

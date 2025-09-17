@@ -22,11 +22,12 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalService, NzModalModule } from 'ng-zorro-antd/modal';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 
 // Components
 import { EnhancedTreeComponent } from './view/tree/enhanced-tree.component';
 import { FlattenedViewComponent } from './view/flattened/flattened-view.component';
-import { NestedViewComponent } from './view/nested/nested-view.component';
 import { MatchingVersionService } from '../matching-version.service';
 import {
   EnhancedTreeNode,
@@ -66,9 +67,10 @@ type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
     NzProgressModule,
     NzCollapseModule,
     NzInputModule,
+    NzModalModule,
+    NzSelectModule,
     EnhancedTreeComponent,
-    FlattenedViewComponent,
-    NestedViewComponent
+    FlattenedViewComponent
   ],
   templateUrl: './matching-editor.component.html',
   styleUrls: ['./matching-editor.component.scss']
@@ -79,6 +81,7 @@ export class MatchingEditorComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly stateService = inject(MatchingEditorStateService);
   private readonly matchingVersionService = inject(MatchingVersionService);
+  private readonly modal = inject(NzModalService);
 
   // Utils
   readonly getStatusColor = getStatusColor;
@@ -94,6 +97,14 @@ export class MatchingEditorComponent implements OnInit {
   readonly detailEditMode = signal<boolean>(false);
   readonly editingTitle = signal<string>('');
   readonly editingVerbatim = signal<string>('');
+
+  // New speaker form state
+  readonly newSpeaker = signal({
+    firstName: '',
+    lastName: '',
+    function: '',
+    party: ''
+  });
 
   // State from service
   readonly state = this.stateService.state;
@@ -175,6 +186,11 @@ export class MatchingEditorComponent implements OnInit {
       this.version.set(+version);
       this.isEditMode.set(editMode);
 
+      // Set appropriate view type based on mode
+      if (editMode) {
+        this.currentViewType.set('flattened-cards');
+      }
+
       // Set edit mode in state service
       this.stateService.setEditMode(editMode ? 'edit' : 'view');
 
@@ -213,11 +229,24 @@ export class MatchingEditorComponent implements OnInit {
       case 'delete':
         this.stateService.deleteItem(event.node.id);
         break;
+      case 'set-as-root':
+        // Re-parent the node to root level
+        this.stateService.moveToRoot(event.node.id);
+        break;
       case 'move-up':
       case 'move-down':
         // Implement move operations
         console.log('Move operation:', event.action.type, event.node.id);
         break;
+    }
+  }
+
+  onNodeDrop(event: { event: any; nodes: EnhancedTreeNode[]; dragDropOperation?: any }): void {
+    console.log('Node dropped:', event);
+
+    if (event.dragDropOperation) {
+      // Use the proper moveItem method with DragDropOperation
+      this.stateService.moveItem(event.dragDropOperation);
     }
   }
 
@@ -256,10 +285,36 @@ export class MatchingEditorComponent implements OnInit {
     this.detailEditMode.set(false);
   }
 
+  onDeleteSelectedItem(): void {
+    const selectedItem = this.selectedItem();
+    if (selectedItem) {
+      this.stateService.deleteItem(selectedItem.id);
+    }
+  }
+
+  hasDetailChanges(): boolean {
+    const selectedItem = this.selectedItem();
+    if (!selectedItem) return false;
+
+    return this.editingTitle() !== (selectedItem.title || '') ||
+           this.editingVerbatim() !== (selectedItem.verbatim || '');
+  }
+
   onSave(): void {
     const sessionIdentifier = this.sessionIdentifier();
     if (sessionIdentifier) {
-      this.stateService.saveChanges(sessionIdentifier);
+      this.stateService.saveAllChanges(sessionIdentifier);
+    }
+  }
+
+  onCancel(): void {
+    // Discard changes and navigate back to read view
+    const sessionIdentifier = this.sessionIdentifier();
+    const version = this.version();
+    if (sessionIdentifier) {
+      this.stateService.discardChanges(sessionIdentifier, version);
+      // Navigate back to read view
+      this.router.navigate(['/matching', sessionIdentifier, version]);
     }
   }
 
@@ -270,6 +325,21 @@ export class MatchingEditorComponent implements OnInit {
     const sessionIdentifier = matchingVersion.sessionIdentifier;
     const version = matchingVersion.version || 1;
 
+    // Show confirmation modal
+    this.modal.confirm({
+      nzTitle: this.translate.instant('matching.detail.validate.confirm.title'),
+      nzContent: this.translate.instant('matching.detail.validate.confirm.content'),
+      nzOkText: this.translate.instant('matching.detail.validate.confirm.ok'),
+      nzOkType: 'primary',
+      nzOkDanger: false,
+      nzCancelText: this.translate.instant('matching.detail.validate.confirm.cancel'),
+      nzOnOk: () => {
+        this.performValidation(sessionIdentifier, version);
+      }
+    });
+  }
+
+  private performValidation(sessionIdentifier: string, version: number): void {
     this.matchingVersionService.validateMatching(sessionIdentifier, version).subscribe({
       next: (response: any) => {
         const validatedMatchingVersion = response.body;
@@ -307,6 +377,19 @@ export class MatchingEditorComponent implements OnInit {
 
   onConfigChange(partialConfig: Partial<MatchingEditorConfig>): void {
     this.stateService.updateConfig(partialConfig);
+    // Update drag drop state when config changes
+    if (partialConfig.enableDragDrop !== undefined) {
+      this.stateService.updateState({
+        dragDropEnabled: partialConfig.enableDragDrop && this.canEdit()
+      });
+    }
+  }
+
+  onSpeakersChange(speakers: any[]): void {
+    const selectedItem = this.selectedItem();
+    if (selectedItem) {
+      this.stateService.updateItemField(selectedItem.id, 'speakers', speakers);
+    }
   }
 
   getProgressPercentage(): number {
@@ -354,5 +437,122 @@ export class MatchingEditorComponent implements OnInit {
 
   getVisibleActions(node: EnhancedTreeNode): TreeNodeAction[] {
     return node.actions?.filter(action => action.visible && !action.disabled) || [];
+  }
+
+  // Speaker Management Methods
+  updateNewSpeaker(field: string, value: string): void {
+    const current = this.newSpeaker();
+    this.newSpeaker.set({
+      ...current,
+      [field]: value
+    });
+  }
+
+  removeSpeaker(index: number): void {
+    const selectedItem = this.selectedItem();
+    if (selectedItem) {
+      this.stateService.removeSpeaker(selectedItem.id, index);
+    }
+  }
+
+  addExistingSpeaker(speaker: any): void {
+    const selectedItem = this.selectedItem();
+    if (selectedItem && speaker) {
+      this.stateService.assignSpeaker(selectedItem.id, speaker);
+    }
+  }
+
+  getAvailableSpeakers(): any[] {
+    const selectedItem = this.selectedItem();
+    if (!selectedItem) return [];
+
+    // Gather speakers from original matchingResult
+    const originalSpeakers = this.state().matchingResult?.speakers || [];
+
+    // Gather speakers from all events in the tree
+    const speakersFromEvents = new Set<any>();
+    const addSpeakersFromNode = (node: EnhancedTreeNode) => {
+      if (node.speakers && node.speakers.length > 0) {
+        node.speakers.forEach(speaker => {
+          // Use fullName as unique key since ISpeaker has no id
+          const key = speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
+          speakersFromEvents.add(JSON.stringify({ ...speaker, key }));
+        });
+      }
+      if (node.inners && node.inners.length > 0) {
+        (node.inners as EnhancedTreeNode[]).forEach(child => addSpeakersFromNode(child));
+      }
+    };
+
+    // Process all root nodes
+    this.treeNodes().forEach(rootNode => {
+      addSpeakersFromNode(rootNode);
+    });
+
+    // Convert set back to array of speaker objects
+    const eventSpeakers = Array.from(speakersFromEvents).map(speakerStr => {
+      const speaker = JSON.parse(speakerStr);
+      delete speaker.key; // Remove the temporary key
+      return speaker;
+    });
+
+    // Combine original speakers and event speakers, removing duplicates
+    const allSpeakers = [...originalSpeakers];
+    eventSpeakers.forEach(eventSpeaker => {
+      const exists = allSpeakers.some(speaker =>
+        (speaker.fullName || `${speaker.firstName} ${speaker.lastName}`) ===
+        (eventSpeaker.fullName || `${eventSpeaker.firstName} ${eventSpeaker.lastName}`)
+      );
+      if (!exists) {
+        allSpeakers.push(eventSpeaker);
+      }
+    });
+
+    // Filter out speakers that are already assigned to the current event
+    const assignedSpeakerNames = selectedItem.speakers.map(s =>
+      s.fullName || `${s.firstName} ${s.lastName}`
+    );
+
+    return allSpeakers.filter(speaker => {
+      const speakerFullName = speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
+      return !assignedSpeakerNames.includes(speakerFullName);
+    });
+  }
+
+  canAddNewSpeaker(): boolean {
+    const speaker = this.newSpeaker();
+    return !!(speaker.firstName.trim() && speaker.lastName.trim());
+  }
+
+  addNewSpeaker(): void {
+    const speaker = this.newSpeaker();
+    if (!this.canAddNewSpeaker()) return;
+
+    const selectedItem = this.selectedItem();
+    if (!selectedItem) return;
+
+    const firstName = speaker.firstName.trim();
+    const lastName = speaker.lastName.trim();
+    const fullName = `${firstName} ${lastName}`;
+
+    const newSpeakerData: any = {
+      firstName,
+      lastName,
+      fullName,
+      function: speaker.function.trim(),
+      party: speaker.party.trim(),
+      gender: '' // Default empty, could be enhanced with a gender field
+    };
+
+    // Add to the selected event
+    this.stateService.assignSpeaker(selectedItem.id, newSpeakerData);
+
+    // Reset the form
+    this.newSpeaker.set({
+      firstName: '',
+      lastName: '',
+      function: '',
+      party: ''
+    });
   }
 }

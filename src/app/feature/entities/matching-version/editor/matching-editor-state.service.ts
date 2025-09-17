@@ -111,8 +111,9 @@ export class MatchingEditorStateService {
         const matchingVersion = response.body;
         if (matchingVersion) {
           this._currentMatchingVersion.set(matchingVersion);
+          const matchingResult = matchingVersion.matchingResult || { result: [], speakers: [], matched: [], unMatched: [] };
           this.updateState({
-            matchingResult: matchingVersion.matchingResult || { result: [], speakers: [], matched: [], unMatched: [] },
+            matchingResult,
             isLoading: false
           });
           this.rebuildTreeNodes();
@@ -301,21 +302,43 @@ export class MatchingEditorStateService {
     this.updateItemField(eventId, 'speakers', updatedSpeakers);
   }
 
+  moveToRoot(itemId: number): void {
+    const currentResult = this._state().matchingResult;
+    if (!currentResult) return;
+
+    // Find the item and remove it from its current parent
+    const item = this.findItemInResult(currentResult, itemId);
+    if (!item) return;
+
+    // Remove from current parent
+    const updatedResult = this.removeItemFromTree(currentResult, itemId);
+
+    // Add to root level
+    const finalResult = {
+      ...updatedResult,
+      result: [...updatedResult.result, item]
+    };
+
+    this.updateState({
+      matchingResult: finalResult,
+      hasChanges: true
+    });
+    this.rebuildTreeNodes();
+    this.addToUndoStack({ type: 'MOVE_TO_ROOT', payload: { itemId }, timestamp: new Date() });
+  }
+
   saveChanges(sessionIdentifier: string): void {
     const currentVersion = this._currentMatchingVersion();
-    const selectedItem = this.selectedItem();
+    const currentResult = this._state().matchingResult;
 
-    if (!currentVersion || !selectedItem || !this.canSave()) return;
+    if (!currentVersion || !currentResult || !this.canSave()) return;
 
     this.updateState({ isSaving: true });
 
+    // Save the full tree as required (Option A format)
     const updateRequest = {
-      id: selectedItem.id,
       version: currentVersion.version || 1,
-      title: selectedItem.title,
-      verbatim: selectedItem.verbatim,
-      status: selectedItem.status,
-      speakers: selectedItem.speakers
+      matchingResult: currentResult
     };
 
     this.matchingVersionService.updateMatching(sessionIdentifier, updateRequest).subscribe({
@@ -338,9 +361,21 @@ export class MatchingEditorStateService {
     });
   }
 
+  saveAllChanges(sessionIdentifier: string): void {
+    // Alias for saveChanges - they do the same thing (save full tree)
+    this.saveChanges(sessionIdentifier);
+  }
+
+  discardChanges(sessionIdentifier: string, version: number): void {
+    // Reload the matching data to discard all local changes
+    this.updateState({ hasChanges: false });
+    this.loadMatchingData(sessionIdentifier, version);
+  }
+
   // Private helper methods
   private rebuildTreeNodes(): void {
     const result = this._state().matchingResult;
+
     if (!result?.result) {
       this._treeNodes.set([]);
       return;
@@ -370,29 +405,27 @@ export class MatchingEditorStateService {
     const isSelected = selectedKeys.includes(itemKey);
     const hasChildren = item.inners && item.inners.length > 0;
 
-    const actions: TreeNodeAction[] = this.generateTreeActions(editMode, !!hasChildren);
+    const actions: TreeNodeAction[] = this.generateTreeActions(editMode, hasChildren);
 
-    const enhancedNode: EnhancedTreeNode = {
+    return {
       ...item,
       isExpanded,
       isSelected,
       isDragSource: false,
       isDragTarget: false,
-      hasChildren: !!hasChildren,
+      hasChildren: hasChildren,
       depth,
       index: 0, // Will be set by parent
       parentId: parentId || undefined,
       actions,
       inners: hasChildren
         ? item.inners!.map((inner, index) => {
-            const childNode = this.buildEnhancedTreeNode(inner, depth + 1, item.id, expandedKeys, selectedKeys, editMode);
-            childNode.index = index;
-            return childNode;
-          })
+          const childNode = this.buildEnhancedTreeNode(inner, depth + 1, item.id, expandedKeys, selectedKeys, editMode);
+          childNode.index = index;
+          return childNode;
+        })
         : []
     };
-
-    return enhancedNode;
   }
 
   private generateTreeActions(editMode: 'view' | 'edit', hasChildren: boolean): TreeNodeAction[] {
@@ -537,7 +570,7 @@ export class MatchingEditorStateService {
 
   private validateInlineEdit(value: string, field: 'title' | 'verbatim' | null): boolean {
     if (field === 'title') {
-      return typeof value === 'string' && value.trim().length > 0;
+      return value.trim().length > 0;
     }
     return true; // Verbatim can be empty
   }
@@ -553,6 +586,23 @@ export class MatchingEditorStateService {
       }
     }
     return null;
+  }
+
+  private findItemInResult(result: IMatchingResult, itemId: number): IMatchingResultItem | null {
+    const findInItems = (items: IMatchingResultItem[]): IMatchingResultItem | null => {
+      for (const item of items) {
+        if (item.id === itemId) {
+          return item;
+        }
+        if (item.inners && item.inners.length > 0) {
+          const found = findInItems(item.inners);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    return findInItems(result.result);
   }
 
   private flattenTreeItems(items: IMatchingResultItem[]): IMatchingResultItem[] {
@@ -664,9 +714,32 @@ export class MatchingEditorStateService {
   }
 
   private performMoveOperation(result: IMatchingResult, operation: DragDropOperation): IMatchingResult {
-    // Implementation for drag-drop operations would go here
-    // This is a complex operation that requires careful handling of tree structure
-    console.log('Move operation:', operation);
+    console.log('Performing move operation:', operation);
+
+    if (operation.operation === 'reorder') {
+      // For flattened view reordering, we need to reorder items at the same level
+      const updatedResult = { ...result };
+
+      // Get all root level items
+      const items = [...updatedResult.result];
+
+      // Find source and target indices
+      const sourceIndex = operation.sourceIndex;
+      const targetIndex = operation.targetIndex;
+
+      if (sourceIndex >= 0 && targetIndex >= 0 && sourceIndex < items.length && targetIndex < items.length) {
+        // Move item from source to target position
+        const [movedItem] = items.splice(sourceIndex, 1);
+        items.splice(targetIndex, 0, movedItem);
+
+        updatedResult.result = items;
+      }
+
+      return updatedResult;
+    }
+
+    // Other move operations can be implemented here
+    console.log('Move operation not implemented:', operation.operation);
     return result;
   }
 

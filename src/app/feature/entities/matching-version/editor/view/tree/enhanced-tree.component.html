@@ -7,7 +7,7 @@
     [class.has-children]="node.hasChildren"
     [style.margin-left.px]="node.depth * 24">
 
-    <!-- Node Card -->
+    <!-- Node Card (READ-ONLY) -->
     <nz-card
       [nzHoverable]="true"
       [nzSize]="'small'"
@@ -32,25 +32,11 @@
             <div class="depth-indicator" [style.width.px]="node.depth * 2"></div>
           </div>
 
-        <!-- Compact Title, Status, Line on same line -->
+        <!-- Compact Title, Status, Line on same line (READ-ONLY) -->
         <div class="title-section">
           <div class="compact-header-line">
-            <div class="node-title"
-                 [class.editable]="canEdit() && inlineEditMode()"
-                 (dblclick)="startInlineEdit(node, 'title')">
-              <span *ngIf="!isEditingTitle(node)" class="title-text">{{ node.title }}</span>
-              <input
-                *ngIf="isEditingTitle(node)"
-                nz-input
-                [value]="editingValue()"
-                (input)="updateEditingValue($any($event.target).value)"
-                (blur)="commitEdit()"
-                (keydown.enter)="commitEdit()"
-                (keydown.escape)="cancelEdit()"
-                class="inline-edit-input"
-                placeholder="Enter event title"
-                #titleInput
-              />
+            <div class="node-title">
+              <span class="title-text">{{ node.title }}</span>
             </div>
 
             <div class="status-section">
@@ -61,24 +47,6 @@
             </div>
           </div>
         </div>
-
-          <!-- Node Actions -->
-          <div class="node-actions" *ngIf="canEdit()">
-            <nz-space nzSize="small">
-              <button
-                *ngFor="let action of getVisibleActions(node)"
-                nz-button
-                nzType="text"
-                nzSize="small"
-                [disabled]="action.disabled"
-                [nz-tooltip]="action.tooltip"
-                (click)="onActionClick(action, node); $event.stopPropagation()"
-                class="action-btn"
-                [class]="'action-' + action.type">
-                <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
-              </button>
-            </nz-space>
-          </div>
         </div>
 
         <!-- Speakers Section - Compact layout on same line -->
@@ -100,12 +68,8 @@
           </div>
         </div>
 
-        <!-- Verbatim Section -->
-        <div class="verbatim-section"
-             *ngIf="node.verbatim"
-             [class.editable]="canEdit() && inlineEditMode()"
-             (dblclick)="startInlineEdit(node, 'verbatim')">
-
+        <!-- Verbatim Section (READ-ONLY) -->
+        <div class="verbatim-section" *ngIf="node.verbatim">
           <nz-divider/>
 
           <div class="verbatim-label">
@@ -113,19 +77,7 @@
             <span>{{ 'matching.editor.verbatim' | translate }}</span>
           </div>
           <div class="verbatim-content">
-            <p *ngIf="!isEditingVerbatim(node)" class="verbatim-text">{{ node.verbatim }}</p>
-            <textarea
-              *ngIf="isEditingVerbatim(node)"
-              nz-input
-              [value]="editingValue()"
-              (input)="updateEditingValue($any($event.target).value)"
-              (blur)="commitEdit()"
-              (keydown.ctrl.enter)="commitEdit()"
-              (keydown.escape)="cancelEdit()"
-              class="inline-edit-textarea"
-              placeholder="Enter verbatim text"
-              rows="3">
-            </textarea>
+            <p class="verbatim-text">{{ node.verbatim }}</p>
           </div>
         </div>
       </div>
@@ -133,19 +85,11 @@
   </div>
 </div>
 
-<!-- Empty State -->
+<!-- Empty State (READ-ONLY) -->
 <div class="empty-tree" *ngIf="treeNodes().length === 0">
   <div class="empty-content">
     <span nz-icon nzType="file-text" nzTheme="outline" class="empty-icon"></span>
     <h4>{{ 'matching.editor.tree.empty.title' | translate }}</h4>
     <p>{{ 'matching.editor.tree.empty.description' | translate }}</p>
-    <button
-      *ngIf="canEdit()"
-      nz-button
-      nzType="primary"
-      (click)="onActionClick({ type: 'add-child', icon: 'plus', tooltip: 'Add event', visible: true, disabled: false }, $any({ id: 0 }))">
-      <span nz-icon nzType="plus" nzTheme="outline"></span>
-      {{ 'matching.editor.tree.empty.addFirst' | translate }}
-    </button>
   </div>
 </div>

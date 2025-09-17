@@ -2,6 +2,9 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
+// CDK imports for drag & drop
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
 // ng-zorro imports
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -18,6 +21,7 @@ import { EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent } from '../../matc
   imports: [
     CommonModule,
     TranslateModule,
+    DragDropModule,
     NzCardModule,
     NzButtonModule,
     NzIconModule,
@@ -37,6 +41,7 @@ export class FlattenedViewComponent {
   nodeSelect = output<TreeSelectionEvent>();
   nodeExpand = output<{ node: EnhancedTreeNode; expanded: boolean }>();
   nodeAction = output<{ action: TreeNodeAction; node: EnhancedTreeNode }>();
+  nodeDrop = output<{ event: CdkDragDrop<EnhancedTreeNode[]>; nodes: EnhancedTreeNode[]; dragDropOperation?: any }>();
 
   trackByNode(index: number, node: EnhancedTreeNode): number {
     return node.id;
@@ -53,5 +58,58 @@ export class FlattenedViewComponent {
   onAction(action: TreeNodeAction, node: EnhancedTreeNode, $event?: MouseEvent): void {
     if ($event) { $event.stopPropagation(); }
     this.nodeAction.emit({ action, node });
+  }
+
+  onSetAsRoot(node: EnhancedTreeNode, $event?: MouseEvent): void {
+    if ($event) { $event.stopPropagation(); }
+    const setAsRootAction: TreeNodeAction = {
+      type: 'set-as-root',
+      icon: 'drag',
+      tooltip: 'Set as root event',
+      visible: true,
+      disabled: false
+    };
+    this.nodeAction.emit({ action: setAsRootAction, node });
+  }
+
+  onDrop(event: CdkDragDrop<EnhancedTreeNode[]>): void {
+    if (event.previousIndex !== event.currentIndex) {
+      console.log('Drag & Drop - Previous index:', event.previousIndex, 'Current index:', event.currentIndex);
+
+      // Create DragDropOperation for the state service
+      const sourceNode = this.nodes()[event.previousIndex];
+      const targetIndex = event.currentIndex;
+
+      const dragDropOperation = {
+        sourceId: sourceNode.id,
+        targetId: -1, // Will be set by state service
+        operation: 'reorder' as 'move-before' | 'move-after' | 'move-into' | 'reorder',
+        sourceIndex: event.previousIndex,
+        targetIndex: targetIndex
+      };
+
+      this.nodeDrop.emit({ event, nodes: this.nodes(), dragDropOperation });
+    }
+  }
+
+  truncateText(text: string, maxLines: number = 2): string {
+    if (!text) return '';
+
+    // Estimate characters per line (roughly 80 characters per line)
+    const charsPerLine = 80;
+    const maxChars = maxLines * charsPerLine;
+
+    if (text.length <= maxChars) {
+      return text;
+    }
+
+    return text.substring(0, maxChars) + '...';
+  }
+
+  getDisplayText(text: string, isReadMode: boolean): string {
+    if (isReadMode) {
+      return this.truncateText(text, 2);
+    }
+    return text;
   }
 }

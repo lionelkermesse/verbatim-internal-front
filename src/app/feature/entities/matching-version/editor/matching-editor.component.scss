@@ -5,7 +5,23 @@
   background: $body-background;
   overflow-x: hidden;
 
-  .matching-editor-layout {
+  .btn-validate-green {
+  background-color: #52c41a !important;
+  border-color: #52c41a !important;
+
+  &:hover {
+    background-color: #73d13d !important;
+    border-color: #73d13d !important;
+  }
+
+  &:focus {
+    background-color: #73d13d !important;
+    border-color: #73d13d !important;
+    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2) !important;
+  }
+}
+
+.matching-editor-layout {
     //min-height: 100vh;
     background: $body-background;
 

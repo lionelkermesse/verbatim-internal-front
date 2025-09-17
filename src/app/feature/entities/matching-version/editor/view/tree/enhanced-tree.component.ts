@@ -40,30 +40,17 @@ import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
 })
 export class EnhancedTreeComponent {
   readonly treeNodes = input.required<EnhancedTreeNode[]>();
+  // Enhanced Tree is READ-ONLY - no editing functionality
   readonly canEdit = input<boolean>(false);
-  readonly inlineEditMode = input<boolean>(true);
 
   // Utils
   readonly getStatusColor = getStatusColor;
 
-  // Outputs
+  // Outputs (read-only operations only)
   readonly onNodeSelect = output<TreeSelectionEvent>();
   readonly onNodeExpand = output<{ node: EnhancedTreeNode; expanded: boolean }>();
-  readonly onNodeAction = output<{ action: TreeNodeAction; node: EnhancedTreeNode }>();
-  readonly onInlineEdit = output<{ node: EnhancedTreeNode; field: string; value: string }>();
 
-  // Inline editing state
-  private readonly editingState = signal<{
-    nodeId: number | null;
-    field: 'title' | 'verbatim' | null;
-    originalValue: string;
-  }>({
-    nodeId: null,
-    field: null,
-    originalValue: ''
-  });
-
-  readonly editingValue = signal<string>('');
+  // Enhanced Tree is READ-ONLY - no editing state needed
 
   // Flatten tree for easier rendering and better performance
   readonly displayNodes = computed(() => {
@@ -108,69 +95,7 @@ export class EnhancedTreeComponent {
     });
   }
 
-  onActionClick(action: TreeNodeAction, node: EnhancedTreeNode): void {
-    this.onNodeAction.emit({ action, node });
-  }
-
-  startInlineEdit(node: EnhancedTreeNode, field: 'title' | 'verbatim'): void {
-    if (!this.canEdit() || !this.inlineEditMode()) return;
-
-    const originalValue = field === 'title' ? node.title : (node.verbatim || '');
-
-    this.editingState.set({
-      nodeId: node.id,
-      field,
-      originalValue
-    });
-
-    this.editingValue.set(originalValue);
-  }
-
-  commitEdit(): void {
-    const state = this.editingState();
-    if (!state.nodeId || !state.field) return;
-
-    const node = this.findNodeById(state.nodeId);
-    if (!node) return;
-
-    const newValue = this.editingValue();
-    if (newValue !== state.originalValue) {
-      this.onInlineEdit.emit({
-        node,
-        field: state.field,
-        value: newValue
-      });
-    }
-
-    this.cancelEdit();
-  }
-
-  cancelEdit(): void {
-    this.editingState.set({
-      nodeId: null,
-      field: null,
-      originalValue: ''
-    });
-    this.editingValue.set('');
-  }
-
-  updateEditingValue(value: string): void {
-    this.editingValue.set(value);
-  }
-
-  isEditingTitle(node: EnhancedTreeNode): boolean {
-    const state = this.editingState();
-    return state.nodeId === node.id && state.field === 'title';
-  }
-
-  isEditingVerbatim(node: EnhancedTreeNode): boolean {
-    const state = this.editingState();
-    return state.nodeId === node.id && state.field === 'verbatim';
-  }
-
-  getVisibleActions(node: EnhancedTreeNode): TreeNodeAction[] {
-    return node.actions.filter(action => action.visible && !action.disabled);
-  }
+  // Enhanced Tree is READ-ONLY - no editing methods needed
 
   getSpeakerDisplayName(speaker: ISpeaker): string {
     return speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;

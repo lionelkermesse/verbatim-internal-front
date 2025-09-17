@@ -1,5 +1,11 @@
-<div class="flattened-cards-view">
-  <div *ngFor="let node of nodes(); trackBy: trackByNode" class="flattened-card-container">
+<div class="flattened-cards-view"
+     cdkDropList
+     [cdkDropListDisabled]="!canEdit()"
+     (cdkDropListDropped)="onDrop($event)">
+  <div *ngFor="let node of nodes(); trackBy: trackByNode"
+       class="flattened-card-container"
+       cdkDrag
+       [cdkDragDisabled]="!canEdit()">
     <nz-card
       [nzHoverable]="true"
       [class.selected]="node.isSelected"
@@ -7,6 +13,11 @@
       [class.child-event]="node.depth > 0"
       class="flattened-card"
       (click)="onSelect(node)">
+
+      <!-- Drag handle for edit mode (visual indicator only) -->
+      <div *ngIf="canEdit()" class="drag-handle">
+        <span nz-icon nzType="drag" nzTheme="outline"></span>
+      </div>
 
       <div class="card-header">
         <!-- Compact single-line layout: [expand] [title] [status] [line] [actions] -->
@@ -35,18 +46,69 @@
             <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
           </div>
 
-          <div class="actions-section" *ngIf="canEdit">
+          <div class="actions-section" *ngIf="canEdit()">
             <nz-space nzSize="small">
-              <ng-container *ngFor="let action of actionProvider()(node)">
+              <!-- Debug: Show canEdit status -->
+              <small *nzSpaceItem style="color: red;">Edit: {{canEdit() ? 'YES' : 'NO'}}</small>
+
+              <!-- Add Inner Event -->
+              <ng-container *nzSpaceItem>
                 <button
-                  *nzSpaceItem
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  [disabled]="action.disabled"
-                  [nz-tooltip]="action.tooltip"
-                  (click)="onAction(action, node, $event)">
-                  <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
+                  nz-tooltip="Add inner event"
+                  (click)="onAction({type: 'add-child', icon: 'plus', tooltip: 'Add inner event', visible: true, disabled: false}, node, $event)">
+                  <span nz-icon nzType="plus" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+
+              <!-- Delete Event -->
+              <ng-container *nzSpaceItem>
+                <button
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip="Delete event"
+                  (click)="onAction({type: 'delete', icon: 'delete', tooltip: 'Delete event', visible: true, disabled: false}, node, $event)">
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+
+              <!-- Move Up -->
+              <ng-container *nzSpaceItem>
+                <button
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip="Move up"
+                  (click)="onAction({type: 'move-up', icon: 'up', tooltip: 'Move up', visible: true, disabled: false}, node, $event)">
+                  <span nz-icon nzType="up" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+
+              <!-- Move Down -->
+              <ng-container *nzSpaceItem>
+                <button
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip="Move down"
+                  (click)="onAction({type: 'move-down', icon: 'down', tooltip: 'Move down', visible: true, disabled: false}, node, $event)">
+                  <span nz-icon nzType="down" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+
+              <!-- Set as Root button (only for non-root nodes) -->
+              <ng-container *nzSpaceItem>
+                <button
+                  *ngIf="node.depth > 0"
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip="Set as root event"
+                  (click)="onSetAsRoot(node, $event)">
+                  <span nz-icon nzType="arrow-up" nzTheme="outline"></span>
                 </button>
               </ng-container>
             </nz-space>
@@ -78,7 +140,7 @@
             <span nz-icon nzType="message" nzTheme="outline"></span>
             {{ 'matching.editor.verbatim' | translate }}
           </div>
-          <p class="verbatim-text">{{ node.verbatim }}</p>
+          <p class="verbatim-text">{{ getDisplayText(node.verbatim, !canEdit()) }}</p>
         </div>
       </div>
     </nz-card>

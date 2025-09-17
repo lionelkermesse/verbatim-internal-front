@@ -56,40 +56,62 @@
         </nz-col>
         <nz-col [nzFlex]="'none'">
           <nz-space nzSize="middle">
-            <!-- View Type Selector -->
-            <nz-segmented
-              *nzSpaceItem
-              [nzSize]="'large'"
-              [nzOptions]="viewOptions"
-              [ngModel]="currentViewIndex()"
-              (ngModelChange)="onViewTypeChange($event)">
-            </nz-segmented>
-
-
-            <!-- Main Actions -->
+            <!-- View Type Selector - Hidden in edit mode (flattened only) -->
             <ng-container *nzSpaceItem>
-              <button
-                *ngIf="isEditMode()"
-                nz-button
-                nzSize="large"
-                [nzLoading]="state().isSaving"
-                [disabled]="!canSave()"
-                (click)="onSave()">
-                <span nz-icon nzType="save" nzTheme="outline"></span>
-                {{ 'matching.detail.save' | translate }}
-              </button>
+              <nz-segmented
+                *ngIf="!isEditMode()"
+                [nzSize]="'large'"
+                [nzOptions]="viewOptions"
+                [ngModel]="currentViewIndex()"
+                (ngModelChange)="onViewTypeChange($event)">
+              </nz-segmented>
             </ng-container>
 
-            <button
-              *nzSpaceItem
-              nz-button
-              nzType="primary"
-              nzSize="large"
-              [disabled]="currentMatchingVersion()?.status === 'VALIDATED'"
-              (click)="onValidate()">
-              <span nz-icon nzType="check-circle" nzTheme="outline"></span>
-              {{ 'matching.detail.validate' | translate }}
-            </button>
+
+            <!-- Edit Mode Actions -->
+            <ng-container *ngIf="isEditMode()">
+
+              <!-- Save Button (only if autoSave is false) -->
+              <ng-container *nzSpaceItem>
+                <button
+                  *ngIf="!config().autoSave"
+                  nz-button
+                  nzSize="large"
+                  [nzLoading]="state().isSaving"
+                  [disabled]="!canSave()"
+                  (click)="onSave()">
+                  <span nz-icon nzType="save" nzTheme="outline"></span>
+                  {{ 'matching.detail.save' | translate }}
+                </button>
+              </ng-container>
+
+              <!-- Cancel Button (only if autoSave is false) -->
+              <ng-container *nzSpaceItem>
+                <button
+                  *ngIf="!config().autoSave"
+                  nz-button
+                  nzType="default"
+                  nzSize="large"
+                  (click)="onCancel()">
+                  <span nz-icon nzType="close" nzTheme="outline"></span>
+                  {{ 'matching.detail.cancel' | translate }}
+                </button>
+              </ng-container>
+            </ng-container>
+
+            <!-- Validate Button (green, with confirm modal) -->
+            <ng-container *nzSpaceItem>
+              <button
+                nz-button
+                nzType="primary"
+                nzSize="large"
+                class="btn-validate-green"
+                [disabled]="currentMatchingVersion()?.status === 'VALIDATED'"
+                (click)="onValidate()">
+                <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+                {{ 'matching.detail.validate' | translate }}
+              </button>
+            </ng-container>
           </nz-space>
         </nz-col>
       </nz-row>
@@ -114,6 +136,29 @@
               </div>
 
               <div class="tree-actions">
+                <!-- Edit Button (Read mode only) -->
+                <button
+                  *ngIf="!isEditMode()"
+                  nz-button
+                  nzType="default"
+                  nzSize="small"
+                  [routerLink]="['/matching', sessionIdentifier(), version(), 'edit']">
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  {{ 'global.edit' | translate }}
+                </button>
+
+                <!-- Add Event Button (Edit mode only) -->
+                <button
+                  *ngIf="isEditMode()"
+                  nz-button
+                  nzType="primary"
+                  nzSize="small"
+                  (click)="onAddRootEvent()"
+                  [nz-tooltip]="'global.add' | translate">
+                  <span nz-icon nzType="plus" nzTheme="outline"></span>
+                  {{ 'global.add' | translate }}
+                </button>
+
                 <span class="expander-controls" *ngIf="currentViewType() === 'enhanced-tree'">
                   <button
                     nz-button
@@ -193,29 +238,20 @@
                 [actionProvider]="getVisibleActions.bind(this)"
                 (nodeSelect)="onNodeSelect($event)"
                 (nodeExpand)="onNodeExpand($event)"
-                (nodeAction)="onNodeAction($event)">
+                (nodeAction)="onNodeAction($event)"
+                (nodeDrop)="onNodeDrop($event)">
               </chd-flattened-view>
 
-              <!-- Enhanced Tree View -->
+              <!-- Enhanced Tree View (READ-ONLY) -->
               <div *ngIf="currentViewType() === 'enhanced-tree'" class="enhanced-tree-view">
                 <chd-enhanced-tree
                   [treeNodes]="treeNodes()"
-                  [canEdit]="canEdit()"
-                  [inlineEditMode]="config().enableInlineEdit"
+                  [canEdit]="false"
                   (onNodeSelect)="onNodeSelect($event)"
-                  (onNodeExpand)="onNodeExpand($event)"
-                  (onNodeAction)="onNodeAction($event)"
-                  (onInlineEdit)="onInlineEdit($event)">
+                  (onNodeExpand)="onNodeExpand($event)">
                 </chd-enhanced-tree>
               </div>
 
-              <!-- Nested Cards View with Recursive Template -->
-              <chd-nested-view
-                *ngIf="currentViewType() === 'nested-cards'"
-                [nodes]="treeNodes()"
-                [statusColorFn]="getStatusColor.bind(this)"
-                (nodeSelect)="onNodeSelect($event)">
-              </chd-nested-view>
 
             </div>
           </nz-card>
@@ -227,18 +263,20 @@
             <div class="detail-header">
               <h3 nz-typography>{{ 'matching.detail.selected.title' | translate }}</h3>
               <nz-space nzSize="small" *ngIf="isEditMode()">
-                <ng-container *ngIf="!detailEditMode(); else editButtons">
-                  <button
-                    *nzSpaceItem
-                    nz-button
-                    nzType="primary"
-                    nzSize="small"
-                    (click)="onEditItem(selectedItem()!)">
-                    <span nz-icon nzType="edit" nzTheme="outline"></span>
-                    {{ 'matching.detail.selected.edit' | translate }}
-                  </button>
-                </ng-container>
-                <ng-template #editButtons>
+                <!-- Always show delete button in edit mode -->
+                <button
+                  *nzSpaceItem
+                  nz-button
+                  nzType="default"
+                  nzDanger
+                  nzSize="small"
+                  (click)="onDeleteSelectedItem()">
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  {{ 'global.delete' | translate }}
+                </button>
+
+                <!-- Save/Cancel buttons (only if changes detected) -->
+                <ng-container *ngIf="hasDetailChanges()">
                   <button
                     *nzSpaceItem
                     nz-button
@@ -246,7 +284,7 @@
                     nzSize="small"
                     (click)="onSaveDetailEdit()">
                     <span nz-icon nzType="check" nzTheme="outline"></span>
-                    {{ 'matching.detail.edit.save' | translate }}
+                    {{ 'global.save' | translate }}
                   </button>
                   <button
                     *nzSpaceItem
@@ -255,9 +293,9 @@
                     nzSize="small"
                     (click)="onCancelDetailEdit()">
                     <span nz-icon nzType="close" nzTheme="outline"></span>
-                    {{ 'matching.detail.edit.cancel' | translate }}
+                    {{ 'global.cancel' | translate }}
                   </button>
-                </ng-template>
+                </ng-container>
               </nz-space>
             </div>
 
@@ -267,26 +305,97 @@
               <!-- Title Field -->
               <div class="detail-item">
                 <span class="detail-label">{{ 'matching.detail.selected.title' | translate }}:</span>
-                <div class="detail-value" *ngIf="!detailEditMode()">{{ selectedItem()?.title }}</div>
+                <div class="detail-value" *ngIf="!isEditMode()">{{ selectedItem()?.title }}</div>
                 <input
-                  *ngIf="detailEditMode()"
+                  *ngIf="isEditMode()"
                   nz-input
-                  [(ngModel)]="editingTitle"
+                  [ngModel]="editingTitle()"
+                  (ngModelChange)="editingTitle.set($event)"
                   [placeholder]="'matching.detail.edit.titlePlaceholder' | translate" />
               </div>
 
-              <div class="detail-item" *ngIf="selectedItem()?.speakers && selectedItem()?.speakers!.length > 0">
+              <!-- Speaker Management -->
+              <div class="detail-item">
                 <span class="detail-label">{{ 'matching.detail.selected.speakers' | translate }}:</span>
-                <div class="detail-value">
-                  <nz-space nzSize="small" nzWrap>
+
+                <!-- Read Mode: Display speakers as tags -->
+                <div class="detail-value" *ngIf="!isEditMode()">
+                  <nz-space nzSize="small" nzWrap *ngIf="selectedItem()?.speakers && selectedItem()?.speakers!.length > 0; else noSpeakers">
                     <ng-container *ngFor="let speaker of selectedItem()?.speakers">
                       <nz-tag
                         *nzSpaceItem
                         nzColor="blue">
-                        {{ speaker.fullName || (speaker.firstName + ' ' + speaker.lastName) }}
+                        {{ speaker.firstName }} {{ speaker.lastName }}
+                        <ng-container *ngIf="speaker.function"> ({{ speaker.function }})</ng-container>
                       </nz-tag>
                     </ng-container>
                   </nz-space>
+                  <ng-template #noSpeakers>
+                    <span class="no-data-text">{{ 'matching.detail.selected.noSpeakers' | translate }}</span>
+                  </ng-template>
+                </div>
+
+                <!-- Edit Mode: Speaker management with add/remove -->
+                <div class="detail-value" *ngIf="isEditMode()">
+                  <!-- Assigned speakers with remove buttons -->
+                  <div *ngIf="selectedItem()?.speakers && selectedItem()?.speakers!.length > 0" style="margin-bottom: 8px;">
+                    <nz-space nzSize="small" nzWrap>
+                      <ng-container *ngFor="let speaker of selectedItem()?.speakers; let i = index">
+                        <nz-tag
+                          *nzSpaceItem
+                          nzColor="blue"
+                          nzClosable
+                          (nzOnClose)="removeSpeaker(i); $event.preventDefault()">
+                          {{ speaker.firstName }} {{ speaker.lastName }}
+                          <ng-container *ngIf="speaker.function"> ({{ speaker.function }})</ng-container>
+                        </nz-tag>
+                      </ng-container>
+                    </nz-space>
+                  </div>
+
+                  <!-- Add speaker from existing list -->
+                  <nz-select
+                    nzPlaceHolder="Add existing speaker"
+                    [ngModel]="null"
+                    (ngModelChange)="addExistingSpeaker($event)"
+                    style="width: 100%; margin-bottom: 8px;"
+                    nzAllowClear>
+                    <nz-option
+                      *ngFor="let speaker of getAvailableSpeakers()"
+                      [nzValue]="speaker"
+                      [nzLabel]="speaker.firstName + ' ' + speaker.lastName + (speaker.function ? ' (' + speaker.function + ')' : '')">
+                    </nz-option>
+                  </nz-select>
+
+                  <!-- Add new speaker form -->
+                  <nz-card nzSize="small" nzTitle="Add New Speaker" style="margin-top: 8px;">
+                    <div nz-row [nzGutter]="[8, 8]">
+                      <div nz-col [nzSpan]="12">
+                        <input nz-input [ngModel]="newSpeaker().firstName" (ngModelChange)="updateNewSpeaker('firstName', $event)" placeholder="First Name" />
+                      </div>
+                      <div nz-col [nzSpan]="12">
+                        <input nz-input [ngModel]="newSpeaker().lastName" (ngModelChange)="updateNewSpeaker('lastName', $event)" placeholder="Last Name" />
+                      </div>
+                      <div nz-col [nzSpan]="12">
+                        <input nz-input [ngModel]="newSpeaker().function" (ngModelChange)="updateNewSpeaker('function', $event)" placeholder="Function" />
+                      </div>
+                      <div nz-col [nzSpan]="12">
+                        <input nz-input [ngModel]="newSpeaker().party" (ngModelChange)="updateNewSpeaker('party', $event)" placeholder="Party" />
+                      </div>
+                      <div nz-col [nzSpan]="24">
+                        <button
+                          nz-button
+                          nzType="dashed"
+                          nzSize="small"
+                          [disabled]="!canAddNewSpeaker()"
+                          (click)="addNewSpeaker()"
+                          style="width: 100%;">
+                          <span nz-icon nzType="plus"></span>
+                          Add Speaker
+                        </button>
+                      </div>
+                    </div>
+                  </nz-card>
                 </div>
               </div>
 
@@ -307,13 +416,14 @@
               </div>
 
               <!-- Verbatim Field -->
-              <div class="detail-item" *ngIf="selectedItem()?.verbatim || detailEditMode()">
+              <div class="detail-item" *ngIf="selectedItem()?.verbatim || isEditMode()">
                 <span class="detail-label">{{ 'matching.detail.selected.verbatim' | translate }}:</span>
-                <div class="detail-value verbatim-content" *ngIf="!detailEditMode()">{{ selectedItem()?.verbatim }}</div>
+                <div class="detail-value verbatim-content" *ngIf="!isEditMode()">{{ selectedItem()?.verbatim }}</div>
                 <textarea
-                  *ngIf="detailEditMode()"
+                  *ngIf="isEditMode()"
                   nz-input
-                  [(ngModel)]="editingVerbatim"
+                  [ngModel]="editingVerbatim()"
+                  (ngModelChange)="editingVerbatim.set($event)"
                   [placeholder]="'matching.detail.edit.verbatimPlaceholder' | translate"
                   [nzAutosize]="{ minRows: 3, maxRows: 6 }">
                 </textarea>
