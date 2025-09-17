@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
+import { TranslateModule, TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
@@ -37,6 +37,7 @@ export class LoginComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly oidcAuthService = inject(OidcAuthService);
   private readonly accountService = inject(AccountService);
+  private readonly translate = inject(TranslateService);
 
   // Component state signals
   readonly isLoading = signal<boolean>(false);
@@ -47,12 +48,17 @@ export class LoginComponent implements OnInit {
     return this.oidcAuthService.getLoginError();
   }
 
+  get translatedLoginError(): string | null {
+    return this.loginError ? this.translate.instant(this.loginError) : null;
+  }
+
   get isAuthInitialized(): boolean {
     return this.oidcAuthService.isInitializationComplete();
   }
 
   ngOnInit(): void {
-    this.initializeAuth();
+    // TODO: uncomment this when the backend OIDC authentication will be ready
+    // this.initializeAuth();
   }
 
   private async initializeAuth(): Promise<void> {
@@ -79,6 +85,8 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginClick(): void {
+    this.router.navigate(['/sessions']);
+    /* TODO: uncomment this when the backend OIDC authentication will be ready
     if (this.isLoading() || this.isInitializing()) {
       return;
     }
@@ -98,6 +106,7 @@ export class LoginComponent implements OnInit {
       console.error('Login initiation failed:', error);
       this.isLoading.set(false);
     }
+     */
   }
 
   private getReturnUrl(): string {

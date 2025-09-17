@@ -5,7 +5,7 @@
     "search": {
       "placeholder": "Rechercher par identifiant de session ou date...",
       "dateRange": {
-        "label": "Plage de dates",
+        "label": "Dates de session",
         "placeholder": "Sélectionner une plage de dates",
         "defaultHint": "Affichage des sessions des 7 derniers jours"
       },

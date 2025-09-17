@@ -75,6 +75,5 @@
       "could.not.extract": "Fichier konnt net extrahéiert ginn",
       "not.image": "Fichier sollt e Bild sinn, gouf awer als \"{{ fileType }}\" erkannt"
     }
-  },
-  "footer": "Dëst ass Ären Footer"
+  }
 }

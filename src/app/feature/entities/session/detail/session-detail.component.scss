@@ -2,15 +2,15 @@
 
 .session-detail-layout {
   background: $body-background;
-  height: 100vh;
-  overflow: hidden;
+  min-height: calc(100vh - $layout-footer-height - $layout-header-height);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .session-detail-content {
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  height: calc(100vh - 48px);
   overflow-y: auto;
   overflow-x: hidden;
 }

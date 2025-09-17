@@ -14,6 +14,7 @@ $normal-color: #d9d9d9;
 
 $white: #fff;
 $black: #000;
+$grey: #f0f2f5;
 
 // --- Text
 $text-color: #212529;
@@ -24,6 +25,7 @@ $text-color-secondary-dark: fade-out($white, 0.35);
 
 // --- Backgrounds
 $body-background: $white;
+$background-color-light: $grey;
 $component-background: $white;
 $layout-body-background: $body-background;
 $layout-header-background: $component-background;
@@ -98,6 +100,7 @@ $table-row-hover-bg: lighten($primary-color, 40%);
 $layout-header-height: 64px;
 $layout-header-padding: 0 50px;
 $layout-sider-background: #001529; // Default dark sider
+$layout-footer-height: 90px;
 
 // Global Button Styles (CHD Theme)
 .ant-btn-primary,

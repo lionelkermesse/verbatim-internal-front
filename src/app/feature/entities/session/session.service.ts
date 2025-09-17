@@ -2,8 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
-import dayjs from 'dayjs/esm';
-import { DATE_FORMAT } from '@chd-digital-verbatim-front/config/input.constants';
+import { dateTimeToStr, dateToStr, strToDate } from '@chd-digital-verbatim-front/shared/util';
 import { ApplicationConfigService } from '@chd-digital-verbatim-front/core/config/application-config.service';
 import { createRequestOption } from '@chd-digital-verbatim-front/core/request/request-util';
 import { ISession, ISessionPage, NewSession } from '@chd-digital-verbatim-front/feature/entities/session/session.model';
@@ -70,7 +69,7 @@ export class SessionService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
-  queryByDate(params: ISessionDateRangeQuery): Observable<SessionPageResponseType> {
+  getByDate(params: ISessionDateRangeQuery): Observable<SessionPageResponseType> {
     const options = createRequestOption(params);
     return this.http
       .get<any>(`${this.resourceUrl}/by-date`, {params: options, observe: 'response'})
@@ -83,22 +82,6 @@ export class SessionService {
 
   getSessionChdIdentifier(session: Pick<ISession, 'id'>): number {
     return session.id;
-  }
-
-  protected convertDateFromClient<T extends ISession | NewSession | PartialUpdateSession>(session: T): RestOf<T> {
-    return {
-      ...session,
-      sessionDate: session.sessionDate?.format(DATE_FORMAT) ?? null,
-      lastProcessedAt: session.lastProcessedAt?.toJSON() ?? null,
-    };
-  }
-
-  protected convertDateFromServer(restSessionChd: RestSession): ISession {
-    return {
-      ...restSessionChd,
-      sessionDate: restSessionChd.sessionDate ? dayjs(restSessionChd.sessionDate) : undefined,
-      lastProcessedAt: restSessionChd.lastProcessedAt ? dayjs(restSessionChd.lastProcessedAt) : undefined,
-    };
   }
 
   protected convertResponseFromServer(res: HttpResponse<RestSession>): HttpResponse<ISession> {
@@ -121,4 +104,21 @@ export class SessionService {
       } : null,
     });
   }
+
+  protected convertDateFromClient<T extends ISession | NewSession | PartialUpdateSession>(session: T): RestOf<T> {
+    return {
+      ...session,
+      sessionDate: dateToStr(session.sessionDate) ,
+      lastProcessedAt: dateTimeToStr(session.lastProcessedAt),
+    };
+  }
+
+  protected convertDateFromServer(restSessionChd: RestSession): ISession {
+    return {
+      ...restSessionChd,
+      sessionDate: strToDate(restSessionChd.sessionDate),
+      lastProcessedAt: strToDate(restSessionChd.lastProcessedAt)
+    };
+  }
+
 }

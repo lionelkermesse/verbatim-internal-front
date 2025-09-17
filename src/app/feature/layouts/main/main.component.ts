@@ -1,13 +1,10 @@
-import {Component, inject, OnInit, Renderer2, RendererFactory2} from '@angular/core';
-import {Router, RouterOutlet} from '@angular/router';
-import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
+import { Component, inject, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 
-import {AccountService} from '@chd-digital-verbatim-front/core/auth/account.service';
-import {AppPageTitleStrategy} from '../../../app-page-title-strategy';
-import PageRibbonComponent from '../profiles/page-ribbon.component';
-import {FooterComponent} from '@chd-digital-verbatim-front/feature/layouts/footer/footer.component';
-import {NavbarComponent} from '@chd-digital-verbatim-front/feature/layouts/navbar/navbar.component';
+import { AccountService } from '@chd-digital-verbatim-front/core/auth/account.service';
+import { AppPageTitleStrategy } from '../../../app-page-title-strategy';
 
 @Component({
   selector: 'chd-main',
@@ -15,7 +12,7 @@ import {NavbarComponent} from '@chd-digital-verbatim-front/feature/layouts/navba
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, NavbarComponent],
+  imports: [RouterOutlet],
 })
 export default class MainComponent implements OnInit {
   private readonly renderer: Renderer2;

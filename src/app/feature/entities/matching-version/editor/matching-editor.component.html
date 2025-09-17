@@ -59,6 +59,7 @@
             <!-- View Type Selector -->
             <nz-segmented
               *nzSpaceItem
+              [nzSize]="'large'"
               [nzOptions]="viewOptions"
               [ngModel]="currentViewIndex()"
               (ngModelChange)="onViewTypeChange($event)">

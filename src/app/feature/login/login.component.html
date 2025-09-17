@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-box">
     <div class="login-header">
-      <img ngSrc="/chd-logo.svg" alt="Chambre des Députés Logo" class="logo" width="317" height="50">
+      <img ngSrc="/chd-logo.svg" [attr.alt]="'login.logoAlt' | translate" class="logo" width="317" height="50">
       <h1>{{ 'login.title' | translate }}</h1>
     </div>
 
@@ -16,7 +16,7 @@
             *ngIf="loginError"
             nzType="error"
             nzShowIcon
-            [nzMessage]="loginError"
+            [nzMessage]="translatedLoginError"
             class="error-alert"
           />
 

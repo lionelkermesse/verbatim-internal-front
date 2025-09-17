@@ -187,33 +187,23 @@
       "line": "Zeile",
       "view": {
         "enhancedTree": {
-          "title": "Erweiterte Baumansicht",
+          "title": "Strukturansicht",
           "description": "Kompakter kartenbasierter Baum mit Inline-Bearbeitung"
         },
         "flattened": {
-          "title": "Abgeflachte Kartenansicht",
+          "title": "Abgeflachte Ansicht",
           "description": "Alle Ereignisse auf derselben Ebene, nach Hierarchie geordnet"
         },
         "nested": {
-          "title": "Verschachtelte Kartenansicht",
+          "title": "Verschachtelte Ansicht",
           "description": "Visuelles Kartenlayout mit verschachtelter Struktur"
         }
       },
-      "tree": {
-        "empty": {
-          "title": "Keine Ereignisse gefunden",
-          "description": "Beginnen Sie mit dem Hinzufügen Ihres ersten Ereignisses, um den Matching-Prozess zu starten.",
-          "addFirst": "Erstes Ereignis hinzufügen"
-        }
+      "empty": {
+        "title": "Keine Ereignisse gefunden",
+        "description": "Beginnen Sie mit dem Hinzufügen Ihres ersten Ereignisses, um den Matching-Prozess zu starten.",
+        "addFirst": "Erstes Ereignis hinzufügen"
       }
-    },
-    "views": {
-      "enhancedTree": "Erweiterter Baum",
-      "enhancedTreeDesc": "Kompakter kartenbasierter Baum mit Inline-Bearbeitung",
-      "flattenedCards": "Abgeflachte Karten",
-      "flattenedCardsDesc": "Alle Ereignisse auf derselben Ebene, nach Hierarchie geordnet",
-      "nestedCards": "Verschachtelte Karten",
-      "nestedCardsDesc": "Visuelles Kartenlayout mit verschachtelter Struktur"
     }
   }
 }

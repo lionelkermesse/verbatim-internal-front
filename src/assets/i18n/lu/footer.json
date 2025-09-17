@@ -1,0 +1,10 @@
+{
+  "footer": {
+    "copyright": "CHD © {{year}}",
+    "links": {
+      "legal": "Impressum",
+      "privacy": "Privatsphär",
+      "accessibility": "Accessibilitéit"
+    }
+  }
+}

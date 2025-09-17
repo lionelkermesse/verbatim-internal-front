@@ -2,8 +2,8 @@
 
 .matching-upload-layout {
   background: $body-background;
-  height: 100vh;
   overflow: hidden;
+  max-height: calc(100vh - #{$layout-header-height - $layout-header-height});
 }
 
 .matching-upload-content {

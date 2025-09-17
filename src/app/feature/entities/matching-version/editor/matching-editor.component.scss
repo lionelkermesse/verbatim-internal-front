@@ -2,19 +2,18 @@
 
 :host {
   display: block;
-  min-height: 100vh;
   background: $body-background;
   overflow-x: hidden;
 
   .matching-editor-layout {
-    min-height: 100vh;
+    //min-height: 100vh;
     background: $body-background;
 
     .editor-content {
       padding: 0;
       background: $body-background;
       overflow-y: auto;
-      max-height: calc(100vh - #{$layout-header-height});
+      max-height: calc(100vh - #{$layout-header-height - $layout-header-height});
     }
   }
 

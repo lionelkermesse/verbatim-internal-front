@@ -5,7 +5,7 @@
     "search": {
       "placeholder": "Search by session identifier or date...",
       "dateRange": {
-        "label": "Date range",
+        "label": "Session date range",
         "placeholder": "Select date range",
         "defaultHint": "Showing sessions from the last 7 days"
       },

@@ -14,28 +14,16 @@ const matchingVersionRoute: Routes = [
       },
       // Matching version editor routes
       {
-        path: 'editor/:sessionIdentifier/:version',
+        path: ':sessionIdentifier/:version',
         loadComponent: () => import('./editor/matching-editor.component').then(m => m.MatchingEditorComponent),
         title: 'matching.detail.title',
         data: { editMode: false }
       },
       {
-        path: 'editor/:sessionIdentifier/:version/edit',
+        path: ':sessionIdentifier/:version/edit',
         loadComponent: () => import('./editor/matching-editor.component').then(m => m.MatchingEditorComponent),
         title: 'matching.edit.title',
         data: { editMode: true }
-      },
-      // Generic session version routes
-      {
-        path: ':sessionIdentifier/:version',
-        loadComponent: () => import('./detail/matching-detail.component').then(m => m.MatchingDetailComponent),
-        title: 'matching.detail.title'
-      },
-      {
-        path: ':sessionIdentifier/:version/edit',
-        loadComponent: () => import('./detail/matching-detail.component').then(m => m.MatchingDetailComponent),
-        data: { editMode: true },
-        title: 'matching.edit.title'
       },
     ],
   },

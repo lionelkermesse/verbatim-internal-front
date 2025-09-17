@@ -5,7 +5,7 @@
     "search": {
       "placeholder": "Sichen no Sessiouns-Identifikateur oder Datum...",
       "dateRange": {
-        "label": "Datumsbereich",
+        "label": "Sessiouns-Datumsbereich",
         "placeholder": "Datumsbereich wielen",
         "defaultHint": "Weist Sessiounen vun de leschten 7 Deeg"
       },

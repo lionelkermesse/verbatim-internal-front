@@ -1,14 +1,13 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient, HttpResponse} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 
-import dayjs from 'dayjs/esm';
-
-import {isPresent} from '@chd-digital-verbatim-front/core/util/operators';
-import {ApplicationConfigService} from '@chd-digital-verbatim-front/core/config/application-config.service';
-import {createRequestOption} from '@chd-digital-verbatim-front/core/request/request-util';
+import { dateTimeToStr, strToDate } from '@chd-digital-verbatim-front/shared/util';
+import { ApplicationConfigService } from '@chd-digital-verbatim-front/core/config/application-config.service';
+import { createRequestOption } from '@chd-digital-verbatim-front/core/request/request-util';
 import {
-  IMatchingVersion, NewMatchingVersion
+  IMatchingVersion,
+  NewMatchingVersion
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.model';
 
 export type PartialUpdateMatchingVersion = Partial<IMatchingVersion> & Pick<IMatchingVersion, 'id'>;
@@ -19,10 +18,6 @@ type RestOf<T extends IMatchingVersion | NewMatchingVersion> = Omit<T, 'createdA
 };
 
 export type RestMatchingVersion = RestOf<IMatchingVersion>;
-
-export type NewRestMatchingVersion = RestOf<NewMatchingVersion>;
-
-export type PartialUpdateRestMatchingVersion = RestOf<PartialUpdateMatchingVersion>;
 
 export type EntityResponseType = HttpResponse<IMatchingVersion>;
 export type EntityArrayResponseType = HttpResponse<IMatchingVersion[]>;
@@ -45,15 +40,6 @@ export class MatchingVersionService {
     const copy = this.convertDateFromClient(matchingVersion);
     return this.http
       .put<RestMatchingVersion>(`${this.resourceUrl}/${this.getMatchingVersionChdIdentifier(matchingVersion)}`, copy, {
-        observe: 'response',
-      })
-      .pipe(map(res => this.convertResponseFromServer(res)));
-  }
-
-  partialUpdate(matchingVersion: PartialUpdateMatchingVersion): Observable<EntityResponseType> {
-    const copy = this.convertDateFromClient(matchingVersion);
-    return this.http
-      .patch<RestMatchingVersion>(`${this.resourceUrl}/${this.getMatchingVersionChdIdentifier(matchingVersion)}`, copy, {
         observe: 'response',
       })
       .pipe(map(res => this.convertResponseFromServer(res)));
@@ -116,50 +102,6 @@ export class MatchingVersionService {
     return matchingVersion.id;
   }
 
-  compareMatchingVersionChd(o1: Pick<IMatchingVersion, 'id'> | null, o2: Pick<IMatchingVersion, 'id'> | null): boolean {
-    return o1 && o2 ? this.getMatchingVersionChdIdentifier(o1) === this.getMatchingVersionChdIdentifier(o2) : o1 === o2;
-  }
-
-  addMatchingVersionChdToCollectionIfMissing<Type extends Pick<IMatchingVersion, 'id'>>(
-    matchingVersionCollection: Type[],
-    ...matchingVersionsToCheck: (Type | null | undefined)[]
-  ): Type[] {
-    const matchingVersions: Type[] = matchingVersionsToCheck.filter(isPresent);
-    if (matchingVersions.length > 0) {
-      const matchingVersionCollectionIdentifiers = matchingVersionCollection.map(matchingVersionItem =>
-        this.getMatchingVersionChdIdentifier(matchingVersionItem),
-      );
-      const matchingVersionsToAdd = matchingVersions.filter(matchingVersionItem => {
-        const matchingVersionIdentifier = this.getMatchingVersionChdIdentifier(matchingVersionItem);
-        if (matchingVersionCollectionIdentifiers.includes(matchingVersionIdentifier)) {
-          return false;
-        }
-        matchingVersionCollectionIdentifiers.push(matchingVersionIdentifier);
-        return true;
-      });
-      return [...matchingVersionsToAdd, ...matchingVersionCollection];
-    }
-    return matchingVersionCollection;
-  }
-
-  protected convertDateFromClient<T extends IMatchingVersion | NewMatchingVersion | PartialUpdateMatchingVersion>(
-    matchingVersion: T,
-  ): RestOf<T> {
-    return {
-      ...matchingVersion,
-      createdAt: matchingVersion.createdAt?.toJSON() ?? null,
-      validatedAt: matchingVersion.validatedAt?.toJSON() ?? null,
-    };
-  }
-
-  protected convertDateFromServer(restMatchingVersion: RestMatchingVersion): IMatchingVersion {
-    return {
-      ...restMatchingVersion,
-      createdAt: restMatchingVersion.createdAt ? dayjs(restMatchingVersion.createdAt) : undefined,
-      validatedAt: restMatchingVersion.validatedAt ? dayjs(restMatchingVersion.validatedAt) : undefined,
-    };
-  }
-
   protected convertResponseFromServer(res: HttpResponse<RestMatchingVersion>): HttpResponse<IMatchingVersion> {
     return res.clone({
       body: res.body ? this.convertDateFromServer(res.body) : null,
@@ -171,4 +113,23 @@ export class MatchingVersionService {
       body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
     });
   }
+
+  protected convertDateFromClient<T extends IMatchingVersion | NewMatchingVersion | PartialUpdateMatchingVersion>(
+    matchingVersion: T,
+  ): RestOf<T> {
+    return {
+      ...matchingVersion,
+      createdAt: dateTimeToStr(matchingVersion.createdAt),
+      validatedAt: dateTimeToStr(matchingVersion.validatedAt),
+    };
+  }
+
+  protected convertDateFromServer(restMatchingVersion: RestMatchingVersion): IMatchingVersion {
+    return {
+      ...restMatchingVersion,
+      createdAt: strToDate(restMatchingVersion.createdAt),
+      validatedAt: strToDate(restMatchingVersion.validatedAt),
+    };
+  }
+
 }

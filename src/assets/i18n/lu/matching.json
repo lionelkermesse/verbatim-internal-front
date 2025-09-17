@@ -187,33 +187,23 @@
       "line": "Linn",
       "view": {
         "enhancedTree": {
-          "title": "Verbessert Bam-Usiicht",
+          "title": "Bamvue",
           "description": "Kompakt kaarte-baséiert Bam mat Inline-Änneren"
         },
         "flattened": {
-          "title": "Flaach Kaarten-Usiicht",
+          "title": "Flaach Vue",
           "description": "All Evenementer op der selwechter Niveau, no Hierarchie sortéiert"
         },
         "nested": {
-          "title": "Verschachtelt Kaarten-Usiicht",
+          "title": "Geschafte Vue",
           "description": "Visuellt Kaarten-Layout mat verschachtelter Struktur"
         }
       },
-      "tree": {
-        "empty": {
-          "title": "Keng Evenementer fonnt",
-          "description": "Fänkt un andeems Dir Ären éischten Evenement dobäisetzt fir de Matching-Prozess ze starten.",
-          "addFirst": "Éischten Evenement dobäisetzen"
-        }
+      "empty": {
+        "title": "Keng Evenementer fonnt",
+        "description": "Fänkt un andeems Dir Ären éischten Evenement dobäisetzt fir de Matching-Prozess ze starten.",
+        "addFirst": "Éischten Evenement dobäisetzen"
       }
-    },
-    "views": {
-      "enhancedTree": "Verbessert Bam-Usiicht",
-      "enhancedTreeDesc": "Kompakt kaarte-baséiert Bam mat Inline-Änneren",
-      "flattenedCards": "Flaach Kaarten",
-      "flattenedCardsDesc": "All Evenementer op der selwechter Niveau, no Hierarchie sortéiert",
-      "nestedCards": "Verschachtelt Kaarten",
-      "nestedCardsDesc": "Visuellt Kaarten-Layout mat verschachtelter Struktur"
     }
   }
 }

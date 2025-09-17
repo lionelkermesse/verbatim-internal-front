@@ -1,4 +1,10 @@
 import { MatchingStatus, VersionStatus } from '@chd-digital-verbatim-front/core/models';
+import dayjs from 'dayjs/esm';
+import { DATE_FORMAT } from '@chd-digital-verbatim-front/config/input.constants';
+
+export const strToDate = (date?: string | null): dayjs.Dayjs | null | undefined => date ? dayjs(date) : undefined
+export const dateToStr = (date?: dayjs.Dayjs | null): string | null => date?.format(DATE_FORMAT) ?? null
+export const dateTimeToStr = (date?: dayjs.Dayjs | null): string | null => date?.toJSON() ?? null
 
 export const getStatusColor = (status?: (keyof typeof VersionStatus) | (keyof typeof MatchingStatus) | string | null): string => {
   if (!status) return '';

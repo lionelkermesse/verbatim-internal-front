@@ -1,67 +1,53 @@
 import { Routes } from '@angular/router';
+import { errorRoute } from '@chd-digital-verbatim-front/feature/layouts/error/error.route';
 
 export const routes: Routes = [
-  // Default redirect
   {
     path: '',
-    redirectTo: '/sessions',
-    pathMatch: 'full'
-  },
-  // Authentication routes
-  {
-    path: 'login',
-    loadComponent: () => import('./feature/login/login.component').then(m => m.LoginComponent),
-    title: 'login.title'
-  },
-  // Home route (will redirect to sessions for authenticated users)
-  {
-    path: 'home',
-    loadComponent: () => import('./feature/home/home.component').then(m => m.default)
-  },
-  {
-    path: 'auth',
+    loadComponent: () => import('./feature/layouts/main/main.component').then(m => m.default),
     children: [
+      // Default redirect
       {
-        path: 'callback',
-        loadComponent: () => import('./feature/login/auth-callback.component').then(m => m.AuthCallbackComponent),
-        title: 'auth.callback.title'
-      }
+        path: '',
+        redirectTo: '/login',
+        pathMatch: 'full'
+      },
+      {
+        path: '',
+        loadComponent: () => import('./feature/layouts/navbar/navbar.component'),
+        outlet: 'navbar',
+      },
+      {
+        path: '',
+        loadComponent: () => import('./feature/layouts/footer/footer.component'),
+        outlet: 'footer',
+      },
+
+      // Authentication routes
+      {
+        path: 'login',
+        loadComponent: () => import('./feature/login/login.component').then(m => m.LoginComponent),
+        title: 'login.title'
+      },
+      {
+        path: 'auth',
+        children: [
+          {
+            path: 'callback',
+            loadComponent: () => import('./feature/login/auth-callback.component').then(m => m.AuthCallbackComponent),
+            title: 'auth.callback.title'
+          }
+        ]
+      },
+
+      // Protected routes
+      {
+        path: '',
+        // canActivate: [UserRouteAccessService],
+        loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/entity.routes'),
+      },
+      // Access denied page - temporary simple component
+      ...errorRoute,
     ]
-  },
-
-  // Protected routes
-  {
-    path: '',
-    // canActivate: [UserRouteAccessService],
-    loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/entity.routes'),
-  },
-  // {
-  //   path: 'sessions',
-  //   // canActivate: [UserRouteAccessService],
-  //   loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/session/session.routes'),
-  // },
-  // {
-  //   path: 'matching',
-  //   // canActivate: [UserRouteAccessService],
-  //   loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.routes'),
-  // },
-  // {
-  //   path: 'referential',
-  //   // canActivate: [UserRouteAccessService],
-  //   loadChildren: () => import('@chd-digital-verbatim-front/feature/entities/referential/referential.routes'),
-  // },
-  // Access denied page - temporary simple component
-  {
-    path: 'accessdenied',
-    component: class AccessDeniedComponent {
-      constructor() {}
-    },
-    title: 'error.access-denied.title'
-  },
-
-  // Wildcard route - temporary redirect to login
-  {
-    path: '**',
-    redirectTo: '/login'
   }
 ];

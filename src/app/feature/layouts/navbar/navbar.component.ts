@@ -24,7 +24,7 @@ import { StateStorageService } from '@chd-digital-verbatim-front/core/auth/state
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export default class NavbarComponent implements OnInit {
   selectedLanguage: string;
 
   constructor(

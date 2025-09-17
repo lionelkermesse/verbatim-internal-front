@@ -143,10 +143,10 @@ export class SessionListComponent implements OnInit {
       endDate: end.format(DATE_FORMAT),
       page: pageIndex - 1, // Backend expects 0-based
       size: this.pageSize(),
-      withMatching: true
+      withMatching: false
     };
 
-    this.sessionService.queryByDate(params).subscribe({
+    this.sessionService.getByDate(params).subscribe({
       next: (response) => {
         const page = response.body;
         if (page) {

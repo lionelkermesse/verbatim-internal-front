@@ -1,8 +1,9 @@
+<!--  <chd-page-ribbon/>-->
+<div>
+  <router-outlet name="navbar"/>
+</div>
+
 <div class="main-layout">
-  <chd-page-ribbon/>
-
-  <app-navbar></app-navbar>
-
   <div class="main-content">
     <div class="container-fluid">
       <div class="card">
@@ -10,6 +11,8 @@
       </div>
     </div>
   </div>
+</div>
 
-  <chd-footer/>
+<div>
+  <router-outlet name="footer"/>
 </div>

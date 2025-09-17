@@ -70,7 +70,7 @@ export class OidcAuthService {
       this.isInitialized.set(true);
     } catch (error) {
       console.error('OIDC initialization failed:', error);
-      this.loginError.set('Authentication configuration failed');
+      this.loginError.set('login.errors.authFailed');
       this.isInitialized.set(true);
     }
   }
@@ -150,12 +150,12 @@ public setTokenValidationHandler(handler: any): void {
 
     } catch (error) {
       console.error('Failed to load user profile after token received:', error);
-      this.loginError.set('Failed to load user profile');
+      this.loginError.set('login.errors.failedUserProfile');
     }
   }
 
   private handleTokenError(): void {
-    this.loginError.set('Authentication failed. Please try again.');
+    this.loginError.set('login.errors.authFailed');
     this.accountService.authenticate(null);
   }
 
@@ -204,7 +204,7 @@ public setTokenValidationHandler(handler: any): void {
       }
     } catch (error) {
       console.error('Auth callback handling failed:', error);
-      this.loginError.set('Authentication callback failed');
+      this.loginError.set('login.errors.callbackFailed');
     }
   }
 }

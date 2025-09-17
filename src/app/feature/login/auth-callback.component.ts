@@ -47,7 +47,7 @@ import { OidcAuthService } from '@chd-digital-verbatim-front/core/auth/oidc-auth
   `,
   styles: [`
     .auth-callback-container {
-      min-height: 100vh;
+      //min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +27,6 @@ import { SessionService } from '@chd-digital-verbatim-front/feature/entities/ses
 import {
   MatchingVersionService
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version.service';
-import { VersionStatus } from '@chd-digital-verbatim-front/core/models';
 import {
   IMatchingVersion
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/matching-version-chd.model';
@@ -137,14 +136,14 @@ export class SessionDetailComponent implements OnInit {
   onViewMatching(matchingVersion: IMatchingVersion): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
     if (sessionIdentifier && matchingVersion.version) {
-      this.router.navigate(['/matching/editor', sessionIdentifier, matchingVersion.version]);
+      this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version]);
     }
   }
 
   onEditMatching(matchingVersion: IMatchingVersion): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
     if (sessionIdentifier && matchingVersion.version) {
-      this.router.navigate(['/matching/editor', sessionIdentifier, matchingVersion.version, 'edit']);
+      this.router.navigate(['/matching', sessionIdentifier, matchingVersion.version, 'edit']);
     }
   }
 

@@ -2,7 +2,7 @@
 
 .referential-upload-layout {
   background: $body-background;
-  height: 100vh;
+  min-height: calc(100vh - $layout-footer-height - $layout-header-height);
   overflow: hidden;
 }
 

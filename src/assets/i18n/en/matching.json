@@ -187,33 +187,23 @@
       "line": "Line",
       "view": {
         "enhancedTree": {
-          "title": "Enhanced Tree View",
+          "title": "Tree View",
           "description": "Compact card-based tree with inline editing"
         },
         "flattened": {
-          "title": "Flattened Cards View",
+          "title": "Flattened View",
           "description": "All events at same level, ordered by hierarchy"
         },
         "nested": {
-          "title": "Nested Cards View",
+          "title": "Nested View",
           "description": "Visual card layout with nested structure"
         }
       },
-      "tree": {
-        "empty": {
-          "title": "No Events Found",
-          "description": "Start by adding your first event to begin the matching process.",
-          "addFirst": "Add First Event"
-        }
+      "empty": {
+        "title": "No Events Found",
+        "description": "Start by adding your first event to begin the matching process.",
+        "addFirst": "Add First Event"
       }
-    },
-    "views": {
-      "enhancedTree": "Enhanced Tree",
-      "enhancedTreeDesc": "Compact card-based tree with inline editing",
-      "flattenedCards": "Flattened Cards",
-      "flattenedCardsDesc": "All events at same level, ordered by hierarchy",
-      "nestedCards": "Nested Cards",
-      "nestedCardsDesc": "Visual card layout with nested structure"
     }
   }
 }

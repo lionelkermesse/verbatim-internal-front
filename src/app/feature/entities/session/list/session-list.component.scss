@@ -2,7 +2,7 @@
 
 .session-layout {
   background: $body-background;
-  min-height: 100vh;
+  min-height: calc(100vh - $layout-footer-height - $layout-header-height);
 }
 
 .session-content {
