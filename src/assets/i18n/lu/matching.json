@@ -185,6 +185,8 @@
       "speakers": "Spriecher",
       "verbatim": "Verbatim Inhalt",
       "line": "Linn",
+      "expandAll": "Alles opklappen",
+      "collapseAll": "Alles zouklappen",
       "view": {
         "enhancedTree": {
           "title": "Bamvue",

@@ -486,7 +486,7 @@ export class MatchingEditorStateService {
       baseActions.push({
         type: 'edit',
         icon: 'edit',
-        tooltip: 'Edit event',
+        tooltip: 'entity.action.edit',
         visible: true,
         disabled: false
       });
@@ -499,21 +499,21 @@ export class MatchingEditorStateService {
         {
           type: 'add-child',
           icon: 'plus',
-          tooltip: 'Add sub-event',
+          tooltip: 'matching.detail.tree.addInner',
           visible: true,
           disabled: false
         },
         {
           type: 'move-up',
           icon: 'up',
-          tooltip: 'Move up',
+          tooltip: 'matching.detail.tree.moveUp',
           visible: true,
           disabled: false
         },
         {
           type: 'move-down',
           icon: 'down',
-          tooltip: 'Move down',
+          tooltip: 'matching.detail.tree.moveDown',
           visible: true,
           disabled: false
         },
@@ -521,14 +521,14 @@ export class MatchingEditorStateService {
         {
           type: 'set-as-root',
           icon: 'arrow-up',
-          tooltip: 'Set as root event',
+          tooltip: 'entity.action.setAsRoot',
           visible: depth > 0,
           disabled: depth === 0
         },
         {
           type: 'delete',
           icon: 'delete',
-          tooltip: 'Delete event',
+          tooltip: 'matching.detail.tree.delete',
           visible: true,
           disabled: false
         }

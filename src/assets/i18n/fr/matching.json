@@ -184,6 +184,8 @@
       "speakers": "Intervenants",
       "verbatim": "Contenu Verbatim",
       "line": "Ligne",
+      "expandAll": "Tout développer",
+      "collapseAll": "Tout réduire",
       "view": {
         "enhancedTree": {
           "title": "Vue Arborescente",

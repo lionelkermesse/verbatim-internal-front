@@ -735,25 +735,30 @@
   border-color: $primary-color;
 }
 
-.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Add sub-event"]:hover {
-  background-color: rgba(82, 196, 26, 0.1);
-  color: #52c41a;
-}
 
-.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Delete event"]:hover {
-  background-color: rgba(245, 34, 45, 0.1);
-  color: #f5222d;
-}
+// Enhanced card left border styling to match flattened cards
+.enhanced-tree {
+  .tree-node {
+    .node-card {
+      &.root-event {
+        border-left: 4px solid $primary-color;
 
-.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Move up"],
-.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Move down"] {
-  &:hover {
-    background-color: rgba(250, 140, 22, 0.1);
-    color: #fa8c16;
+        .node-content .title-section .compact-header-line .node-title .title-text {
+          font-weight: 600;
+          font-size: 16px;
+          color: #262626;
+        }
+      }
+
+      &.child-event {
+        border-left: 4px solid lighten($primary-color, 30%);
+
+        .node-content .title-section .compact-header-line .node-title .title-text {
+          font-weight: 500;
+          font-size: 15px;
+          color: #595959;
+        }
+      }
+    }
   }
-}
-
-.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Set as root event"]:hover {
-  background-color: rgba(24, 144, 255, 0.1);
-  color: #1890ff;
 }

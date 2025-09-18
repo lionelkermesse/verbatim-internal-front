@@ -185,6 +185,8 @@
       "speakers": "Speakers",
       "verbatim": "Verbatim Content",
       "line": "Line",
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All",
       "view": {
         "enhancedTree": {
           "title": "Tree View",

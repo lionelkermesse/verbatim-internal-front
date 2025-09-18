@@ -12,7 +12,9 @@
       [nzHoverable]="true"
       [nzSize]="'small'"
       [nzBordered]="true"
-      class="node-card">
+      class="node-card"
+      [class.root-event]="node.depth === 0"
+      [class.child-event]="node.depth > 0">
 
       <div class="node-content" (click)="onNodeClick(node)">
         <!-- Expansion Toggle and Actions -->
@@ -85,7 +87,8 @@
                       [nzType]="action.type === 'delete' ? 'default' : 'text'"
                       [nzDanger]="action.type === 'delete'"
                       nzSize="small"
-                      [nz-tooltip]="action.tooltip"
+                      nz-tooltip
+                      [nzTooltipTitle]="action.tooltip | translate"
                       tabindex="0"
                       (click)="onNodeActionClick(action, node, $event)"
                       (keyup.enter)="onNodeActionClick(action, node, $event)"

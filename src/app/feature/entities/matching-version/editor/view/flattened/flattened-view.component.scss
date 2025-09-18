@@ -163,27 +163,6 @@
                   border-color: $primary-color;
                 }
 
-                &[nz-tooltip="Add inner event"] {
-                  &:hover {
-                    background-color: rgba(82, 196, 26, 0.1);
-                    color: #52c41a;
-                  }
-                }
-
-                &[nz-tooltip="Delete event"] {
-                  &:hover {
-                    background-color: rgba(245, 34, 45, 0.1);
-                    color: #f5222d;
-                  }
-                }
-
-                &[nz-tooltip="Move up"],
-                &[nz-tooltip="Move down"] {
-                  &:hover {
-                    background-color: rgba(250, 140, 22, 0.1);
-                    color: #fa8c16;
-                  }
-                }
               }
             }
           }

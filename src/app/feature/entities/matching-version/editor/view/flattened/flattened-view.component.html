@@ -41,8 +41,9 @@
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  nz-tooltip="Add inner event"
-                  (click)="onAction({type: 'add-child', icon: 'plus', tooltip: 'Add inner event', visible: true, disabled: false}, node, $event)">
+                  nz-tooltip
+                  [nzTooltipTitle]="'matching.detail.tree.addInner' | translate"
+                  (click)="onAction({type: 'add-child', icon: 'plus', tooltip: 'matching.detail.tree.addInner', visible: true, disabled: false}, node, $event)">
                   <span nz-icon nzType="plus" nzTheme="outline"></span>
                 </button>
               </ng-container>
@@ -53,8 +54,9 @@
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  nz-tooltip="Move up"
-                  (click)="onAction({type: 'move-up', icon: 'up', tooltip: 'Move up', visible: true, disabled: false}, node, $event)">
+                  nz-tooltip
+                  [nzTooltipTitle]="'matching.detail.tree.moveUp' | translate"
+                  (click)="onAction({type: 'move-up', icon: 'up', tooltip: 'matching.detail.tree.moveUp', visible: true, disabled: false}, node, $event)">
                   <span nz-icon nzType="up" nzTheme="outline"></span>
                 </button>
               </ng-container>
@@ -65,8 +67,9 @@
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  nz-tooltip="Move down"
-                  (click)="onAction({type: 'move-down', icon: 'down', tooltip: 'Move down', visible: true, disabled: false}, node, $event)">
+                  nz-tooltip
+                  [nzTooltipTitle]="'matching.detail.tree.moveDown' | translate"
+                  (click)="onAction({type: 'move-down', icon: 'down', tooltip: 'matching.detail.tree.moveDown', visible: true, disabled: false}, node, $event)">
                   <span nz-icon nzType="down" nzTheme="outline"></span>
                 </button>
               </ng-container>
@@ -78,7 +81,8 @@
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  nz-tooltip="{{ 'entity.action.setAsRoot' | translate }}"
+                  nz-tooltip
+                  [nzTooltipTitle]="'entity.action.setAsRoot' | translate"
                   (click)="onSetAsRoot(node, $event)">
                   <span nz-icon nzType="arrow-up" nzTheme="outline"></span>
                 </button>
@@ -90,8 +94,9 @@
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  nz-tooltip="Delete event"
-                  (click)="onAction({type: 'delete', icon: 'delete', tooltip: 'Delete event', visible: true, disabled: false}, node, $event)">
+                  nz-tooltip
+                  [nzTooltipTitle]="'matching.detail.tree.delete' | translate"
+                  (click)="onAction({type: 'delete', icon: 'delete', tooltip: 'matching.detail.tree.delete', visible: true, disabled: false}, node, $event)">
                   <span nz-icon nzType="delete" nzTheme="outline"></span>
                 </button>
               </ng-container>
