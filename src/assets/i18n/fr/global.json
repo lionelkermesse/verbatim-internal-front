@@ -37,16 +37,21 @@
   },
   "entity": {
     "action": {
+      "add": "Ajouter",
+      "addEvent": "Ajouter un événement",
       "addblob": "Ajouter blob",
       "addimage": "Ajouter image",
       "back": "Retour",
       "cancel": "Annuler",
       "edit": "Editer",
       "delete": "Supprimer",
+      "moveUp": "Déplacer vers le haut",
+      "moveDown": "Déplacer vers le bas",
+      "setAsRoot": "Définir comme racine",
       "open": "Ouvrir",
       "save": "Sauvegarder",
       "view": "Voir",
-      "show": "Show {{otherEntity}}"
+      "show": "Afficher {{otherEntity}}"
     },
     "detail": {
       "field": "Champs",

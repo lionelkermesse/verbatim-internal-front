@@ -35,12 +35,17 @@
   },
   "entity": {
     "action": {
+      "add": "Hinzufügen",
+      "addEvent": "Ereignis hinzufügen",
       "addblob": "Blob hinzufügen",
       "addimage": "Bild hinzufügen",
       "back": "Zurück",
       "cancel": "Abbrechen",
       "delete": "Löschen",
       "edit": "Bearbeiten",
+      "moveUp": "Nach oben verschieben",
+      "moveDown": "Nach unten verschieben",
+      "setAsRoot": "Als Stamm festlegen",
       "open": "Öffnen",
       "save": "Speichern",
       "view": "Anzeigen",

@@ -35,12 +35,17 @@
   },
   "entity": {
     "action": {
+      "add": "Add",
+      "addEvent": "Add an event",
       "addblob": "Add blob",
       "addimage": "Add image",
       "back": "Back",
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "setAsRoot": "Set as root",
       "open": "Open",
       "save": "Save",
       "view": "View",

@@ -35,11 +35,12 @@ export interface MatchingStats {
 }
 
 export interface TreeNodeAction {
-  type: 'edit' | 'delete' | 'add-child' | 'move-up' | 'move-down' | 'duplicate' | 'set-as-root';
+  type: 'edit' | 'delete' | 'add-child' | 'move-up' | 'move-down' | 'duplicate' | 'set-as-root' | 'remove-speaker';
   icon: string;
   tooltip: string;
   visible: boolean;
   disabled: boolean;
+  speakerIndex?: number;
 }
 
 export interface EnhancedTreeNode extends IMatchingResultItem {

@@ -94,7 +94,7 @@
                   nzSize="large"
                   (click)="onCancel()">
                   <span nz-icon nzType="close" nzTheme="outline"></span>
-                  {{ 'matching.detail.cancel' | translate }}
+                  {{ 'entity.action.cancel' | translate }}
                 </button>
               </ng-container>
             </ng-container>
@@ -144,7 +144,7 @@
                   nzSize="small"
                   [routerLink]="['/matching', sessionIdentifier(), version(), 'edit']">
                   <span nz-icon nzType="edit" nzTheme="outline"></span>
-                  {{ 'global.edit' | translate }}
+                  {{ 'entity.action.edit' | translate }}
                 </button>
 
                 <!-- Add Event Button (Edit mode only) -->
@@ -154,9 +154,9 @@
                   nzType="primary"
                   nzSize="small"
                   (click)="onAddRootEvent()"
-                  [nz-tooltip]="'global.add' | translate">
+                  [nz-tooltip]="'entity.action.addEvent' | translate">
                   <span nz-icon nzType="plus" nzTheme="outline"></span>
-                  {{ 'global.add' | translate }}
+                  {{ 'entity.action.addEvent' | translate }}
                 </button>
 
                 <span class="expander-controls" *ngIf="currentViewType() === 'enhanced-tree'">
@@ -272,7 +272,7 @@
                   nzSize="small"
                   (click)="onDeleteSelectedItem()">
                   <span nz-icon nzType="delete" nzTheme="outline"></span>
-                  {{ 'global.delete' | translate }}
+                  {{ 'entity.action.delete' | translate }}
                 </button>
 
                 <!-- Save/Cancel buttons (only if changes detected) -->
@@ -284,7 +284,7 @@
                     nzSize="small"
                     (click)="onSaveDetailEdit()">
                     <span nz-icon nzType="check" nzTheme="outline"></span>
-                    {{ 'global.save' | translate }}
+                    {{ 'entity.action.save' | translate }}
                   </button>
                   <button
                     *nzSpaceItem
@@ -293,7 +293,7 @@
                     nzSize="small"
                     (click)="onCancelDetailEdit()">
                     <span nz-icon nzType="close" nzTheme="outline"></span>
-                    {{ 'global.cancel' | translate }}
+                    {{ 'entity.action.cancel' | translate }}
                   </button>
                 </ng-container>
               </nz-space>

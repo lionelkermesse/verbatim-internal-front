@@ -37,12 +37,17 @@
     "action": {
       "addblob": "Blob dobäisetzen",
       "addimage": "Bild dobäisetzen",
+      "add": "Dobäisetzen",
+      "addEvent": "Evenement dobäisetzen",
       "back": "Zréck",
       "cancel": "Ofbriechen",
       "delete": "Läschen",
       "edit": "Änneren",
+      "moveUp": "No uewe réckelen",
+      "moveDown": "No ënnen réckelen",
       "open": "Opmaachen",
       "save": "Späicheren",
+      "setAsRoot": "Als Wuerzel festleeën",
       "view": "Weisen",
       "show": "{{otherEntity}} weisen"
     },

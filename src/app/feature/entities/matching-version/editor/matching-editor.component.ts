@@ -230,13 +230,17 @@ export class MatchingEditorComponent implements OnInit {
         this.stateService.deleteItem(event.node.id);
         break;
       case 'set-as-root':
-        // Re-parent the node to root level
         this.stateService.moveToRoot(event.node.id);
         break;
       case 'move-up':
       case 'move-down':
         // Implement move operations
         console.log('Move operation:', event.action.type, event.node.id);
+        break;
+      case 'remove-speaker':
+        if (typeof event.action.speakerIndex === 'number') {
+          this.stateService.removeSpeaker(event.node.id, event.action.speakerIndex);
+        }
         break;
     }
   }

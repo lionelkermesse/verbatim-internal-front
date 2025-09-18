@@ -22,25 +22,12 @@
       <div class="card-header">
         <!-- Compact single-line layout: [expand] [title] [status] [line] [actions] -->
         <div class="header-line">
-<!--          <div class="expand-section">-->
-<!--            <button-->
-<!--              *ngIf="node.hasChildren"-->
-<!--              nz-button-->
-<!--              nzType="text"-->
-<!--              nzSize="small"-->
-<!--              class="expand-toggle"-->
-<!--              (click)="onExpand(node); $event.stopPropagation()">-->
-<!--              <span nz-icon [nzType]="node.isExpanded ? 'minus-square' : 'plus-square'" nzTheme="outline"></span>-->
-<!--            </button>-->
-<!--            <div *ngIf="!node.hasChildren" class="expand-spacer"></div>-->
-<!--          </div>-->
-
           <div class="title-section">
             <span class="event-title">{{ node.title }}</span>
-          </div>
-
-          <div class="status-section">
-            <nz-tag [nzColor]="statusColorFn()(node.status || 'UNMATCHED')">
+            <nz-tag 
+              [nzColor]="statusColorFn()(node.status || 'UNMATCHED')"
+              nz-tooltip 
+              [nzTooltipTitle]="'matching.detail.tree.addInner' | translate">
               {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
             </nz-tag>
             <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
@@ -51,7 +38,7 @@
               <!-- Debug: Show canEdit status -->
               <small *nzSpaceItem style="color: red;">Edit: {{canEdit() ? 'YES' : 'NO'}}</small>
 
-              <!-- Add Inner Event -->
+              <!-- Add Child Button -->
               <ng-container *nzSpaceItem>
                 <button
                   nz-button
@@ -63,7 +50,7 @@
                 </button>
               </ng-container>
 
-              <!-- Delete Event -->
+              <!-- Delete Button -->
               <ng-container *nzSpaceItem>
                 <button
                   nz-button
@@ -75,7 +62,7 @@
                 </button>
               </ng-container>
 
-              <!-- Move Up -->
+              <!-- Move Up Button -->
               <ng-container *nzSpaceItem>
                 <button
                   nz-button
@@ -87,7 +74,7 @@
                 </button>
               </ng-container>
 
-              <!-- Move Down -->
+              <!-- Move Down Button -->
               <ng-container *nzSpaceItem>
                 <button
                   nz-button
@@ -99,14 +86,14 @@
                 </button>
               </ng-container>
 
-              <!-- Set as Root button (only for non-root nodes) -->
+              <!-- Set as Root Button (only for non-root nodes) -->
               <ng-container *nzSpaceItem>
                 <button
                   *ngIf="node.depth > 0"
                   nz-button
                   nzType="text"
                   nzSize="small"
-                  nz-tooltip="Set as root event"
+                  nz-tooltip="{{ 'entity.action.setAsRoot' | translate }}"
                   (click)="onSetAsRoot(node, $event)">
                   <span nz-icon nzType="arrow-up" nzTheme="outline"></span>
                 </button>

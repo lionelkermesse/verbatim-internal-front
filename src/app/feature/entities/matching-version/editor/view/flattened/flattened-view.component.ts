@@ -57,6 +57,11 @@ export class FlattenedViewComponent {
 
   onAction(action: TreeNodeAction, node: EnhancedTreeNode, $event?: MouseEvent): void {
     if ($event) { $event.stopPropagation(); }
+    // Special case: remove speaker
+    if (action.type === 'remove-speaker' && typeof action.speakerIndex === 'number') {
+      this.nodeAction.emit({ action: { ...action, type: 'remove-speaker' }, node });
+      return;
+    }
     this.nodeAction.emit({ action, node });
   }
 
