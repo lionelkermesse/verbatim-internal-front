@@ -793,8 +793,26 @@ export class MatchingEditorStateService {
   }
 
   private getNextLineNumber(parentId?: number): number {
-    // Logic to calculate the next line number
-    return Date.now(); // Temporary implementation
+    // Compute the next line number as max(lineNumber) of all items (including inners) + 1
+    const currentResult = this._state().matchingResult;
+    if (!currentResult) {
+      return 1;
+    }
+
+    let maxLine = 0;
+    const stack = [...(currentResult.result || [])];
+
+    while (stack.length) {
+      const item = stack.pop()!;
+      if (typeof item.lineNumber === 'number') {
+        maxLine = Math.max(maxLine, item.lineNumber);
+      }
+      if (item.inners && item.inners.length) {
+        stack.push(...item.inners);
+      }
+    }
+
+    return maxLine + 1;
   }
 
   private getItemLevel(itemId: number): number {

@@ -97,11 +97,4 @@ export class FlattenedViewComponent {
     }
   }
 
-  getDisplayText(text: string, isReadMode: boolean): string {
-    if (!text) return '';
-
-    // For read mode, CSS handles the truncation with ellipsis
-    // For edit mode, show full text
-    return text;
-  }
 }
