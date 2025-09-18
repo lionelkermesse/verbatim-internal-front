@@ -1,7 +1,7 @@
 <div class="speaker-editor">
   <!-- Speaker Management Section -->
   <div class="speaker-management">
-    <span class="speaker-label">{{ 'matching.detail.selected.speakers' | translate }}:</span>
+    <span class="speaker-label">{{ 'matching.detail.selected.speakers' | translate }}</span>
 
     <!-- Read Mode: Display speakers as tags -->
     <div class="speaker-value" *ngIf="!isEditMode()">
@@ -37,7 +37,7 @@
                 nzSize="small"
                 class="delete-speaker-btn"
                 (click)="removeSpeaker(i)"
-                [nz-tooltip]="'Remove speaker'">
+                [nz-tooltip]="'speaker.remove' | translate">
                 <span nz-icon nzType="close" nzTheme="outline"></span>
               </button>
             </nz-tag>
@@ -49,7 +49,7 @@
       <div class="add-existing-speaker" style="margin-bottom: 8px;">
         <nz-input-group [nzSuffix]="addExistingBtn">
           <nz-select
-            nzPlaceHolder="Select existing speaker"
+            [nzPlaceHolder]="'speaker.selectExisting.placeholder' | translate"
             [ngModel]="selectedExistingSpeaker()"
             (ngModelChange)="onExistingSpeakerSelect($event)"
             style="width: 100%;"
@@ -67,7 +67,7 @@
               nzSize="small"
               [disabled]="!selectedExistingSpeaker()"
               (click)="addSelectedExistingSpeaker()"
-              [nz-tooltip]="'Add selected speaker'">
+              [nz-tooltip]="'speaker.addSelected' | translate">
               <span nz-icon nzType="plus" nzTheme="outline"></span>
             </button>
           </ng-template>
@@ -75,7 +75,7 @@
       </div>
 
       <!-- Add new speaker form -->
-      <nz-card nzSize="small" nzTitle="Add New Speaker" style="margin-top: 8px;">
+      <nz-card nzSize="small" [nzTitle]="'speaker.addNew.title' | translate" style="margin-top: 8px;">
         <form (ngSubmit)="onFormSubmit($event)">
           <div nz-row [nzGutter]="[8, 8]">
             <div nz-col [nzSpan]="12">
@@ -83,32 +83,32 @@
                 nz-input
                 [ngModel]="newSpeaker().firstName"
                 (ngModelChange)="updateNewSpeaker('firstName', $event)"
-                placeholder="First Name"
-                name="firstName" />
+                [placeholder]="'speaker.form.firstName' | translate"
+                name="firstName"/>
             </div>
             <div nz-col [nzSpan]="12">
               <input
                 nz-input
                 [ngModel]="newSpeaker().lastName"
                 (ngModelChange)="updateNewSpeaker('lastName', $event)"
-                placeholder="Last Name"
-                name="lastName" />
+                [placeholder]="'speaker.form.lastName' | translate"
+                name="lastName"/>
             </div>
             <div nz-col [nzSpan]="12">
               <input
                 nz-input
                 [ngModel]="newSpeaker().function"
                 (ngModelChange)="updateNewSpeaker('function', $event)"
-                placeholder="Function"
-                name="function" />
+                [placeholder]="'speaker.form.function' | translate"
+                name="function"/>
             </div>
             <div nz-col [nzSpan]="12">
               <input
                 nz-input
                 [ngModel]="newSpeaker().party"
                 (ngModelChange)="updateNewSpeaker('party', $event)"
-                placeholder="Party"
-                name="party" />
+                [placeholder]="'speaker.form.party' | translate"
+                name="party"/>
             </div>
             <div nz-col [nzSpan]="24">
               <button
@@ -119,7 +119,7 @@
                 [disabled]="!canAddNewSpeaker()"
                 style="width: 100%;">
                 <span nz-icon nzType="plus"></span>
-                Add Speaker
+                {{ 'speaker.add' | translate }}
               </button>
             </div>
           </div>

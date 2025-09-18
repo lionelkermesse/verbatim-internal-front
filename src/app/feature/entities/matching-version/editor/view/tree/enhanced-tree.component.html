@@ -31,30 +31,8 @@
               <span nz-icon [nzType]="node.isExpanded ? 'caret-down' : 'caret-right'" nzTheme="fill"></span>
             </button>
             <div *ngIf="!node.hasChildren" class="expand-spacer"></div>
-
-            <!--            <div class="depth-indicator" [style.width.px]="node.depth * 2"></div>-->
           </div>
 
-          <!-- Action Buttons (Edit Mode Only) -->
-          <div class="actions-section" *ngIf="canEdit() && getVisibleActions(node).length > 0">
-            <nz-space nzSize="small">
-              <ng-container *ngFor="let action of getVisibleActions(node)">
-                <button
-                  *nzSpaceItem
-                  nz-button
-                  [nzType]="action.type === 'delete' ? 'default' : 'text'"
-                  [nzDanger]="action.type === 'delete'"
-                  nzSize="small"
-                  [nz-tooltip]="action.tooltip"
-                  tabindex="0"
-                  (click)="onNodeActionClick(action, node, $event)"
-                  (keyup.enter)="onNodeActionClick(action, node, $event)"
-                  (keyup.space)="onNodeActionClick(action, node, $event); $event.preventDefault()">
-                  <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
-                </button>
-              </ng-container>
-            </nz-space>
-          </div>
 
           <!-- Title Section with Inline Editing -->
           <div class="title-section">
@@ -95,6 +73,27 @@
                   {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
                 </nz-tag>
                 <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
+              </div>
+
+              <!-- Actions aligned to the right after line number (Edit Mode Only) -->
+              <div class="actions-section" *ngIf="canEdit() && getVisibleActions(node).length > 0">
+                <nz-space nzSize="small">
+                  <ng-container *ngFor="let action of getVisibleActions(node)">
+                    <button
+                      *nzSpaceItem
+                      nz-button
+                      [nzType]="action.type === 'delete' ? 'default' : 'text'"
+                      [nzDanger]="action.type === 'delete'"
+                      nzSize="small"
+                      [nz-tooltip]="action.tooltip"
+                      tabindex="0"
+                      (click)="onNodeActionClick(action, node, $event)"
+                      (keyup.enter)="onNodeActionClick(action, node, $event)"
+                      (keyup.space)="onNodeActionClick(action, node, $event); $event.preventDefault()">
+                      <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
+                    </button>
+                  </ng-container>
+                </nz-space>
               </div>
             </div>
           </div>

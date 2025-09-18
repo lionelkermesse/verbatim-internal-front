@@ -1,0 +1,19 @@
+{
+  "speaker": {
+    "remove": "Supprimer l'orateur",
+    "selectExisting": {
+      "placeholder": "Sélectionner un orateur existant"
+    },
+    "addSelected": "Ajouter l'orateur sélectionné",
+    "addNew": {
+      "title": "Ajouter un nouvel orateur"
+    },
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "function": "Fonction",
+      "party": "Parti"
+    },
+    "add": "Ajouter un orateur"
+  }
+}

@@ -56,7 +56,11 @@
         }
 
         .node-content {
-          cursor: pointer;
+          cursor: grab; // Use grab cursor to reflect draggable/drag-like interaction
+
+          &:active {
+            cursor: grabbing;
+          }
 
           .node-header {
             display: flex;
@@ -702,4 +706,54 @@
       }
     }
   }
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section {
+  flex-shrink: 0;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid $primary-color; /* default border for edit buttons */
+  background: transparent;
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn .anticon {
+  color: $primary-color; /* default icon color primary */
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn:hover {
+  background-color: rgba(229, 0, 0, 0.1);
+  border-color: $primary-color;
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Add sub-event"]:hover {
+  background-color: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Delete event"]:hover {
+  background-color: rgba(245, 34, 45, 0.1);
+  color: #f5222d;
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Move up"],
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Move down"] {
+  &:hover {
+    background-color: rgba(250, 140, 22, 0.1);
+    color: #fa8c16;
+  }
+}
+
+.enhanced-tree .node-card .node-content .title-section .compact-header-line .actions-section ::ng-deep .ant-space .ant-btn[nz-tooltip="Set as root event"]:hover {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: #1890ff;
 }

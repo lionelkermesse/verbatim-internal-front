@@ -1,0 +1,19 @@
+{
+  "speaker": {
+    "remove": "Remove speaker",
+    "selectExisting": {
+      "placeholder": "Select existing speaker"
+    },
+    "addSelected": "Add selected speaker",
+    "addNew": {
+      "title": "Add New Speaker"
+    },
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "function": "Function",
+      "party": "Party"
+    },
+    "add": "Add Speaker"
+  }
+}

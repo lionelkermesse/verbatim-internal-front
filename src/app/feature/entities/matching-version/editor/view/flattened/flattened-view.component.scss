@@ -10,6 +10,7 @@
     margin-bottom: 12px;
 
     .flattened-card {
+      cursor: grab;
       position: relative;
       border-radius: 8px;
       border: 1px solid #f0f0f0;
@@ -150,6 +151,12 @@
                 justify-content: center;
                 border-radius: 6px;
                 transition: all 0.2s ease;
+                border: 1px solid $primary-color; // default border for edit buttons
+                background: transparent;
+
+                .anticon {
+                  color: $primary-color; // default icon color primary
+                }
 
                 &:hover {
                   background-color: rgba(229, 0, 0, 0.1);
@@ -464,4 +471,28 @@
       }
     }
   }
+}
+
+// Drag & Drop visual feedback
+.flattened-cards-view .flattened-card-container.cdk-drag-dragging {
+  cursor: grabbing;
+}
+
+.flattened-cards-view .flattened-card-container.cdk-drag-dragging .flattened-card {
+  border-color: $primary-color;
+  box-shadow: 0 6px 16px rgba(229, 0, 0, 0.25);
+}
+
+// Style the drag preview to resemble the card with highlight
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid $primary-color;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background: #fff;
+}
+
+// Ensure placeholder space keeps layout stable
+.cdk-drag-placeholder {
+  opacity: 0;
 }

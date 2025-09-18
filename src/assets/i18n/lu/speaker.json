@@ -1,0 +1,19 @@
+{
+  "speaker": {
+    "remove": "Spriecher ewechhuelen",
+    "selectExisting": {
+      "placeholder": "Bestehende Spriecher auswielen"
+    },
+    "addSelected": "Ausgewielten Spriecher dobäisetzen",
+    "addNew": {
+      "title": "Neie Spriecher dobäisetzen"
+    },
+    "form": {
+      "firstName": "Virnumm",
+      "lastName": "Familljennumm",
+      "function": "Funktioun",
+      "party": "Partei"
+    },
+    "add": "Spriecher dobäisetzen"
+  }
+}

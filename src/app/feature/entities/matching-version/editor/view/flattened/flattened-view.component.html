@@ -14,7 +14,7 @@
       class="flattened-card"
       (click)="onSelect(node)">
 
-      <!-- Drag handle for edit mode (visual indicator only) -->
+      <!-- Drag indicator in edit mode (card is draggable from anywhere) -->
       <div *ngIf="canEdit()" class="drag-handle">
         <span nz-icon nzType="drag" nzTheme="outline"></span>
       </div>
@@ -44,18 +44,6 @@
                   nz-tooltip="Add inner event"
                   (click)="onAction({type: 'add-child', icon: 'plus', tooltip: 'Add inner event', visible: true, disabled: false}, node, $event)">
                   <span nz-icon nzType="plus" nzTheme="outline"></span>
-                </button>
-              </ng-container>
-
-              <!-- Delete Button -->
-              <ng-container *nzSpaceItem>
-                <button
-                  nz-button
-                  nzType="text"
-                  nzSize="small"
-                  nz-tooltip="Delete event"
-                  (click)="onAction({type: 'delete', icon: 'delete', tooltip: 'Delete event', visible: true, disabled: false}, node, $event)">
-                  <span nz-icon nzType="delete" nzTheme="outline"></span>
                 </button>
               </ng-container>
 
@@ -93,6 +81,18 @@
                   nz-tooltip="{{ 'entity.action.setAsRoot' | translate }}"
                   (click)="onSetAsRoot(node, $event)">
                   <span nz-icon nzType="arrow-up" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+
+              <!-- Delete Button (moved to the end to match enhanced view) -->
+              <ng-container *nzSpaceItem>
+                <button
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip="Delete event"
+                  (click)="onAction({type: 'delete', icon: 'delete', tooltip: 'Delete event', visible: true, disabled: false}, node, $event)">
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
                 </button>
               </ng-container>
             </nz-space>

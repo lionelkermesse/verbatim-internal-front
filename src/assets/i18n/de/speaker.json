@@ -1,0 +1,19 @@
+{
+  "speaker": {
+    "remove": "Redner entfernen",
+    "selectExisting": {
+      "placeholder": "Bestehenden Redner auswählen"
+    },
+    "addSelected": "Ausgewählten Redner hinzufügen",
+    "addNew": {
+      "title": "Neuen Redner hinzufügen"
+    },
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "function": "Funktion",
+      "party": "Partei"
+    },
+    "add": "Redner hinzufügen"
+  }
+}

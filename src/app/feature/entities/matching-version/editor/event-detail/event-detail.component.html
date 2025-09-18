@@ -43,14 +43,14 @@
   <div class="detail-content">
     <!-- Title Field -->
     <div class="detail-item">
-      <span class="detail-label">{{ 'matching.detail.selected.title' | translate }}:</span>
+      <span class="detail-label">{{ 'matching.detail.selected.title' | translate }}</span>
       <div class="detail-value" *ngIf="!isEditMode()">{{ selectedItem()?.title }}</div>
       <input
         *ngIf="isEditMode()"
         nz-input
         [ngModel]="editingTitle()"
         (ngModelChange)="onTitleChange($event)"
-        [placeholder]="'matching.detail.edit.titlePlaceholder' | translate" />
+        [placeholder]="'matching.detail.edit.titlePlaceholder' | translate"/>
     </div>
 
     <!-- Speaker Management -->
@@ -66,12 +66,12 @@
     <div class="detail-item status-line-container">
       <div class="status-line-wrapper">
         <div class="status-labels-row">
-          <span class="detail-label">{{ 'matching.detail.selected.status' | translate }}:</span>
-          <span class="detail-label">{{ 'matching.detail.selected.lineNumber' | translate }}:</span>
+          <span class="detail-label">{{ 'matching.detail.selected.status' | translate }}</span>
+          <span class="detail-label">{{ 'matching.detail.selected.lineNumber' | translate }}</span>
         </div>
         <div class="status-values-row">
           <nz-tag [nzColor]="getStatusColor(selectedItem()?.status || 'UNMATCHED')">
-            {{ ('matchingStatus.' + (selectedItem()?.status || 'UNMATCHED')) | translate | titlecase}}
+            {{ ('matchingStatus.' + (selectedItem()?.status || 'UNMATCHED')) | translate | titlecase }}
           </nz-tag>
           <span class="detail-value">{{ selectedItem()?.lineNumber || 0 }}</span>
         </div>
@@ -80,7 +80,7 @@
 
     <!-- Verbatim Field -->
     <div class="detail-item" *ngIf="selectedItem()?.verbatim || isEditMode()">
-      <span class="detail-label">{{ 'matching.detail.selected.verbatim' | translate }}:</span>
+      <span class="detail-label">{{ 'matching.detail.selected.verbatim' | translate }}</span>
       <div class="detail-value verbatim-content" *ngIf="!isEditMode()">{{ selectedItem()?.verbatim }}</div>
       <textarea
         *ngIf="isEditMode()"

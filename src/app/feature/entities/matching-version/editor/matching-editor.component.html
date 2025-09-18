@@ -120,7 +120,7 @@
     <div class="editor-main">
       <nz-spin [nzSpinning]="state().isLoading" nzSize="large">
       <nz-row [nzGutter]="[24, 24]">
-        <!-- Tree View Column -->
+        <!-- Views Panel -->
         <nz-col [nzSpan]="selectedItem() ? 16 : 24">
           <nz-card [nzBordered]="false" class="tree-container" [nzLoading]="state().isLoading">
             <div class="tree-header">
@@ -158,72 +158,27 @@
                   {{ 'entity.action.addEvent' | translate }}
                 </button>
 
-                <span class="expander-controls" *ngIf="currentViewType() === 'enhanced-tree'">
+                <span class="actions-section" *ngIf="currentViewType() === 'enhanced-tree'">
                   <button
                     nz-button
                     nzType="text"
                     nzSize="small"
+                    class="expand-collapse-btn animated-toggle-btn"
                     (click)="onExpandAll()"
                     [nz-tooltip]="'Expand All'">
-                    <span nz-icon nzType="plus-square" nzTheme="outline"></span>
+                    <span nz-icon nzType="caret-down" nzTheme="fill"></span>
                   </button>
                   <button
                     nz-button
                     nzType="text"
                     nzSize="small"
+                    class="expand-collapse-btn animated-toggle-btn"
                     (click)="onCollapseAll()"
                     [nz-tooltip]="'Collapse All'">
-                    <span nz-icon nzType="minus-square" nzTheme="outline"></span>
+                    <span nz-icon nzType="caret-right" nzTheme="fill"></span>
                   </button>
                 </span>
-
-                <!-- Config Toggle -->
-                <button
-                  nz-button
-                  nzType="text"
-                  nzSize="small"
-                  (click)="onToggleConfig()"
-                  [nz-tooltip]="'Settings'">
-                  <span nz-icon nzType="setting" nzTheme="outline"></span>
-                </button>
               </div>
-            </div>
-
-            <!-- Configuration Panel -->
-            <div class="config-panel" *ngIf="showConfig()">
-              <nz-card nzSize="small" class="config-card">
-                <div class="config-options">
-                  <nz-row [nzGutter]="[16, 16]">
-                    <nz-col [nzSpan]="8">
-                      <div class="config-item">
-                        <span class="config-label">Inline Editing</span>
-                        <nz-switch
-                          [ngModel]="config().enableInlineEdit"
-                          (ngModelChange)="onConfigChange({ enableInlineEdit: $event })">
-                        </nz-switch>
-                      </div>
-                    </nz-col>
-                    <nz-col [nzSpan]="8">
-                      <div class="config-item">
-                        <span class="config-label">Drag & Drop</span>
-                        <nz-switch
-                          [ngModel]="config().enableDragDrop"
-                          (ngModelChange)="onConfigChange({ enableDragDrop: $event })">
-                        </nz-switch>
-                      </div>
-                    </nz-col>
-                    <nz-col [nzSpan]="8">
-                      <div class="config-item">
-                        <span class="config-label">Auto Save</span>
-                        <nz-switch
-                          [ngModel]="config().autoSave"
-                          (ngModelChange)="onConfigChange({ autoSave: $event })">
-                        </nz-switch>
-                      </div>
-                    </nz-col>
-                  </nz-row>
-                </div>
-              </nz-card>
             </div>
 
             <!-- View Content -->
@@ -258,7 +213,7 @@
           </nz-card>
         </nz-col>
 
-        <!-- Detail Panel -->
+        <!-- Event Detail Panel -->
         <nz-col [nzSpan]="8" *ngIf="selectedItem()">
           <chd-event-detail
             [selectedItem]="selectedItem()"

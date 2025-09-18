@@ -244,7 +244,8 @@ export class MatchingEditorStateService {
       lineNumber: this.getNextLineNumber(parentId),
       inners: [],
       speakers: [],
-      status: 'UNMATCHED',
+      // Default to MANUALLY_MATCHED when user adds a new event (instead of UNMATCHED)
+      status: 'MANUALLY_MATCHED',
       level: parentId ? this.getItemLevel(parentId) + 1 : 0,
       expand: true
     };
@@ -454,7 +455,7 @@ export class MatchingEditorStateService {
     const isSelected = selectedKeys.includes(itemKey);
     const hasChildren = item.inners && item.inners.length > 0;
 
-    const actions: TreeNodeAction[] = this.generateTreeActions(editMode, hasChildren);
+    const actions: TreeNodeAction[] = this.generateTreeActions(editMode, hasChildren, depth);
 
     return {
       ...item,
@@ -477,18 +478,23 @@ export class MatchingEditorStateService {
     };
   }
 
-  private generateTreeActions(editMode: 'view' | 'edit', hasChildren: boolean): TreeNodeAction[] {
-    const baseActions: TreeNodeAction[] = [
-      {
+  private generateTreeActions(editMode: 'view' | 'edit', hasChildren: boolean, depth: number): TreeNodeAction[] {
+    const baseActions: TreeNodeAction[] = [];
+
+    if (editMode === 'view') {
+      // Show edit action only in read mode. In edit mode, the button is hidden to avoid redundancy.
+      baseActions.push({
         type: 'edit',
         icon: 'edit',
         tooltip: 'Edit event',
         visible: true,
-        disabled: editMode === 'view'
-      }
-    ];
+        disabled: false
+      });
+    }
 
     if (editMode === 'edit') {
+      // NOTE: Intentionally hiding the node-level 'edit' button in edit mode.
+      // To re-enable in the future, add the action back here.
       baseActions.push(
         {
           type: 'add-child',
@@ -510,6 +516,14 @@ export class MatchingEditorStateService {
           tooltip: 'Move down',
           visible: true,
           disabled: false
+        },
+        // Set as root (only for non-root nodes)
+        {
+          type: 'set-as-root',
+          icon: 'arrow-up',
+          tooltip: 'Set as root event',
+          visible: depth > 0,
+          disabled: depth === 0
         },
         {
           type: 'delete',
