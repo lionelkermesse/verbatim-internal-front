@@ -1,3 +1,5 @@
+@import 'src/assets/scss/vendor.scss';
+
 :host {
   display: block;
 }
@@ -8,33 +10,44 @@
     margin-bottom: 12px;
 
     .flattened-card {
+      position: relative;
       border-radius: 8px;
       border: 1px solid #f0f0f0;
       transition: all 0.3s ease;
+      background: #fff;
 
       &:hover {
         border-color: #d9d9d9;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transform: translateY(-1px);
+
+        .actions-section {
+          opacity: 1;
+        }
       }
 
       &.selected {
-        border-color: #e50000; // $primary-color approximation
+        border-color: $primary-color;
         box-shadow: 0 4px 12px rgba(229, 0, 0, 0.2);
+
+        ::ng-deep .ant-card-body {
+          background: rgba(229, 0, 0, 0.02);
+        }
       }
 
       // Visual hierarchy indicators
       &.root-event {
-        border-left: 4px solid #e50000; // $primary-color
+        border-left: 4px solid $primary-color;
 
         .card-header .header-line .title-section .event-title {
           font-weight: 600;
           font-size: 16px;
+          color: #262626;
         }
       }
 
       &.child-event {
-        border-left: 4px solid #f3a3a3; // lighten($primary-color, 30%) approximation
+        border-left: 4px solid lighten($primary-color, 30%);
         margin-left: 20px;
 
         .card-header .header-line .title-section .event-title {
@@ -64,9 +77,10 @@
         cursor: grab;
         opacity: 0.7;
         transition: all 0.2s ease;
+        z-index: 3;
 
         &:hover {
-          background: #e50000;
+          background: $primary-color;
           color: white;
           opacity: 1;
         }
@@ -84,40 +98,13 @@
         .header-line {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           gap: 12px;
-          margin-bottom: 8px;
-
-          .expand-section {
-            flex-shrink: 0;
-            width: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            .expand-toggle {
-              width: 24px;
-              height: 24px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              border-radius: 4px;
-
-              &:hover {
-                background-color: rgba(229, 0, 0, 0.1);
-              }
-
-              .anticon {
-                color: #e50000; // $primary-color
-              }
-            }
-
-            .expand-spacer {
-              width: 24px;
-              height: 24px;
-            }
-          }
 
           .title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             flex: 1;
             min-width: 0;
 
@@ -126,24 +113,23 @@
               line-height: 1.4;
               margin: 0;
               word-wrap: break-word;
+              flex: 1;
               // 2-line truncation
               display: -webkit-box;
               -webkit-line-clamp: 2;
               -webkit-box-orient: vertical;
               overflow: hidden;
             }
-          }
 
-          .status-section {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
+            nz-tag {
+              flex-shrink: 0;
+            }
 
             .line-number {
+              flex-shrink: 0;
               font-size: 12px;
               color: #8c8c8c;
-              font-family: monospace;
+              font-family: 'Monaco', 'Menlo', monospace;
               background: #f5f5f5;
               padding: 2px 6px;
               border-radius: 3px;
@@ -163,17 +149,40 @@
                 align-items: center;
                 justify-content: center;
                 border-radius: 6px;
+                transition: all 0.2s ease;
 
                 &:hover {
                   background-color: rgba(229, 0, 0, 0.1);
-                  border-color: #e50000; // $primary-color
+                  border-color: $primary-color;
+                }
+
+                &[nz-tooltip="Add inner event"] {
+                  &:hover {
+                    background-color: rgba(82, 196, 26, 0.1);
+                    color: #52c41a;
+                  }
+                }
+
+                &[nz-tooltip="Delete event"] {
+                  &:hover {
+                    background-color: rgba(245, 34, 45, 0.1);
+                    color: #f5222d;
+                  }
+                }
+
+                &[nz-tooltip="Move up"],
+                &[nz-tooltip="Move down"] {
+                  &:hover {
+                    background-color: rgba(250, 140, 22, 0.1);
+                    color: #fa8c16;
+                  }
                 }
               }
             }
           }
         }
 
-        // Speakers on same line as label
+        // Speakers section - Compact layout
         .speakers-line {
           display: flex;
           align-items: center;
@@ -185,7 +194,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 13px;
+            font-size: 12px;
             color: #595959;
             font-weight: 500;
             flex-shrink: 0;
@@ -198,10 +207,16 @@
           ::ng-deep .ant-space {
             flex: 1;
           }
-        }
 
-        &:hover .actions-section {
-          opacity: 1;
+          .speaker-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            .anticon {
+              font-size: 12px;
+            }
+          }
         }
       }
 
@@ -219,25 +234,231 @@
             margin-bottom: 6px;
 
             .anticon {
-              font-size: 14px;
+              font-size: 12px;
             }
           }
 
           .verbatim-text {
             margin: 0;
-            padding: 8px 12px;
+            padding: 6px 10px;
             background: #fafafa;
-            border-radius: 6px;
-            border-left: 3px solid #d9d9d9;
-            font-style: italic;
-            line-height: 1.6;
+            border-radius: 4px;
+            border-left: 2px solid #d9d9d9;
+            font-size: 12px;
             color: #595959;
-            font-size: 14px;
-            // 2-line truncation
+            line-height: 1.4;
+            font-style: italic;
+            min-height: 16px;
+            // 2-line truncation with ellipsis
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design - match enhanced view
+@media (max-width: 768px) {
+  .flattened-cards-view {
+    .flattened-card-container {
+      .flattened-card {
+        ::ng-deep .ant-card-body {
+          padding: 12px;
+        }
+
+        .card-header {
+          .header-line {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+
+            .title-section {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 8px;
+            }
+
+            .actions-section {
+              opacity: 1;
+
+              ::ng-deep .ant-space {
+                justify-content: flex-end;
+              }
+            }
+          }
+
+          .speakers-line {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Force light theme with CHD colors - match enhanced view
+:host {
+  color-scheme: light !important;
+
+  .flattened-cards-view {
+    background: $component-background !important;
+
+    .flattened-card-container {
+      .flattened-card {
+        &.selected {
+          border-color: $primary-color !important;
+          box-shadow: 0 4px 12px rgba(229, 0, 0, 0.2) !important;
+
+          ::ng-deep .ant-card-body {
+            background: rgba(229, 0, 0, 0.02) !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+// High contrast mode - match enhanced view
+@media (prefers-contrast: high) {
+  .flattened-cards-view {
+    .flattened-card-container {
+      .flattened-card {
+        border: 2px solid #000;
+
+        &:hover {
+          border-color: #0066cc;
+        }
+
+        &.selected {
+          border-color: #0066cc;
+          border-width: 3px;
+        }
+
+        .card-header {
+          .actions-section {
+            ::ng-deep .ant-btn {
+              border: 1px solid #000;
+
+              &:hover {
+                border-color: #0066cc;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Print styles - match enhanced view
+@media print {
+  .flattened-cards-view {
+    .flattened-card-container {
+      .flattened-card {
+        border: 1px solid #000;
+        box-shadow: none;
+
+        &:hover {
+          transform: none;
+        }
+
+        .drag-handle,
+        .actions-section {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// Reduced motion preferences - match enhanced view
+@media (prefers-reduced-motion: reduce) {
+  .flattened-cards-view {
+    .flattened-card-container {
+      .flattened-card {
+        transition: none;
+
+        &:hover {
+          transform: none;
+        }
+
+        .actions-section {
+          transition: none;
+        }
+      }
+    }
+  }
+}
+
+// Focus styles for accessibility - match enhanced view
+:host {
+  ::ng-deep {
+    .ant-btn:focus {
+      outline: 2px solid $primary-color;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Loading state (for future use) - match enhanced view
+:host(.loading) {
+  .flattened-cards-view {
+    .flattened-card-container {
+      .flattened-card {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+// Compact mode styling - match enhanced view
+:host(.compact) {
+  .flattened-cards-view {
+    .flattened-card-container {
+      margin-bottom: 6px;
+
+      .flattened-card {
+        ::ng-deep .ant-card-body {
+          padding: 8px 12px;
+        }
+
+        .card-header {
+          .header-line {
+            gap: 8px;
+
+            .title-section {
+              gap: 8px;
+
+              .event-title {
+                font-size: 14px;
+              }
+            }
+          }
+
+          .speakers-line {
+            margin-top: 4px;
+
+            .speakers-label {
+              font-size: 12px;
+            }
+          }
+        }
+
+        .card-content {
+          margin-top: 4px;
+
+          .verbatim-section {
+            .verbatim-label {
+              font-size: 12px;
+              margin-bottom: 4px;
+            }
           }
         }
       }

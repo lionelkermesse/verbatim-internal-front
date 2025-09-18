@@ -1,0 +1,130 @@
+<div class="speaker-editor">
+  <!-- Speaker Management Section -->
+  <div class="speaker-management">
+    <span class="speaker-label">{{ 'matching.detail.selected.speakers' | translate }}:</span>
+
+    <!-- Read Mode: Display speakers as tags -->
+    <div class="speaker-value" *ngIf="!isEditMode()">
+      <nz-space nzSize="small" nzWrap *ngIf="hasAssignedSpeakers(); else noSpeakers">
+        <ng-container *ngFor="let speaker of assignedSpeakers()">
+          <nz-tag *nzSpaceItem nzColor="blue">
+            {{ getSpeakerDisplayName(speaker) }}
+            <ng-container *ngIf="speaker.function"> ({{ speaker.function }})</ng-container>
+          </nz-tag>
+        </ng-container>
+      </nz-space>
+      <ng-template #noSpeakers>
+        <span class="no-data-text">{{ 'matching.detail.selected.noSpeakers' | translate }}</span>
+      </ng-template>
+    </div>
+
+    <!-- Edit Mode: Speaker management with add/remove -->
+    <div class="speaker-value" *ngIf="isEditMode()">
+      <!-- Assigned speakers with remove buttons -->
+      <div *ngIf="hasAssignedSpeakers()" style="margin-bottom: 8px;">
+        <nz-space nzSize="small" nzWrap>
+          <ng-container *ngFor="let speaker of assignedSpeakers(); let i = index">
+            <nz-tag
+              *nzSpaceItem
+              nzColor="blue"
+              class="speaker-tag-with-delete">
+              <span nz-icon nzType="user" nzTheme="outline"></span>
+              {{ getSpeakerDisplayName(speaker) }}
+              <ng-container *ngIf="speaker.function"> ({{ speaker.function }})</ng-container>
+              <button
+                nz-button
+                nzType="text"
+                nzSize="small"
+                class="delete-speaker-btn"
+                (click)="removeSpeaker(i)"
+                [nz-tooltip]="'Remove speaker'">
+                <span nz-icon nzType="close" nzTheme="outline"></span>
+              </button>
+            </nz-tag>
+          </ng-container>
+        </nz-space>
+      </div>
+
+      <!-- Add speaker from existing list with + button -->
+      <div class="add-existing-speaker" style="margin-bottom: 8px;">
+        <nz-input-group [nzSuffix]="addExistingBtn">
+          <nz-select
+            nzPlaceHolder="Select existing speaker"
+            [ngModel]="selectedExistingSpeaker()"
+            (ngModelChange)="onExistingSpeakerSelect($event)"
+            style="width: 100%;"
+            nzAllowClear>
+            <nz-option
+              *ngFor="let speaker of availableSpeakers()"
+              [nzValue]="speaker"
+              [nzLabel]="getSpeakerFullLabel(speaker)">
+            </nz-option>
+          </nz-select>
+          <ng-template #addExistingBtn>
+            <button
+              nz-button
+              nzType="primary"
+              nzSize="small"
+              [disabled]="!selectedExistingSpeaker()"
+              (click)="addSelectedExistingSpeaker()"
+              [nz-tooltip]="'Add selected speaker'">
+              <span nz-icon nzType="plus" nzTheme="outline"></span>
+            </button>
+          </ng-template>
+        </nz-input-group>
+      </div>
+
+      <!-- Add new speaker form -->
+      <nz-card nzSize="small" nzTitle="Add New Speaker" style="margin-top: 8px;">
+        <form (ngSubmit)="onFormSubmit($event)">
+          <div nz-row [nzGutter]="[8, 8]">
+            <div nz-col [nzSpan]="12">
+              <input
+                nz-input
+                [ngModel]="newSpeaker().firstName"
+                (ngModelChange)="updateNewSpeaker('firstName', $event)"
+                placeholder="First Name"
+                name="firstName" />
+            </div>
+            <div nz-col [nzSpan]="12">
+              <input
+                nz-input
+                [ngModel]="newSpeaker().lastName"
+                (ngModelChange)="updateNewSpeaker('lastName', $event)"
+                placeholder="Last Name"
+                name="lastName" />
+            </div>
+            <div nz-col [nzSpan]="12">
+              <input
+                nz-input
+                [ngModel]="newSpeaker().function"
+                (ngModelChange)="updateNewSpeaker('function', $event)"
+                placeholder="Function"
+                name="function" />
+            </div>
+            <div nz-col [nzSpan]="12">
+              <input
+                nz-input
+                [ngModel]="newSpeaker().party"
+                (ngModelChange)="updateNewSpeaker('party', $event)"
+                placeholder="Party"
+                name="party" />
+            </div>
+            <div nz-col [nzSpan]="24">
+              <button
+                nz-button
+                nzType="dashed"
+                nzSize="small"
+                type="submit"
+                [disabled]="!canAddNewSpeaker()"
+                style="width: 100%;">
+                <span nz-icon nzType="plus"></span>
+                Add Speaker
+              </button>
+            </div>
+          </div>
+        </form>
+      </nz-card>
+    </div>
+  </div>
+</div>

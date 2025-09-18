@@ -1,0 +1,95 @@
+<nz-card [nzBordered]="false" class="detail-panel" *ngIf="selectedItem()">
+  <div class="detail-header">
+    <h3 nz-typography>{{ 'matching.detail.selected.title' | translate }}</h3>
+    <nz-space nzSize="small" *ngIf="isEditMode()">
+      <!-- Always show delete button in edit mode -->
+      <button
+        *nzSpaceItem
+        nz-button
+        nzType="default"
+        nzDanger
+        nzSize="small"
+        (click)="onDeleteItem()">
+        <span nz-icon nzType="delete" nzTheme="outline"></span>
+        {{ 'entity.action.delete' | translate }}
+      </button>
+
+      <!-- Save/Cancel buttons (only if changes detected) -->
+      <ng-container *ngIf="hasChanges()">
+        <button
+          *nzSpaceItem
+          nz-button
+          nzType="primary"
+          nzSize="small"
+          (click)="onSaveChanges()">
+          <span nz-icon nzType="check" nzTheme="outline"></span>
+          {{ 'entity.action.save' | translate }}
+        </button>
+        <button
+          *nzSpaceItem
+          nz-button
+          nzType="default"
+          nzSize="small"
+          (click)="onCancelChanges()">
+          <span nz-icon nzType="close" nzTheme="outline"></span>
+          {{ 'entity.action.cancel' | translate }}
+        </button>
+      </ng-container>
+    </nz-space>
+  </div>
+
+  <nz-divider/>
+
+  <div class="detail-content">
+    <!-- Title Field -->
+    <div class="detail-item">
+      <span class="detail-label">{{ 'matching.detail.selected.title' | translate }}:</span>
+      <div class="detail-value" *ngIf="!isEditMode()">{{ selectedItem()?.title }}</div>
+      <input
+        *ngIf="isEditMode()"
+        nz-input
+        [ngModel]="editingTitle()"
+        (ngModelChange)="onTitleChange($event)"
+        [placeholder]="'matching.detail.edit.titlePlaceholder' | translate" />
+    </div>
+
+    <!-- Speaker Management -->
+    <div class="detail-item">
+      <chd-speaker-editor
+        [selectedItem]="selectedItem()"
+        [isEditMode]="isEditMode()"
+        (speakersChanged)="onSpeakersChanged($event)">
+      </chd-speaker-editor>
+    </div>
+
+    <!-- Status and Line Number: labels on first row, values on second row -->
+    <div class="detail-item status-line-container">
+      <div class="status-line-wrapper">
+        <div class="status-labels-row">
+          <span class="detail-label">{{ 'matching.detail.selected.status' | translate }}:</span>
+          <span class="detail-label">{{ 'matching.detail.selected.lineNumber' | translate }}:</span>
+        </div>
+        <div class="status-values-row">
+          <nz-tag [nzColor]="getStatusColor(selectedItem()?.status || 'UNMATCHED')">
+            {{ ('matchingStatus.' + (selectedItem()?.status || 'UNMATCHED')) | translate | titlecase}}
+          </nz-tag>
+          <span class="detail-value">{{ selectedItem()?.lineNumber || 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verbatim Field -->
+    <div class="detail-item" *ngIf="selectedItem()?.verbatim || isEditMode()">
+      <span class="detail-label">{{ 'matching.detail.selected.verbatim' | translate }}:</span>
+      <div class="detail-value verbatim-content" *ngIf="!isEditMode()">{{ selectedItem()?.verbatim }}</div>
+      <textarea
+        *ngIf="isEditMode()"
+        nz-input
+        [ngModel]="editingVerbatim()"
+        (ngModelChange)="onVerbatimChange($event)"
+        [placeholder]="'matching.detail.edit.verbatimPlaceholder' | translate"
+        [nzAutosize]="{ minRows: 3, maxRows: 6 }">
+      </textarea>
+    </div>
+  </div>
+</nz-card>

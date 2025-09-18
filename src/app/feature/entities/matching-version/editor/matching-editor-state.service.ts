@@ -287,19 +287,68 @@ export class MatchingEditorStateService {
   }
 
   assignSpeaker(eventId: number, speaker: ISpeaker): void {
-    const item = this.findItemById(eventId, this._treeNodes());
-    if (!item) return;
+    const currentResult = this._state().matchingResult;
+    if (!currentResult) return;
 
-    const updatedSpeakers = [...item.speakers, speaker];
-    this.updateItemField(eventId, 'speakers', updatedSpeakers);
+    // Update speakers directly in the result structure
+    const updatedResult = this.updateSpeakersInTree(currentResult, eventId, (currentSpeakers) => {
+      return [...currentSpeakers, speaker];
+    });
+
+    this.updateState({
+      matchingResult: updatedResult,
+      hasChanges: true
+    });
+
+    this.rebuildTreeNodes();
+    this.forceSignalRefresh();
   }
 
   removeSpeaker(eventId: number, speakerIndex: number): void {
-    const item = this.findItemById(eventId, this._treeNodes());
-    if (!item) return;
+    const currentResult = this._state().matchingResult;
+    if (!currentResult) return;
 
-    const updatedSpeakers = item.speakers.filter((_, index) => index !== speakerIndex);
-    this.updateItemField(eventId, 'speakers', updatedSpeakers);
+    // Update speakers directly in the result structure
+    const updatedResult = this.updateSpeakersInTree(currentResult, eventId, (currentSpeakers) => {
+      return currentSpeakers.filter((_, index) => index !== speakerIndex);
+    });
+
+    this.updateState({
+      matchingResult: updatedResult,
+      hasChanges: true
+    });
+
+    this.rebuildTreeNodes();
+    this.forceSignalRefresh();
+  }
+
+  private updateSpeakersInTree(
+    result: IMatchingResult,
+    itemId: number,
+    updateFn: (speakers: ISpeaker[]) => ISpeaker[]
+  ): IMatchingResult {
+    const updateItem = (items: IMatchingResultItem[]): IMatchingResultItem[] => {
+      return items.map(item => {
+        if (item.id === itemId) {
+          return { ...item, speakers: updateFn(item.speakers || []) };
+        }
+        if (item.inners && item.inners.length > 0) {
+          return { ...item, inners: updateItem(item.inners) };
+        }
+        return item;
+      });
+    };
+
+    return {
+      ...result,
+      result: updateItem(result.result)
+    };
+  }
+
+  private forceSignalRefresh(): void {
+    // Force all computed signals to recalculate by updating state
+    const currentState = this._state();
+    this._state.set({ ...currentState });
   }
 
   moveToRoot(itemId: number): void {

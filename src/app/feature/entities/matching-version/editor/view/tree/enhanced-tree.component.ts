@@ -1,23 +1,25 @@
-import { Component, input, output, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, computed, input, output, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
 
 // ng-zorro imports
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzTagModule } from 'ng-zorro-antd/tag';
-import { NzSpaceModule } from 'ng-zorro-antd/space';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzIconModule} from 'ng-zorro-antd/icon';
+import {NzTagModule} from 'ng-zorro-antd/tag';
+import {NzSpaceModule} from 'ng-zorro-antd/space';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
+import {NzCardModule} from 'ng-zorro-antd/card';
+import {NzDividerModule} from 'ng-zorro-antd/divider';
 
-import { ISpeaker } from '@chd-digital-verbatim-front/core/models';
+import {ISpeaker} from '@chd-digital-verbatim-front/core/models';
 import {
-  EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent
+  EnhancedTreeNode,
+  TreeNodeAction,
+  TreeSelectionEvent
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/editor/matching-editor.models';
-import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
+import {getStatusColor} from '@chd-digital-verbatim-front/shared/util';
 
 @Component({
   selector: 'chd-enhanced-tree',
@@ -40,17 +42,21 @@ import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
 })
 export class EnhancedTreeComponent {
   readonly treeNodes = input.required<EnhancedTreeNode[]>();
-  // Enhanced Tree is READ-ONLY - no editing functionality
   readonly canEdit = input<boolean>(false);
 
   // Utils
   readonly getStatusColor = getStatusColor;
 
-  // Outputs (read-only operations only)
+  // Outputs
   readonly onNodeSelect = output<TreeSelectionEvent>();
   readonly onNodeExpand = output<{ node: EnhancedTreeNode; expanded: boolean }>();
+  readonly onNodeAction = output<{ action: TreeNodeAction; node: EnhancedTreeNode }>();
+  readonly onInlineEdit = output<{ node: EnhancedTreeNode; field: string; value: string }>();
 
-  // Enhanced Tree is READ-ONLY - no editing state needed
+  // Edit state
+  readonly inlineEditNode = signal<EnhancedTreeNode | null>(null);
+  readonly inlineEditField = signal<string>('');
+  readonly inlineEditValue = signal<string>('');
 
   // Flatten tree for easier rendering and better performance
   readonly displayNodes = computed(() => {
@@ -95,10 +101,47 @@ export class EnhancedTreeComponent {
     });
   }
 
-  // Enhanced Tree is READ-ONLY - no editing methods needed
+  onNodeActionClick(action: TreeNodeAction, node: EnhancedTreeNode, event: Event): void {
+    event.stopPropagation();
+    this.onNodeAction.emit({action, node});
+  }
+
+  onInlineEditStart(node: EnhancedTreeNode, field: string): void {
+    if (!this.canEdit()) return;
+
+    this.inlineEditNode.set(node);
+    this.inlineEditField.set(field);
+    this.inlineEditValue.set(field === 'title' ? (node.title || '') : (node.verbatim || ''));
+  }
+
+  onInlineEditSave(node: EnhancedTreeNode): void {
+    if (!this.inlineEditNode() || this.inlineEditField() === '') return;
+
+    this.onInlineEdit.emit({
+      node: node,
+      field: this.inlineEditField(),
+      value: this.inlineEditValue()
+    });
+
+    this.onInlineEditCancel();
+  }
+
+  onInlineEditCancel(): void {
+    this.inlineEditNode.set(null);
+    this.inlineEditField.set('');
+    this.inlineEditValue.set('');
+  }
+
+  isEditingField(node: EnhancedTreeNode, field: string): boolean {
+    return this.inlineEditNode() === node && this.inlineEditField() === field;
+  }
+
+  getVisibleActions(node: EnhancedTreeNode): TreeNodeAction[] {
+    return node.actions?.filter(action => action.visible && !action.disabled) || [];
+  }
 
   getSpeakerDisplayName(speaker: ISpeaker): string {
-    return speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
+    return `${speaker.firstName} ${speaker.lastName}`;
   }
 
   private findNodeById(id: number): EnhancedTreeNode | null {

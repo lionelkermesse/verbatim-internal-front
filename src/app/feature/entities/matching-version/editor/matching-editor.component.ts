@@ -1,34 +1,34 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 // ng-zorro imports
-import { NzLayoutModule } from 'ng-zorro-antd/layout';
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzGridModule } from 'ng-zorro-antd/grid';
-import { NzSpinModule } from 'ng-zorro-antd/spin';
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { NzSpaceModule } from 'ng-zorro-antd/space';
-import { NzTagModule } from 'ng-zorro-antd/tag';
-import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { NzProgressModule } from 'ng-zorro-antd/progress';
-import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzModalService, NzModalModule } from 'ng-zorro-antd/modal';
-import { NzSelectModule } from 'ng-zorro-antd/select';
+import {NzLayoutModule} from 'ng-zorro-antd/layout';
+import {NzCardModule} from 'ng-zorro-antd/card';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzIconModule} from 'ng-zorro-antd/icon';
+import {NzGridModule} from 'ng-zorro-antd/grid';
+import {NzSpinModule} from 'ng-zorro-antd/spin';
+import {NzBreadCrumbModule} from 'ng-zorro-antd/breadcrumb';
+import {NzTypographyModule} from 'ng-zorro-antd/typography';
+import {NzSpaceModule} from 'ng-zorro-antd/space';
+import {NzTagModule} from 'ng-zorro-antd/tag';
+import {NzSwitchModule} from 'ng-zorro-antd/switch';
+import {NzSegmentedModule} from 'ng-zorro-antd/segmented';
+import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
+import {NzDividerModule} from 'ng-zorro-antd/divider';
+import {NzProgressModule} from 'ng-zorro-antd/progress';
+import {NzCollapseModule} from 'ng-zorro-antd/collapse';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzModalModule, NzModalService} from 'ng-zorro-antd/modal';
 
 // Components
-import { EnhancedTreeComponent } from './view/tree/enhanced-tree.component';
-import { FlattenedViewComponent } from './view/flattened/flattened-view.component';
-import { MatchingVersionService } from '../matching-version.service';
+import {EnhancedTreeComponent} from './view/tree/enhanced-tree.component';
+import {FlattenedViewComponent} from './view/flattened/flattened-view.component';
+import {EventDetailChange, EventDetailComponent} from './event-detail/event-detail.component';
+import {MatchingVersionService} from '../matching-version.service';
 import {
   EnhancedTreeNode,
   MatchingEditorConfig,
@@ -38,7 +38,7 @@ import {
 import {
   MatchingEditorStateService
 } from '@chd-digital-verbatim-front/feature/entities/matching-version/editor/matching-editor-state.service';
-import { getStatusColor } from '@chd-digital-verbatim-front/shared/util';
+import {getStatusColor} from '@chd-digital-verbatim-front/shared/util';
 
 type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
 
@@ -68,9 +68,9 @@ type ViewType = 'enhanced-tree' | 'flattened-cards' | 'nested-cards';
     NzCollapseModule,
     NzInputModule,
     NzModalModule,
-    NzSelectModule,
     EnhancedTreeComponent,
-    FlattenedViewComponent
+    FlattenedViewComponent,
+    EventDetailComponent
   ],
   templateUrl: './matching-editor.component.html',
   styleUrls: ['./matching-editor.component.scss']
@@ -98,13 +98,6 @@ export class MatchingEditorComponent implements OnInit {
   readonly editingTitle = signal<string>('');
   readonly editingVerbatim = signal<string>('');
 
-  // New speaker form state
-  readonly newSpeaker = signal({
-    firstName: '',
-    lastName: '',
-    function: '',
-    party: ''
-  });
 
   // State from service
   readonly state = this.stateService.state;
@@ -121,9 +114,16 @@ export class MatchingEditorComponent implements OnInit {
 
   private buildViewOptions() {
     return [
-      { label: this.translate.instant('matching.editor.view.flattened.title'), value: 'flattened-cards' as ViewType, icon: 'unordered-list' },
-      { label: this.translate.instant('matching.editor.view.enhancedTree.title'), value: 'enhanced-tree' as ViewType, icon: 'node-index' },
-      // { label: this.translate.instant('matching.editor.view.nested.title'), value: 'nested-cards' as ViewType, icon: 'layout' }
+      {
+        label: this.translate.instant('matching.editor.view.flattened.title'),
+        value: 'flattened-cards' as ViewType,
+        icon: 'unordered-list'
+      },
+      {
+        label: this.translate.instant('matching.editor.view.enhancedTree.title'),
+        value: 'enhanced-tree' as ViewType,
+        icon: 'node-index'
+      },
     ];
   }
 
@@ -139,7 +139,7 @@ export class MatchingEditorComponent implements OnInit {
 
     const flattenNode = (node: EnhancedTreeNode, parentDepth = 0) => {
       // Add the current node with proper depth
-      const flatNode = { ...node, depth: parentDepth };
+      const flatNode = {...node, depth: parentDepth};
       flattened.push(flatNode);
 
       // Add all children recursively
@@ -185,11 +185,6 @@ export class MatchingEditorComponent implements OnInit {
       this.sessionIdentifier.set(sessionIdentifier);
       this.version.set(+version);
       this.isEditMode.set(editMode);
-
-      // Set appropriate view type based on mode
-      if (editMode) {
-        this.currentViewType.set('flattened-cards');
-      }
 
       // Set edit mode in state service
       this.stateService.setEditMode(editMode ? 'edit' : 'view');
@@ -301,7 +296,7 @@ export class MatchingEditorComponent implements OnInit {
     if (!selectedItem) return false;
 
     return this.editingTitle() !== (selectedItem.title || '') ||
-           this.editingVerbatim() !== (selectedItem.verbatim || '');
+      this.editingVerbatim() !== (selectedItem.verbatim || '');
   }
 
   onSave(): void {
@@ -313,12 +308,10 @@ export class MatchingEditorComponent implements OnInit {
 
   onCancel(): void {
     // Discard changes and navigate back to read view
-    const sessionIdentifier = this.sessionIdentifier();
-    const version = this.version();
-    if (sessionIdentifier) {
-      this.stateService.discardChanges(sessionIdentifier, version);
+    if (this.sessionIdentifier()) {
+      this.stateService.discardChanges(this.sessionIdentifier(), this.version());
       // Navigate back to read view
-      this.router.navigate(['/matching', sessionIdentifier, version]);
+      this.router.navigate(['/matching', this.sessionIdentifier(), this.version()]);
     }
   }
 
@@ -390,10 +383,37 @@ export class MatchingEditorComponent implements OnInit {
   }
 
   onSpeakersChange(speakers: any[]): void {
+    // Speaker changes are already handled by the SpeakerManagementService
+    // and MatchingEditorStateService. This handler is just for notification purposes.
+    // The actual state updates happen through assignSpeaker/removeSpeaker methods.
+    console.log('Speakers changed notification:', speakers);
+  }
+
+  // EventDetailComponent handlers
+  onDetailChange(change: EventDetailChange): void {
     const selectedItem = this.selectedItem();
     if (selectedItem) {
-      this.stateService.updateItemField(selectedItem.id, 'speakers', speakers);
+      this.stateService.updateItemField(selectedItem.id, change.field, change.value);
     }
+  }
+
+  onDetailSaveChanges(): void {
+    // Changes are handled by onDetailChange, just signal completion
+    this.detailEditMode.set(false);
+  }
+
+  onDetailCancelChanges(): void {
+    // Reset to original values
+    const selectedItem = this.selectedItem();
+    if (selectedItem) {
+      this.editingTitle.set(selectedItem.title || '');
+      this.editingVerbatim.set(selectedItem.verbatim || '');
+    }
+    this.detailEditMode.set(false);
+  }
+
+  onDetailDeleteItem(itemId: number): void {
+    this.stateService.deleteItem(itemId);
   }
 
   getProgressPercentage(): number {
@@ -418,20 +438,24 @@ export class MatchingEditorComponent implements OnInit {
   getCurrentViewTitle(): string {
     const viewType = this.currentViewType();
     switch (viewType) {
-      case 'enhanced-tree': return 'matching.editor.view.enhancedTree.title';
-      case 'flattened-cards': return 'matching.editor.view.flattened.title';
-      case 'nested-cards': return 'matching.editor.view.nested.title';
-      default: return 'matching.editor.view.enhancedTree.title';
+      case 'flattened-cards':
+        return 'matching.editor.view.flattened.title';
+      case 'enhanced-tree':
+        return 'matching.editor.view.enhancedTree.title';
+      default:
+        return 'matching.editor.view.flattened.title';
     }
   }
 
   getCurrentViewDescription(): string {
     const viewType = this.currentViewType();
     switch (viewType) {
-      case 'enhanced-tree': return 'matching.editor.view.enhancedTree.description';
-      case 'flattened-cards': return 'matching.editor.view.flattened.description';
-      case 'nested-cards': return 'matching.editor.view.nested.description';
-      default: return 'matching.editor.view.enhancedTree.description';
+      case 'flattened-cards':
+        return 'matching.editor.view.flattened.description';
+      case 'enhanced-tree':
+        return 'matching.editor.view.enhancedTree.description';
+      default:
+        return 'matching.editor.view.flattened.description';
     }
   }
 
@@ -443,120 +467,4 @@ export class MatchingEditorComponent implements OnInit {
     return node.actions?.filter(action => action.visible && !action.disabled) || [];
   }
 
-  // Speaker Management Methods
-  updateNewSpeaker(field: string, value: string): void {
-    const current = this.newSpeaker();
-    this.newSpeaker.set({
-      ...current,
-      [field]: value
-    });
-  }
-
-  removeSpeaker(index: number): void {
-    const selectedItem = this.selectedItem();
-    if (selectedItem) {
-      this.stateService.removeSpeaker(selectedItem.id, index);
-    }
-  }
-
-  addExistingSpeaker(speaker: any): void {
-    const selectedItem = this.selectedItem();
-    if (selectedItem && speaker) {
-      this.stateService.assignSpeaker(selectedItem.id, speaker);
-    }
-  }
-
-  getAvailableSpeakers(): any[] {
-    const selectedItem = this.selectedItem();
-    if (!selectedItem) return [];
-
-    // Gather speakers from original matchingResult
-    const originalSpeakers = this.state().matchingResult?.speakers || [];
-
-    // Gather speakers from all events in the tree
-    const speakersFromEvents = new Set<any>();
-    const addSpeakersFromNode = (node: EnhancedTreeNode) => {
-      if (node.speakers && node.speakers.length > 0) {
-        node.speakers.forEach(speaker => {
-          // Use fullName as unique key since ISpeaker has no id
-          const key = speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
-          speakersFromEvents.add(JSON.stringify({ ...speaker, key }));
-        });
-      }
-      if (node.inners && node.inners.length > 0) {
-        (node.inners as EnhancedTreeNode[]).forEach(child => addSpeakersFromNode(child));
-      }
-    };
-
-    // Process all root nodes
-    this.treeNodes().forEach(rootNode => {
-      addSpeakersFromNode(rootNode);
-    });
-
-    // Convert set back to array of speaker objects
-    const eventSpeakers = Array.from(speakersFromEvents).map(speakerStr => {
-      const speaker = JSON.parse(speakerStr);
-      delete speaker.key; // Remove the temporary key
-      return speaker;
-    });
-
-    // Combine original speakers and event speakers, removing duplicates
-    const allSpeakers = [...originalSpeakers];
-    eventSpeakers.forEach(eventSpeaker => {
-      const exists = allSpeakers.some(speaker =>
-        (speaker.fullName || `${speaker.firstName} ${speaker.lastName}`) ===
-        (eventSpeaker.fullName || `${eventSpeaker.firstName} ${eventSpeaker.lastName}`)
-      );
-      if (!exists) {
-        allSpeakers.push(eventSpeaker);
-      }
-    });
-
-    // Filter out speakers that are already assigned to the current event
-    const assignedSpeakerNames = selectedItem.speakers.map(s =>
-      s.fullName || `${s.firstName} ${s.lastName}`
-    );
-
-    return allSpeakers.filter(speaker => {
-      const speakerFullName = speaker.fullName || `${speaker.firstName} ${speaker.lastName}`;
-      return !assignedSpeakerNames.includes(speakerFullName);
-    });
-  }
-
-  canAddNewSpeaker(): boolean {
-    const speaker = this.newSpeaker();
-    return !!(speaker.firstName.trim() && speaker.lastName.trim());
-  }
-
-  addNewSpeaker(): void {
-    const speaker = this.newSpeaker();
-    if (!this.canAddNewSpeaker()) return;
-
-    const selectedItem = this.selectedItem();
-    if (!selectedItem) return;
-
-    const firstName = speaker.firstName.trim();
-    const lastName = speaker.lastName.trim();
-    const fullName = `${firstName} ${lastName}`;
-
-    const newSpeakerData: any = {
-      firstName,
-      lastName,
-      fullName,
-      function: speaker.function.trim(),
-      party: speaker.party.trim(),
-      gender: '' // Default empty, could be enhanced with a gender field
-    };
-
-    // Add to the selected event
-    this.stateService.assignSpeaker(selectedItem.id, newSpeakerData);
-
-    // Reset the form
-    this.newSpeaker.set({
-      firstName: '',
-      lastName: '',
-      function: '',
-      party: ''
-    });
-  }
 }

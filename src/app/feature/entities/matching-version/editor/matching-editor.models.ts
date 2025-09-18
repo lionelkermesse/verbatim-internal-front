@@ -1,4 +1,16 @@
-import { IMatchingResultItem, ISpeaker, IMatchingResult } from '@chd-digital-verbatim-front/core/models';
+import {IMatchingResult, IMatchingResultItem} from '@chd-digital-verbatim-front/core/models';
+
+export type EditModeType = 'view' | 'edit';
+export type NodeActionType =
+  'edit'
+  | 'delete'
+  | 'add-child'
+  | 'move-up'
+  | 'move-down'
+  | 'duplicate'
+  | 'set-as-root'
+  | 'remove-speaker';
+export type DragDropOperationType = 'move-before' | 'move-after' | 'move-into' | 'reorder';
 
 // Enhanced matching editor models
 export interface MatchingEditorState {
@@ -9,7 +21,7 @@ export interface MatchingEditorState {
   isLoading: boolean;
   hasChanges: boolean;
   isSaving: boolean;
-  editMode: 'view' | 'edit';
+  editMode: EditModeType;
   dragDropEnabled: boolean;
 }
 
@@ -35,7 +47,7 @@ export interface MatchingStats {
 }
 
 export interface TreeNodeAction {
-  type: 'edit' | 'delete' | 'add-child' | 'move-up' | 'move-down' | 'duplicate' | 'set-as-root' | 'remove-speaker';
+  type: NodeActionType;
   icon: string;
   tooltip: string;
   visible: boolean;
@@ -59,7 +71,7 @@ export interface EnhancedTreeNode extends IMatchingResultItem {
 export interface DragDropOperation {
   sourceId: number;
   targetId: number;
-  operation: 'move-before' | 'move-after' | 'move-into' | 'reorder';
+  operation: DragDropOperationType;
   sourceIndex: number;
   targetIndex: number;
 }

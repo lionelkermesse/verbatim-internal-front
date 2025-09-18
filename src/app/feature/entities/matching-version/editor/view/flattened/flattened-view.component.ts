@@ -69,7 +69,7 @@ export class FlattenedViewComponent {
     if ($event) { $event.stopPropagation(); }
     const setAsRootAction: TreeNodeAction = {
       type: 'set-as-root',
-      icon: 'drag',
+      icon: 'arrow-up',
       tooltip: 'Set as root event',
       visible: true,
       disabled: false
@@ -97,24 +97,11 @@ export class FlattenedViewComponent {
     }
   }
 
-  truncateText(text: string, maxLines: number = 2): string {
+  getDisplayText(text: string, isReadMode: boolean): string {
     if (!text) return '';
 
-    // Estimate characters per line (roughly 80 characters per line)
-    const charsPerLine = 80;
-    const maxChars = maxLines * charsPerLine;
-
-    if (text.length <= maxChars) {
-      return text;
-    }
-
-    return text.substring(0, maxChars) + '...';
-  }
-
-  getDisplayText(text: string, isReadMode: boolean): string {
-    if (isReadMode) {
-      return this.truncateText(text, 2);
-    }
+    // For read mode, CSS handles the truncation with ellipsis
+    // For edit mode, show full text
     return text;
   }
 }

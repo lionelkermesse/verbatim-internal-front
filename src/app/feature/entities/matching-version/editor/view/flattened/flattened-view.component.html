@@ -24,9 +24,9 @@
         <div class="header-line">
           <div class="title-section">
             <span class="event-title">{{ node.title }}</span>
-            <nz-tag 
+            <nz-tag
               [nzColor]="statusColorFn()(node.status || 'UNMATCHED')"
-              nz-tooltip 
+              nz-tooltip
               [nzTooltipTitle]="'matching.detail.tree.addInner' | translate">
               {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
             </nz-tag>
@@ -35,9 +35,6 @@
 
           <div class="actions-section" *ngIf="canEdit()">
             <nz-space nzSize="small">
-              <!-- Debug: Show canEdit status -->
-              <small *nzSpaceItem style="color: red;">Edit: {{canEdit() ? 'YES' : 'NO'}}</small>
-
               <!-- Add Child Button -->
               <ng-container *nzSpaceItem>
                 <button
@@ -112,8 +109,10 @@
             <ng-container *ngFor="let speaker of node.speakers">
               <nz-tag
                 *nzSpaceItem
-                nzColor="blue">
-                {{ speaker.fullName || (speaker.firstName + ' ' + speaker.lastName) }}
+                nzColor="blue"
+                class="speaker-tag">
+                <span nz-icon nzType="user" nzTheme="outline"></span>
+                {{ speaker.firstName + ' ' + speaker.lastName }}
               </nz-tag>
             </ng-container>
           </nz-space>

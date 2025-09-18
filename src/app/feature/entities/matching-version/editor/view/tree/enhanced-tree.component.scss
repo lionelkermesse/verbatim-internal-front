@@ -296,6 +296,11 @@
               line-height: 1.4;
               font-style: italic;
               min-height: 16px;
+              // 2-line truncation with ellipsis
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
             }
 
             .inline-edit-textarea {
@@ -464,7 +469,7 @@
 }
 
 // High contrast mode
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   :host {
     .enhanced-tree {
       .tree-node {

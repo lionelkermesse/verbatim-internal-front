@@ -15,7 +15,7 @@
       class="node-card">
 
       <div class="node-content" (click)="onNodeClick(node)">
-        <!-- Expansion Toggle -->
+        <!-- Expansion Toggle and Actions -->
         <div class="node-header">
           <div class="expand-section">
             <button
@@ -24,29 +24,80 @@
               nzType="text"
               nzSize="small"
               class="expand-toggle"
-              (click)="onToggleExpansion(node); $event.stopPropagation()">
+              tabindex="0"
+              (click)="onToggleExpansion(node); $event.stopPropagation()"
+              (keyup.enter)="onToggleExpansion(node); $event.stopPropagation()"
+              (keyup.space)="onToggleExpansion(node); $event.stopPropagation(); $event.preventDefault()">
               <span nz-icon [nzType]="node.isExpanded ? 'caret-down' : 'caret-right'" nzTheme="fill"></span>
             </button>
             <div *ngIf="!node.hasChildren" class="expand-spacer"></div>
 
-            <div class="depth-indicator" [style.width.px]="node.depth * 2"></div>
+            <!--            <div class="depth-indicator" [style.width.px]="node.depth * 2"></div>-->
           </div>
 
-        <!-- Compact Title, Status, Line on same line (READ-ONLY) -->
-        <div class="title-section">
-          <div class="compact-header-line">
-            <div class="node-title">
-              <span class="title-text">{{ node.title }}</span>
-            </div>
+          <!-- Action Buttons (Edit Mode Only) -->
+          <div class="actions-section" *ngIf="canEdit() && getVisibleActions(node).length > 0">
+            <nz-space nzSize="small">
+              <ng-container *ngFor="let action of getVisibleActions(node)">
+                <button
+                  *nzSpaceItem
+                  nz-button
+                  [nzType]="action.type === 'delete' ? 'default' : 'text'"
+                  [nzDanger]="action.type === 'delete'"
+                  nzSize="small"
+                  [nz-tooltip]="action.tooltip"
+                  tabindex="0"
+                  (click)="onNodeActionClick(action, node, $event)"
+                  (keyup.enter)="onNodeActionClick(action, node, $event)"
+                  (keyup.space)="onNodeActionClick(action, node, $event); $event.preventDefault()">
+                  <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
+                </button>
+              </ng-container>
+            </nz-space>
+          </div>
 
-            <div class="status-section">
-              <nz-tag [nzColor]="getStatusColor(node.status || 'UNMATCHED')">
-                {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
-              </nz-tag>
-              <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
+          <!-- Title Section with Inline Editing -->
+          <div class="title-section">
+            <div class="compact-header-line">
+              <div class="node-title">
+                <!-- Title Display/Edit -->
+                <div *ngIf="!isEditingField(node, 'title')" class="title-display">
+                <span
+                  class="title-text"
+                  [class.editable]="canEdit()"
+                  (dblclick)="onInlineEditStart(node, 'title')"
+                  [nz-tooltip]="canEdit() ? 'Double-click to edit' : null">
+                  {{ node.title }}
+                </span>
+                </div>
+                <div *ngIf="isEditingField(node, 'title')" class="title-edit">
+                  <input
+                    nz-input
+                    nzSize="small"
+                    [(ngModel)]="inlineEditValue"
+                    (blur)="onInlineEditSave(node)"
+                    (keydown.enter)="onInlineEditSave(node)"
+                    (keydown.escape)="onInlineEditCancel()"
+                    #titleInput/>
+                  <nz-space nzSize="small" class="edit-actions">
+                    <button *nzSpaceItem nz-button nzType="primary" nzSize="small" (click)="onInlineEditSave(node)">
+                      <span nz-icon nzType="check"></span>
+                    </button>
+                    <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="onInlineEditCancel()">
+                      <span nz-icon nzType="close"></span>
+                    </button>
+                  </nz-space>
+                </div>
+              </div>
+
+              <div class="status-section">
+                <nz-tag [nzColor]="getStatusColor(node.status || 'UNMATCHED')">
+                  {{ 'matchingStatus.' + (node.status || 'UNMATCHED') | translate | titlecase }}
+                </nz-tag>
+                <span class="line-number">{{ 'matching.editor.line' | translate }} {{ node.lineNumber || 0 }}</span>
+              </div>
             </div>
           </div>
-        </div>
         </div>
 
         <!-- Speakers Section - Compact layout on same line -->
@@ -70,8 +121,6 @@
 
         <!-- Verbatim Section (READ-ONLY) -->
         <div class="verbatim-section" *ngIf="node.verbatim">
-          <nz-divider/>
-
           <div class="verbatim-label">
             <span nz-icon nzType="message" nzTheme="outline"></span>
             <span>{{ 'matching.editor.verbatim' | translate }}</span>
