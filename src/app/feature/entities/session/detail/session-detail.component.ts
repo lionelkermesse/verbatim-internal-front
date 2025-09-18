@@ -172,16 +172,17 @@ export class SessionDetailComponent implements OnInit {
     });
   }
 
-  onExportMatching(matchingVersion: IMatchingVersion): void {
+  onExportMatching(matchingVersion: IMatchingVersion, format: 'JSON' | 'XML' | 'CSV'): void {
     const sessionIdentifier = this.session()?.sessionIdentifier;
     if (sessionIdentifier && matchingVersion.version) {
-      this.matchingVersionService.exportMatching(sessionIdentifier, matchingVersion.version, 'JSON').subscribe({
+      this.matchingVersionService.exportMatching(sessionIdentifier, matchingVersion.version, format).subscribe({
         next: (blob) => {
           // Create download link
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = `matching_${sessionIdentifier}_v${matchingVersion.version}.json`;
+          const ext = format.toLowerCase();
+          link.download = `matching_${sessionIdentifier}_v${matchingVersion.version}.${ext}`;
           link.click();
           window.URL.revokeObjectURL(url);
         },

@@ -12,6 +12,7 @@ import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
 import {NzCardModule} from 'ng-zorro-antd/card';
 import {NzDividerModule} from 'ng-zorro-antd/divider';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 import {ISpeaker} from '@chd-digital-verbatim-front/core/models';
 import {
@@ -35,7 +36,8 @@ import {getStatusColor} from '@chd-digital-verbatim-front/shared/util';
     NzInputModule,
     NzToolTipModule,
     NzCardModule,
-    NzDividerModule
+    NzDividerModule,
+    NzPopconfirmModule
   ],
   templateUrl: './enhanced-tree.component.html',
   styleUrls: ['./enhanced-tree.component.scss']
@@ -101,8 +103,10 @@ export class EnhancedTreeComponent {
     });
   }
 
-  onNodeActionClick(action: TreeNodeAction, node: EnhancedTreeNode, event: Event): void {
-    event.stopPropagation();
+  onNodeActionClick(action: TreeNodeAction, node: EnhancedTreeNode, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.onNodeAction.emit({action, node});
   }
 

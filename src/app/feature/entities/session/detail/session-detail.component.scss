@@ -236,6 +236,31 @@
   }
 
   .version-actions {
+    /* Primary color for icon-only text buttons (View, Export, More) */
+    .ant-btn.ant-btn-text {
+      color: $primary-color; /* affects icon via currentColor */
+      padding: 4px 8px;
+      height: auto;
+      line-height: 1.5;
+      font-size: $font-size-sm;
+
+      &:hover:not(:disabled),
+      &:focus:not(:disabled) {
+        color: lighten($primary-color, 5%);
+        background: rgba(229, 0, 0, 0.06);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .anticon {
+        margin-right: 0; /* icon-only buttons */
+      }
+    }
+
+    /* Keep support in case any link-type buttons remain */
     .ant-btn-link {
       color: $primary-color;
       padding: 4px 8px;

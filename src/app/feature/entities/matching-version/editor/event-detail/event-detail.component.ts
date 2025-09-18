@@ -12,6 +12,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 import { ISpeaker } from '@chd-digital-verbatim-front/core/models';
 import { EnhancedTreeNode } from '../matching-editor.models';
@@ -38,6 +39,7 @@ export interface EventDetailChange {
     NzSpaceModule,
     NzTagModule,
     NzTypographyModule,
+    NzPopconfirmModule,
     SpeakerEditorComponent
   ],
   templateUrl: './event-detail.component.html',

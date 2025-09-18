@@ -69,134 +69,153 @@
     <nz-divider></nz-divider>
 
     <nz-card [nzBordered]="false" class="matching-versions-card">
-        <!-- Matching Versions Table -->
-        <div class="card-header">
-          <h2 nz-typography>{{ 'session.detail.matchingVersions.title' | translate }}</h2>
-          <p nz-typography nzType="secondary">
-            {{ 'session.detail.matchingVersions.subtitle' | translate }}
-          </p>
-        </div>
+      <!-- Matching Versions Table -->
+      <div class="card-header">
+        <h2 nz-typography>{{ 'session.detail.matchingVersions.title' | translate }}</h2>
+        <p nz-typography nzType="secondary">
+          {{ 'session.detail.matchingVersions.subtitle' | translate }}
+        </p>
+      </div>
 
-        <nz-table
-          #matchingVersionsTable
-          [nzData]="matchingVersions()"
-          [nzLoading]="isLoadingVersions()"
-          [nzPageSize]="pageSize"
-          [nzPageIndex]="pageIndex()"
-          (nzPageIndexChange)="onPageIndexChange($event)"
-          [nzShowSizeChanger]="true"
-          [nzPageSizeOptions]="[10, 20, 50]"
-          [nzNoResult]="noResultTemplate"
-          nzShowPagination
-          nzSize="small"
-          class="matching-versions-table"
-        >
-          <!-- Table Header -->
-          <thead>
-          <tr>
-            <th nzAlign="center">{{ 'session.detail.table.version' | translate }}</th>
-            <th nzAlign="center">{{ 'session.detail.table.status' | translate }}</th>
-            <th nzAlign="center">{{ 'session.detail.table.createdBy' | translate }}</th>
-            <th nzAlign="center">{{ 'session.detail.table.createdDate' | translate }}</th>
-            <th nzAlign="center">{{ 'session.detail.table.validatedBy' | translate }}</th>
-            <th nzAlign="center">{{ 'session.detail.table.actions' | translate }}</th>
-          </tr>
-          </thead>
+      <nz-table
+        #matchingVersionsTable
+        [nzData]="matchingVersions()"
+        [nzLoading]="isLoadingVersions()"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex()"
+        (nzPageIndexChange)="onPageIndexChange($event)"
+        [nzShowSizeChanger]="true"
+        [nzPageSizeOptions]="[10, 20, 50]"
+        [nzNoResult]="noResultTemplate"
+        nzShowPagination
+        nzSize="small"
+        class="matching-versions-table"
+      >
+        <!-- Table Header -->
+        <thead>
+        <tr>
+          <th nzAlign="center">{{ 'session.detail.table.version' | translate }}</th>
+          <th nzAlign="center">{{ 'session.detail.table.status' | translate }}</th>
+          <th nzAlign="center">{{ 'session.detail.table.createdBy' | translate }}</th>
+          <th nzAlign="center">{{ 'session.detail.table.createdDate' | translate }}</th>
+          <th nzAlign="center">{{ 'session.detail.table.validatedBy' | translate }}</th>
+          <th nzAlign="center">{{ 'session.detail.table.actions' | translate }}</th>
+        </tr>
+        </thead>
 
-          <!-- Table Body -->
-          <tbody>
-          <tr *ngFor="let version of matchingVersionsTable.data" class="version-row">
-            <td class="version-number">
-              <strong> {{ version.version || '-' }}</strong>
-            </td>
+        <!-- Table Body -->
+        <tbody>
+        <tr *ngFor="let version of matchingVersionsTable.data" class="version-row">
+          <td class="version-number">
+            <strong> {{ version.version || '-' }}</strong>
+          </td>
 
-            <td class="version-status">
-              <nz-tag [nzColor]="getStatusColor(version.status || 'UPLOADED')">
-                {{ ('versionStatus.' + (version.status || 'UPLOADED')) | translate | titlecase}}
-              </nz-tag>
-            </td>
+          <td class="version-status">
+            <nz-tag [nzColor]="getStatusColor(version.status || 'UPLOADED')">
+              {{ ('versionStatus.' + (version.status || 'UPLOADED')) | translate | titlecase }}
+            </nz-tag>
+          </td>
 
-            <td class="version-created">
-              <div class="created-info">
-                <div class="created-by">{{ version.createdBy || '-' }}</div>
-              </div>
-            </td>
+          <td class="version-created">
+            <div class="created-info">
+              <div class="created-by">{{ version.createdBy || '-' }}</div>
+            </div>
+          </td>
 
-            <td class="version-date">
-              {{ version.createdAt | formatMediumDatetime }}
-            </td>
+          <td class="version-date">
+            {{ version.createdAt | formatMediumDatetime }}
+          </td>
 
-            <td class="version-validated">
-              <div class="validated-info" *ngIf="version.validatedBy; else notValidated">
-                <div class="validated-by">{{ version.validatedBy }}</div>
-                <div class="validated-date">{{ version.validatedAt | formatMediumDatetime }}</div>
-              </div>
-              <ng-template #notValidated>
-                <span class="not-validated">{{ 'session.detail.notValidated' | translate }}</span>
-              </ng-template>
-            </td>
-
-            <td nzAlign="center" class="version-actions">
-              <button
-                nz-button
-                nzType="link"
-                nzSize="small"
-                nz-dropdown
-                [nzDropdownMenu]="versionActionsMenu"
-                nzPlacement="bottomRight"
-                [title]="'session.detail.actions.menu' | translate"
-              >
-                <span nz-icon nzType="more" nzTheme="outline"></span>
-                {{ 'session.detail.actions.actions' | translate }}
-                <span nz-icon nzType="down" nzTheme="outline"></span>
-              </button>
-
-              <nz-dropdown-menu #versionActionsMenu="nzDropdownMenu">
-                <ul nz-menu>
-                  <li nz-menu-item (click)="onViewMatching(version)">
-                    <span nz-icon nzType="eye" nzTheme="outline"></span>
-                    {{ 'session.detail.actions.view' | translate }}
-                  </li>
-                  <li
-                    nz-menu-item
-                    (click)="onEditMatching(version)"
-                    [class.disabled]="version.status === 'VALIDATED'"
-                  >
-                    <span nz-icon nzType="edit" nzTheme="outline"></span>
-                    {{ 'session.detail.actions.edit' | translate }}
-                  </li>
-                  <li nz-menu-divider></li>
-                  <li nz-menu-item (click)="onExportMatching(version)">
-                    <span nz-icon nzType="download" nzTheme="outline"></span>
-                    {{ 'session.detail.actions.export' | translate }}
-                  </li>
-                  <li nz-menu-divider></li>
-                  <li
-                    nz-menu-item
-                    nzDanger
-                    (click)="onDeleteMatching(version)"
-                    [class.disabled]="version.status === 'VALIDATED'"
-                  >
-                    <span nz-icon nzType="delete" nzTheme="outline"></span>
-                    {{ 'session.detail.actions.delete' | translate }}
-                  </li>
-                </ul>
-              </nz-dropdown-menu>
-            </td>
-          </tr>
-          </tbody>
-        </nz-table>
-
-        <!-- Empty State -->
-        <ng-template  #noResultTemplate>
-          <nz-empty [nzNotFoundContent]="emptyFooterTemplate">
-            <ng-template #emptyFooterTemplate>
-              <p nz-typography nzType="secondary">
-                {{ 'session.detail.empty.description' | translate }}
-              </p>
+          <td class="version-validated">
+            <div class="validated-info" *ngIf="version.validatedBy; else notValidated">
+              <div class="validated-by">{{ version.validatedBy }}</div>
+              <div class="validated-date">{{ version.validatedAt | formatMediumDatetime }}</div>
+            </div>
+            <ng-template #notValidated>
+              <span class="not-validated">{{ 'session.detail.notValidated' | translate }}</span>
             </ng-template>
-          </nz-empty>
-        </ng-template>
+          </td>
+
+          <td nzAlign="center" class="version-actions">
+            <!-- Always visible actions: View (icon-only, borderless) -->
+            <button
+              nz-button
+              nzType="text"
+              (click)="onViewMatching(version)"
+              [title]="'session.detail.actions.view' | translate">
+              <span nz-icon nzType="eye" nzTheme="outline"></span>
+            </button>
+
+            <!-- Export: icon-only, opens format menu on click -->
+            <button
+              nz-button
+              nzType="text"
+              nz-dropdown
+              [nzDropdownMenu]="exportMenu"
+              [nzTrigger]="'click'"
+              nzPlacement="bottomRight"
+              [title]="'session.detail.actions.export' | translate"
+              style="margin-left: 4px;">
+              <span nz-icon nzType="download" nzTheme="outline"></span>
+            </button>
+            <nz-dropdown-menu #exportMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-item (click)="onExportMatching(version, 'JSON')">JSON</li>
+                <li nz-menu-item (click)="onExportMatching(version, 'XML')">XML</li>
+                <li nz-menu-item (click)="onExportMatching(version, 'CSV')">CSV</li>
+              </ul>
+            </nz-dropdown-menu>
+
+            <!-- More menu for remaining actions (icon-only, click to open, no label) -->
+            <button
+              nz-button
+              nzType="text"
+              nz-dropdown
+              [nzDropdownMenu]="versionActionsMenu"
+              [nzTrigger]="'click'"
+              nzPlacement="bottomRight"
+              [title]="'session.detail.actions.menu' | translate"
+              style="margin-left: 4px;">
+              <span nz-icon nzType="more" nzTheme="outline"></span>
+            </button>
+
+            <nz-dropdown-menu #versionActionsMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li
+                  nz-menu-item
+                  (click)="onEditMatching(version)"
+                  [class.disabled]="version.status === 'VALIDATED'"
+                >
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  {{ 'session.detail.actions.edit' | translate }}
+                </li>
+                <li nz-menu-divider></li>
+                <li
+                  nz-menu-item
+                  nzDanger
+                  (click)="onDeleteMatching(version)"
+                  [class.disabled]="version.status === 'VALIDATED'"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  {{ 'session.detail.actions.delete' | translate }}
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+
+      <!-- Empty State -->
+      <ng-template #noResultTemplate>
+        <nz-empty [nzNotFoundContent]="emptyFooterTemplate">
+          <ng-template #emptyFooterTemplate>
+            <p nz-typography nzType="secondary">
+              {{ 'session.detail.empty.description' | translate }}
+            </p>
+          </ng-template>
+        </nz-empty>
+      </ng-template>
     </nz-card>
   </nz-content>
 </nz-layout>

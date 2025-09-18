@@ -81,20 +81,41 @@
               <div class="actions-section" *ngIf="canEdit() && getVisibleActions(node).length > 0">
                 <nz-space nzSize="small">
                   <ng-container *ngFor="let action of getVisibleActions(node)">
-                    <button
-                      *nzSpaceItem
-                      nz-button
-                      [nzType]="action.type === 'delete' ? 'default' : 'text'"
-                      [nzDanger]="action.type === 'delete'"
-                      nzSize="small"
-                      nz-tooltip
-                      [nzTooltipTitle]="action.tooltip | translate"
-                      tabindex="0"
-                      (click)="onNodeActionClick(action, node, $event)"
-                      (keyup.enter)="onNodeActionClick(action, node, $event)"
-                      (keyup.space)="onNodeActionClick(action, node, $event); $event.preventDefault()">
-                      <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
-                    </button>
+                    <ng-container *nzSpaceItem>
+                      <ng-container [ngSwitch]="action.type">
+                        <!-- Delete action with confirmation -->
+                        <button
+                          *ngSwitchCase="'delete'"
+                          nz-button
+                          nzType="default"
+                          nzDanger
+                          nzSize="small"
+                          nz-tooltip
+                          [nzTooltipTitle]="action.tooltip | translate"
+                          nz-popconfirm
+                          [nzPopconfirmTitle]="'matching.detail.deleteConfirm.title' | translate"
+                          [nzOkText]="'matching.detail.deleteConfirm.okText' | translate"
+                          [nzCancelText]="'matching.detail.deleteConfirm.cancelText' | translate"
+                          (click)="$event.stopPropagation()"
+                          (nzOnConfirm)="onNodeActionClick(action, node)">
+                          <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
+                        </button>
+                        <!-- Other actions -->
+                        <button
+                          *ngSwitchDefault
+                          nz-button
+                          nzType="text"
+                          nzSize="small"
+                          nz-tooltip
+                          [nzTooltipTitle]="action.tooltip | translate"
+                          tabindex="0"
+                          (click)="onNodeActionClick(action, node, $event)"
+                          (keyup.enter)="onNodeActionClick(action, node, $event)"
+                          (keyup.space)="onNodeActionClick(action, node, $event); $event.preventDefault()">
+                          <span nz-icon [nzType]="action.icon" nzTheme="outline"></span>
+                        </button>
+                      </ng-container>
+                    </ng-container>
                   </ng-container>
                 </nz-space>
               </div>

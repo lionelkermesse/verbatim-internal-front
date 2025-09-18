@@ -21,6 +21,39 @@
   }
 }
 
+  /* Save button in edit mode: force blue color */
+  .btn-save-blue {
+    background-color: #1890ff !important; /* Ant Design blue */
+    border-color: #1890ff !important;
+    color: #fff !important;
+
+    &:hover {
+      background-color: #40a9ff !important;
+      border-color: #40a9ff !important;
+      color: #fff !important;
+    }
+
+    &:focus {
+      background-color: #40a9ff !important;
+      border-color: #40a9ff !important;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+      color: #fff !important;
+    }
+
+    &:disabled,
+    &.ant-btn-loading,
+    &[disabled] {
+      background-color: #91d5ff !important;
+      border-color: #91d5ff !important;
+      color: #fff !important;
+      opacity: 0.85;
+    }
+
+    .anticon {
+      color: #fff !important;
+    }
+  }
+
 .matching-editor-layout {
     //min-height: 100vh;
     background: $body-background;
@@ -1007,6 +1040,8 @@
 .tree-container .tree-header .tree-actions .actions-section .expand-collapse-btn {
   border: 1px solid $primary-color; /* default border to primary color */
   box-shadow: 0 0 0 0 rgba(229, 0, 0, 0);
+  width: 40px; /* make button larger to reflect nzSize large */
+  height: 40px;
 }
 
 .tree-container .tree-header .tree-actions .actions-section .expand-collapse-btn:hover {
@@ -1022,6 +1057,8 @@
 
 .tree-container .tree-header .tree-actions .actions-section .expand-collapse-btn .anticon {
   transition: transform 0.2s ease;
+  color: $primary-color; /* icon color primary */
+  font-size: 18px; /* make icon slightly larger */
 }
 
 .tree-container .tree-header .tree-actions .actions-section .expand-collapse-btn:hover .anticon {

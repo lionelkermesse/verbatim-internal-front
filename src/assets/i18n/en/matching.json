@@ -102,6 +102,11 @@
         "verbatimPlaceholder": "Enter verbatim text...",
         "cancel": "Cancel",
         "save": "Save Changes"
+      },
+      "deleteConfirm": {
+        "title": "Are you sure you want to delete this event?",
+        "okText": "Delete",
+        "cancelText": "Cancel"
       }
     },
     "status": {

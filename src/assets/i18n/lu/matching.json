@@ -102,6 +102,11 @@
         "verbatimPlaceholder": "Verbatim Text aginn...",
         "cancel": "Ofbriechen",
         "save": "Ännerungen späicheren"
+      },
+      "deleteConfirm": {
+        "title": "Sidd Dir sécher, datt Dir dëst Evenement läsche wëllt?",
+        "okText": "Läschen",
+        "cancelText": "Ofbriechen"
       }
     },
     "status": {

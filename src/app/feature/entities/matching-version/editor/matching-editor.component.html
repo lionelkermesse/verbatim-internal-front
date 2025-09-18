@@ -70,21 +70,7 @@
             <!-- Edit Mode Actions -->
             <ng-container *ngIf="isEditMode()">
 
-              <!-- Save Button (only if autoSave is false) -->
-              <ng-container *nzSpaceItem>
-                <button
-                  *ngIf="!config().autoSave"
-                  nz-button
-                  nzSize="large"
-                  [nzLoading]="state().isSaving"
-                  [disabled]="!canSave()"
-                  (click)="onSave()">
-                  <span nz-icon nzType="save" nzTheme="outline"></span>
-                  {{ 'matching.detail.save' | translate }}
-                </button>
-              </ng-container>
-
-              <!-- Cancel Button (only if autoSave is false) -->
+              <!-- Cancel Matching Button -->
               <ng-container *nzSpaceItem>
                 <button
                   *ngIf="!config().autoSave"
@@ -94,6 +80,21 @@
                   (click)="onCancel()">
                   <span nz-icon nzType="close" nzTheme="outline"></span>
                   {{ 'entity.action.cancel' | translate }}
+                </button>
+              </ng-container>
+
+              <!-- Save Matching Button -->
+              <ng-container *nzSpaceItem>
+                <button
+                  *ngIf="!config().autoSave"
+                  nz-button
+                  nzSize="large"
+                  class="btn-save-blue"
+                  [nzLoading]="state().isSaving"
+                  [disabled]="!canSave()"
+                  (click)="onSave()">
+                  <span nz-icon nzType="save" nzTheme="outline"></span>
+                  {{ 'matching.detail.save' | translate }}
                 </button>
               </ng-container>
             </ng-container>
@@ -119,50 +120,50 @@
     <!-- Main Content Area -->
     <div class="editor-main">
       <nz-spin [nzSpinning]="state().isLoading" nzSize="large">
-      <nz-row [nzGutter]="[24, 24]">
-        <!-- Views Panel -->
-        <nz-col [nzSpan]="selectedItem() ? 16 : 24">
-          <nz-card [nzBordered]="false" class="tree-container" [nzLoading]="state().isLoading">
-            <div class="tree-header">
-              <div class="tree-title">
-                <h3 nz-typography class="title-row">
-                  <span nz-icon [nzType]="getCurrentViewIcon()" nzTheme="outline"></span>
-                  {{ getCurrentViewTitle() | translate }}
-                </h3>
-                <p nz-typography nzType="secondary">
-                  {{ getCurrentViewDescription() | translate }}
-                </p>
-              </div>
+        <nz-row [nzGutter]="[24, 24]">
+          <!-- Views Panel -->
+          <nz-col [nzSpan]="selectedItem() ? 16 : 24">
+            <nz-card [nzBordered]="false" class="tree-container" [nzLoading]="state().isLoading">
+              <div class="tree-header">
+                <div class="tree-title">
+                  <h3 nz-typography class="title-row">
+                    <span nz-icon [nzType]="getCurrentViewIcon()" nzTheme="outline"></span>
+                    {{ getCurrentViewTitle() | translate }}
+                  </h3>
+                  <p nz-typography nzType="secondary">
+                    {{ getCurrentViewDescription() | translate }}
+                  </p>
+                </div>
 
-              <div class="tree-actions">
-                <!-- Edit Button (Read mode only) -->
-                <button
-                  *ngIf="!isEditMode()"
-                  nz-button
-                  nzType="default"
-                  nzSize="small"
-                  [routerLink]="['/matching', sessionIdentifier(), version(), 'edit']">
-                  <span nz-icon nzType="edit" nzTheme="outline"></span>
-                  {{ 'entity.action.edit' | translate }}
-                </button>
+                <div class="tree-actions">
+                  <!-- Edit Button (Read mode only) -->
+                  <button
+                    *ngIf="!isEditMode()"
+                    nz-button
+                    nzType="default"
+                    nzSize="small"
+                    [routerLink]="['/matching', sessionIdentifier(), version(), 'edit']">
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    {{ 'entity.action.edit' | translate }}
+                  </button>
 
-                <!-- Add Event Button (Edit mode only) -->
-                <button
-                  *ngIf="isEditMode()"
-                  nz-button
-                  nzType="primary"
-                  nzSize="small"
-                  (click)="onAddRootEvent()"
-                  [nz-tooltip]="'entity.action.addEvent' | translate">
-                  <span nz-icon nzType="plus" nzTheme="outline"></span>
-                  {{ 'entity.action.addEvent' | translate }}
-                </button>
+                  <!-- Add Event Button (Edit mode only) -->
+                  <button
+                    *ngIf="isEditMode()"
+                    nz-button
+                    nzType="primary"
+                    nzSize="small"
+                    (click)="onAddRootEvent()"
+                    [nz-tooltip]="'entity.action.addEvent' | translate">
+                    <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    {{ 'entity.action.addEvent' | translate }}
+                  </button>
 
-                <span class="actions-section" *ngIf="currentViewType() === 'enhanced-tree'">
+                  <span class="actions-section" *ngIf="currentViewType() === 'enhanced-tree'">
                   <button
                     nz-button
                     nzType="text"
-                    nzSize="small"
+                    nzSize="large"
                     class="expand-collapse-btn animated-toggle-btn"
                     (click)="onExpandAll()"
                     [nz-tooltip]="'matching.editor.expandAll' | translate">
@@ -171,61 +172,61 @@
                   <button
                     nz-button
                     nzType="text"
-                    nzSize="small"
+                    nzSize="large"
                     class="expand-collapse-btn animated-toggle-btn"
                     (click)="onCollapseAll()"
                     [nz-tooltip]="'matching.editor.collapseAll' | translate">
-                    <span nz-icon nzType="caret-right" nzTheme="fill"></span>
+                    <span nz-icon nzType="caret-up" nzTheme="fill"></span>
                   </button>
                 </span>
+                </div>
               </div>
-            </div>
 
-            <!-- View Content -->
-            <div class="view-content">
-              <!-- Flattened Cards View -->
-              <chd-flattened-view
-                *ngIf="currentViewType() === 'flattened-cards'"
-                [nodes]="flattenedNodes()"
-                [canEdit]="canEdit()"
-                [statusColorFn]="getStatusColor.bind(this)"
-                [actionProvider]="getVisibleActions.bind(this)"
-                (nodeSelect)="onNodeSelect($event)"
-                (nodeExpand)="onNodeExpand($event)"
-                (nodeAction)="onNodeAction($event)"
-                (nodeDrop)="onNodeDrop($event)">
-              </chd-flattened-view>
-
-              <!-- Enhanced Tree View -->
-              <div *ngIf="currentViewType() === 'enhanced-tree'" class="enhanced-tree-view">
-                <chd-enhanced-tree
-                  [treeNodes]="treeNodes()"
+              <!-- View Content -->
+              <div class="view-content">
+                <!-- Flattened Cards View -->
+                <chd-flattened-view
+                  *ngIf="currentViewType() === 'flattened-cards'"
+                  [nodes]="flattenedNodes()"
                   [canEdit]="canEdit()"
-                  (onNodeSelect)="onNodeSelect($event)"
-                  (onNodeExpand)="onNodeExpand($event)"
-                  (onNodeAction)="onNodeAction($event)"
-                  (onInlineEdit)="onInlineEdit($event)">
-                </chd-enhanced-tree>
+                  [statusColorFn]="getStatusColor.bind(this)"
+                  [actionProvider]="getVisibleActions.bind(this)"
+                  (nodeSelect)="onNodeSelect($event)"
+                  (nodeExpand)="onNodeExpand($event)"
+                  (nodeAction)="onNodeAction($event)"
+                  (nodeDrop)="onNodeDrop($event)">
+                </chd-flattened-view>
+
+                <!-- Enhanced Tree View -->
+                <div *ngIf="currentViewType() === 'enhanced-tree'" class="enhanced-tree-view">
+                  <chd-enhanced-tree
+                    [treeNodes]="treeNodes()"
+                    [canEdit]="canEdit()"
+                    (onNodeSelect)="onNodeSelect($event)"
+                    (onNodeExpand)="onNodeExpand($event)"
+                    (onNodeAction)="onNodeAction($event)"
+                    (onInlineEdit)="onInlineEdit($event)">
+                  </chd-enhanced-tree>
+                </div>
+
+
               </div>
+            </nz-card>
+          </nz-col>
 
-
-            </div>
-          </nz-card>
-        </nz-col>
-
-        <!-- Event Detail Panel -->
-        <nz-col [nzSpan]="8" *ngIf="selectedItem()">
-          <chd-event-detail
-            [selectedItem]="selectedItem()"
-            [isEditMode]="isEditMode()"
-            (detailChange)="onDetailChange($event)"
-            (saveChanges)="onDetailSaveChanges()"
-            (cancelChanges)="onDetailCancelChanges()"
-            (deleteItem)="onDetailDeleteItem($event)"
-            (speakersChanged)="onSpeakersChange($event)">
-          </chd-event-detail>
-        </nz-col>
-      </nz-row>
+          <!-- Event Detail Panel -->
+          <nz-col [nzSpan]="8" *ngIf="selectedItem()">
+            <chd-event-detail
+              [selectedItem]="selectedItem()"
+              [isEditMode]="isEditMode()"
+              (detailChange)="onDetailChange($event)"
+              (saveChanges)="onDetailSaveChanges()"
+              (cancelChanges)="onDetailCancelChanges()"
+              (deleteItem)="onDetailDeleteItem($event)"
+              (speakersChanged)="onSpeakersChange($event)">
+            </chd-event-detail>
+          </nz-col>
+        </nz-row>
       </nz-spin>
     </div>
   </nz-content>

@@ -12,6 +12,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 import { EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent } from '../../matching-editor.models';
 
@@ -28,6 +29,7 @@ import { EnhancedTreeNode, TreeNodeAction, TreeSelectionEvent } from '../../matc
     NzTagModule,
     NzSpaceModule,
     NzToolTipModule,
+    NzPopconfirmModule,
   ],
   templateUrl: './flattened-view.component.html',
   styleUrls: ['./flattened-view.component.scss']

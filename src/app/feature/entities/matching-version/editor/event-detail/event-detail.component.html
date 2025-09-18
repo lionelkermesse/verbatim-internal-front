@@ -9,7 +9,11 @@
         nzType="default"
         nzDanger
         nzSize="small"
-        (click)="onDeleteItem()">
+        nz-popconfirm
+        [nzPopconfirmTitle]="'matching.detail.deleteConfirm.title' | translate"
+        [nzOkText]="'matching.detail.deleteConfirm.okText' | translate"
+        [nzCancelText]="'matching.detail.deleteConfirm.cancelText' | translate"
+        (nzOnConfirm)="onDeleteItem()">
         <span nz-icon nzType="delete" nzTheme="outline"></span>
         {{ 'entity.action.delete' | translate }}
       </button>

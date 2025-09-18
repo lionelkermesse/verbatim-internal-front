@@ -102,6 +102,11 @@
         "verbatimPlaceholder": "Verbatim-Text eingeben...",
         "cancel": "Abbrechen",
         "save": "Änderungen speichern"
+      },
+      "deleteConfirm": {
+        "title": "Möchten Sie dieses Ereignis wirklich löschen?",
+        "okText": "Löschen",
+        "cancelText": "Abbrechen"
       }
     },
     "status": {
