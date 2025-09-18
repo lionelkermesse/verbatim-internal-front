@@ -766,21 +766,16 @@ export class MatchingEditorStateService {
     console.log('Performing move operation:', operation);
 
     if (operation.operation === 'reorder') {
-      // For flattened view reordering, we need to reorder items at the same level
+      // For flattened view reordering, we need to reorder root-level items
       const updatedResult = { ...result };
-
-      // Get all root level items
       const items = [...updatedResult.result];
 
-      // Find source and target indices
       const sourceIndex = operation.sourceIndex;
       const targetIndex = operation.targetIndex;
 
       if (sourceIndex >= 0 && targetIndex >= 0 && sourceIndex < items.length && targetIndex < items.length) {
-        // Move item from source to target position
         const [movedItem] = items.splice(sourceIndex, 1);
         items.splice(targetIndex, 0, movedItem);
-
         updatedResult.result = items;
       }
 
@@ -790,6 +785,68 @@ export class MatchingEditorStateService {
     // Other move operations can be implemented here
     console.log('Move operation not implemented:', operation.operation);
     return result;
+  }
+
+  // Reorder an item within its siblings (root or nested). Direction: -1 = up, +1 = down
+  private reorderWithinSiblings(result: IMatchingResult, itemId: number, direction: -1 | 1): IMatchingResult {
+    const reorderIn = (items: IMatchingResultItem[]): IMatchingResultItem[] => {
+      const index = items.findIndex(i => i.id === itemId);
+      if (index !== -1) {
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= items.length) {
+          return items; // out of bounds, no changes
+        }
+        const newItems = [...items];
+        const [moved] = newItems.splice(index, 1);
+        newItems.splice(targetIndex, 0, moved);
+        return newItems;
+      }
+
+      let changed = false;
+      const maybeNewItems = items.map(it => {
+        if (it.inners && it.inners.length) {
+          const newInners = reorderIn(it.inners);
+          if (newInners !== it.inners) {
+            changed = true;
+            return { ...it, inners: newInners };
+          }
+        }
+        return it;
+      });
+
+      return changed ? maybeNewItems : items;
+    };
+
+    const newRoots = reorderIn(result.result);
+    return newRoots === result.result ? result : { ...result, result: newRoots };
+  }
+
+  public moveUp(itemId: number): void {
+    const currentResult = this._state().matchingResult;
+    if (!currentResult) return;
+
+    const updatedResult = this.reorderWithinSiblings(currentResult, itemId, -1);
+    if (updatedResult === currentResult) {
+      return; // no-op (already at top within siblings or not found)
+    }
+
+    this.updateState({ matchingResult: updatedResult, hasChanges: true });
+    this.rebuildTreeNodes();
+    this.addToUndoStack({ type: 'MOVE_UP', payload: { itemId }, timestamp: new Date() });
+  }
+
+  public moveDown(itemId: number): void {
+    const currentResult = this._state().matchingResult;
+    if (!currentResult) return;
+
+    const updatedResult = this.reorderWithinSiblings(currentResult, itemId, 1);
+    if (updatedResult === currentResult) {
+      return; // no-op
+    }
+
+    this.updateState({ matchingResult: updatedResult, hasChanges: true });
+    this.rebuildTreeNodes();
+    this.addToUndoStack({ type: 'MOVE_DOWN', payload: { itemId }, timestamp: new Date() });
   }
 
   private getNextLineNumber(parentId?: number): number {

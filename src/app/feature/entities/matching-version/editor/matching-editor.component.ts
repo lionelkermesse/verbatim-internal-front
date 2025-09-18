@@ -228,9 +228,10 @@ export class MatchingEditorComponent implements OnInit {
         this.stateService.moveToRoot(event.node.id);
         break;
       case 'move-up':
+        this.stateService.moveUp(event.node.id);
+        break;
       case 'move-down':
-        // Implement move operations
-        console.log('Move operation:', event.action.type, event.node.id);
+        this.stateService.moveDown(event.node.id);
         break;
       case 'remove-speaker':
         if (typeof event.action.speakerIndex === 'number') {
