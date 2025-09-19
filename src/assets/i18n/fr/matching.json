@@ -106,6 +106,12 @@
         "title": "Êtes-vous sûr de vouloir supprimer cet événement ?",
         "okText": "Supprimer",
         "cancelText": "Annuler"
+      },
+      "validateConfirm": {
+        "title": "Confirmer la validation",
+        "content": "Êtes-vous sûr de vouloir valider cette version du matching ? Cette action finalisera le matching et les modifications ultérieures ne seront plus possibles.",
+        "ok": "Valider",
+        "cancel": "Annuler"
       }
     },
     "status": {

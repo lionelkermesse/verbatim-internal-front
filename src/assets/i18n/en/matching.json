@@ -107,6 +107,12 @@
         "title": "Are you sure you want to delete this event?",
         "okText": "Delete",
         "cancelText": "Cancel"
+      },
+      "validateConfirm": {
+        "title": "Confirm validation",
+        "content": "Are you sure you want to validate this matching version? This will finalize the matching and further edits will not be possible.",
+        "ok": "Validate",
+        "cancel": "Cancel"
       }
     },
     "status": {

@@ -107,6 +107,12 @@
         "title": "Sidd Dir sécher, datt Dir dëst Evenement läsche wëllt?",
         "okText": "Läschen",
         "cancelText": "Ofbriechen"
+      },
+      "validateConfirm": {
+        "title": "Validatioun confirméieren",
+        "content": "Sidd Dir sécher, datt Dir dës Matching-Versioun validéiere wëllt? Dëst finaliséiert d'Matching an weider Ännerunge si net méi méiglech.",
+        "ok": "Validéieren",
+        "cancel": "Ofbriechen"
       }
     },
     "status": {

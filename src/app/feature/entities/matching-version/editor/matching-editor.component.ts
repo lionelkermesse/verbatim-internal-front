@@ -325,12 +325,12 @@ export class MatchingEditorComponent implements OnInit {
 
     // Show confirmation modal
     this.modal.confirm({
-      nzTitle: this.translate.instant('matching.detail.validate.confirm.title'),
-      nzContent: this.translate.instant('matching.detail.validate.confirm.content'),
-      nzOkText: this.translate.instant('matching.detail.validate.confirm.ok'),
+      nzTitle: this.translate.instant('matching.detail.validateConfirm.title'),
+      nzContent: this.translate.instant('matching.detail.validateConfirm.content'),
+      nzOkText: this.translate.instant('matching.detail.validateConfirm.ok'),
       nzOkType: 'primary',
       nzOkDanger: false,
-      nzCancelText: this.translate.instant('matching.detail.validate.confirm.cancel'),
+      nzCancelText: this.translate.instant('matching.detail.validateConfirm.cancel'),
       nzOnOk: () => {
         this.performValidation(sessionIdentifier, version);
       }

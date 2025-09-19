@@ -107,6 +107,12 @@
         "title": "Möchten Sie dieses Ereignis wirklich löschen?",
         "okText": "Löschen",
         "cancelText": "Abbrechen"
+      },
+      "validateConfirm": {
+        "title": "Validierung bestätigen",
+        "content": "Sind Sie sicher, dass Sie diese Matching-Version validieren möchten? Dies finalisiert das Matching und weitere Bearbeitungen sind nicht mehr möglich.",
+        "ok": "Validieren",
+        "cancel": "Abbrechen"
       }
     },
     "status": {
