@@ -3,12 +3,16 @@
 .session-layout {
   background: $body-background;
   min-height: calc(100vh - $layout-footer-height - $layout-header-height);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .session-content {
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 // Ensure on big screens the session list has a minimum width of 1200px

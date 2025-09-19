@@ -22,8 +22,8 @@ export class ReferentialService {
   }
 
   // User Story 3.3 - Download referential file
-  downloadFile(id: number): Observable<Blob> {
-    return this.http.get(`${this.resourceUrl}/${id}/download`, {
+  downloadFile(id: number, format?: string): Observable<Blob> {
+    return this.http.get(`${this.resourceUrl}/${id}/export?format=${format ? format : ''}`, {
       responseType: 'blob'
     });
   }

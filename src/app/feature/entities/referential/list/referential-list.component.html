@@ -89,20 +89,13 @@
                     nz-button
                     nzType="link"
                     nzSize="small"
-                    (click)="toggleRawContent()"
+                    (click)="onPreviewRawContent(currentReferential()!)"
                   >
-                    <span nz-icon [nzType]="showRawContent() ? 'table' : 'code'" nzTheme="outline"></span>
-                    {{ showRawContent() ? ('referential.current.showTable' | translate) : ('referential.current.showRaw' | translate) }}
+                    <span nz-icon [nzType]="'code'" nzTheme="outline"></span>
+                    {{ 'referential.current.showRaw' | translate }}
                   </button>
                 </nz-col>
               </nz-row>
-
-              <!-- Raw Content Preview -->
-              <div *ngIf="showRawContent()" class="raw-content-section">
-                <nz-card nzSize="small" class="raw-content-card">
-                  <pre class="raw-content">{{ currentReferential()?.rawContent }}</pre>
-                </nz-card>
-              </div>
 
               <!-- Correspondences Table -->
               <div
@@ -231,7 +224,7 @@
                     (click)="onPreviewRawContent(file)"
                     [title]="'referential.actions.preview' | translate"
                   >
-                    <span nz-icon nzType="eye" nzTheme="outline"></span>
+                    <span nz-icon nzType="code" nzTheme="outline"></span>
                   </button>
 
                   <button
@@ -248,12 +241,8 @@
                   </button>
                   <nz-dropdown-menu #downloadMenu="nzDropdownMenu">
                     <ul nz-menu>
-                      <li nz-menu-item (click)="onDownloadFile(file)">
-                        JSON
-                      </li>
-                      <li nz-menu-item (click)="onDownloadFile(file)">
-                        XML
-                      </li>
+                      <li nz-menu-item (click)="onDownloadFile(file, 'JSON')">JSON</li>
+                      <li nz-menu-item (click)="onDownloadFile(file, 'XML')">XML</li>
                     </ul>
                   </nz-dropdown-menu>
 

@@ -3,7 +3,8 @@
 .referential-upload-layout {
   background: $body-background;
   min-height: calc(100vh - $layout-footer-height - $layout-header-height);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .referential-upload-content {

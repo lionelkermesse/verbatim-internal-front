@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,8 +24,10 @@ import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
 import { ReferentialService } from '../referential.service';
-import { IReferentialFile, IReferentialContent } from '../models/referential.model';
+import { IReferentialContent, IReferentialFile } from '../models/referential.model';
 import { AlertService } from '@chd-digital-verbatim-front/core/util/alert.service';
+import { tapResponse } from '@ngrx/operators';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'chd-referential-list',
@@ -68,7 +70,6 @@ export class ReferentialListComponent implements OnInit {
   readonly currentContent = signal<IReferentialContent | null>(null);
   readonly isLoadingCurrent = signal<boolean>(false);
   readonly isLoadingFiles = signal<boolean>(false);
-  readonly isLoadingContent = signal<boolean>(false);
   readonly showRawContent = signal<boolean>(false);
   readonly previewModalVisible = signal<boolean>(false);
   readonly previewFile = signal<IReferentialFile | null>(null);
@@ -123,21 +124,24 @@ export class ReferentialListComponent implements OnInit {
     this.router.navigate(['/referential/upload']);
   }
 
-  onDownloadFile(file: IReferentialFile): void {
-    this.referentialService.downloadFile(file.id).subscribe({
-      next: (blob) => {
-        // Create download link
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = file.originalFilename;
-        link.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: (error) => {
-        console.error('Error downloading file:', error);
-      }
-    });
+  onDownloadFile(file: IReferentialFile, format?: 'JSON' | 'XML'): void {
+    this.referentialService.downloadFile(file.id, format).pipe(
+      tap(() => this.isLoadingCurrent.set(true)),
+      tapResponse({
+        next: blob => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = file.originalFilename;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: error => {
+          console.error('Error downloading file:', error);
+        },
+        finalize: () => { this.isLoadingCurrent.set(false) }
+    })).subscribe();
   }
 
   onSetDefaultFile(file: IReferentialFile): void {
@@ -217,16 +221,6 @@ export class ReferentialListComponent implements OnInit {
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   }
 
   toggleRawContent(): void {

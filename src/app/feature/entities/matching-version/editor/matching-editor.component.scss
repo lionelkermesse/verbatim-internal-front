@@ -6,20 +6,20 @@
   overflow-x: hidden;
 
   .btn-validate-green {
-  background-color: #52c41a !important;
-  border-color: #52c41a !important;
+    background-color: #52c41a !important;
+    border-color: #52c41a !important;
 
-  &:hover {
-    background-color: #73d13d !important;
-    border-color: #73d13d !important;
-  }
+    &:hover {
+      background-color: #73d13d !important;
+      border-color: #73d13d !important;
+    }
 
-  &:focus {
-    background-color: #73d13d !important;
-    border-color: #73d13d !important;
-    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2) !important;
+    &:focus {
+      background-color: #73d13d !important;
+      border-color: #73d13d !important;
+      box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2) !important;
+    }
   }
-}
 
   /* Save button in edit mode: force blue color */
   .btn-save-blue {
@@ -54,7 +54,7 @@
     }
   }
 
-.matching-editor-layout {
+  .matching-editor-layout {
     //min-height: 100vh;
     background: $body-background;
 
@@ -126,6 +126,7 @@
 
       .progress-section {
         min-width: 200px;
+
         .progress-info {
           display: flex;
           align-items: center;
