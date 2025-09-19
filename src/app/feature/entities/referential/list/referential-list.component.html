@@ -187,7 +187,7 @@
                 <th nzAlign="center">{{ 'referential.table.uploadedBy' | translate }}</th>
                 <th nzAlign="center">{{ 'referential.table.uploadDate' | translate }}</th>
                 <th nzAlign="center">{{ 'referential.table.status' | translate }}</th>
-                <th nzAlign="center">{{ 'referential.table.actions' | translate }}</th>
+                <th nzAlign="left">{{ 'referential.table.actions' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -221,52 +221,74 @@
                   </nz-tag>
                 </td>
 
-                <td nzAlign="center" class="file-actions">
-                  <button
-                    nz-button
-                    nzType="link"
-                    nzSize="small"
-                    nz-dropdown
-                    [nzDropdownMenu]="fileActionsMenu"
-                    nzPlacement="bottomRight"
-                    [title]="'referential.actions.menu' | translate"
-                  >
-                    <span nz-icon nzType="more" nzTheme="outline"></span>
-                    {{ 'referential.actions.actions' | translate }}
-                    <span nz-icon nzType="down" nzTheme="outline"></span>
-                  </button>
+                <td nzAlign="left" class="file-actions">
+                  <nz-space nzSize="small">
+                    <button
+                      nz-button
+                      *nzSpaceItem
+                      nzType="link"
+                      (click)="onPreviewRawContent(file)"
+                      [title]="'referential.actions.preview' | translate"
+                    >
+                      <span nz-icon nzType="eye" nzTheme="outline"></span>
+                    </button>
 
-                  <nz-dropdown-menu #fileActionsMenu="nzDropdownMenu">
-                    <ul nz-menu>
-                      <li nz-menu-item (click)="onDownloadFile(file)">
-                        <span nz-icon nzType="download" nzTheme="outline"></span>
-                        {{ 'referential.actions.download' | translate }}
-                      </li>
-                      <li nz-menu-item (click)="onPreviewRawContent(file)">
-                        <span nz-icon nzType="eye" nzTheme="outline"></span>
-                        {{ 'referential.actions.preview' | translate }}
-                      </li>
-                      <li nz-menu-divider></li>
-                      <li
-                        nz-menu-item
-                        (click)="onSetDefaultFile(file)"
-                        [nzDisabled]="file.isActive || isSettingDefault() === file.id"
-                      >
-                        <span nz-icon nzType="check-circle" nzTheme="outline"></span>
-                        {{ 'referential.actions.setDefault' | translate }}
-                      </li>
-                      <li nz-menu-divider></li>
-                      <li
-                        nz-menu-item
-                        nzDanger
-                        (click)="onDeleteFile(file)"
-                        [nzDisabled]="file.isActive"
-                      >
-                        <span nz-icon nzType="delete" nzTheme="outline"></span>
-                        {{ 'referential.actions.delete' | translate }}
-                      </li>
-                    </ul>
-                  </nz-dropdown-menu>
+                    <button
+                      nz-button
+                      *nzSpaceItem
+                      nzType="link"
+                      nz-dropdown
+                      [nzDropdownMenu]="downloadMenu"
+                      nzPlacement="bottomLeft"
+                      [title]="'referential.actions.download' | translate"
+                    >
+                      <span nz-icon nzType="download" nzTheme="outline"></span>
+                    </button>
+                    <nz-dropdown-menu #downloadMenu="nzDropdownMenu">
+                      <ul nz-menu>
+                        <li nz-menu-item (click)="onDownloadFile(file)">
+                          JSON
+                        </li>
+                        <li nz-menu-item (click)="onDownloadFile(file)">
+                          XML
+                        </li>
+                      </ul>
+                    </nz-dropdown-menu>
+
+                    <button
+                      nz-button
+                      *nzSpaceItem
+                      nzType="link"
+                      nz-dropdown
+                      [nzDropdownMenu]="moreMenu"
+                      nzPlacement="bottomLeft"
+                      [title]="'referential.actions.more' | translate"
+                    >
+                      <span nz-icon nzType="more" nzTheme="outline"></span>
+                    </button>
+                    <nz-dropdown-menu #moreMenu="nzDropdownMenu">
+                      <ul nz-menu>
+                        <li
+                          nz-menu-item
+                          (click)="onSetDefaultFile(file)"
+                          [nzDisabled]="file.isActive || isSettingDefault() === file.id"
+                        >
+                          <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+                          {{ 'referential.actions.setDefault' | translate }}
+                        </li>
+                        <li nz-menu-divider></li>
+                        <li
+                          nz-menu-item
+                          nzDanger
+                          (click)="onDeleteFile(file)"
+                          [nzDisabled]="file.isActive"
+                        >
+                          <span nz-icon nzType="delete" nzTheme="outline"></span>
+                          {{ 'referential.actions.delete' | translate }}
+                        </li>
+                      </ul>
+                    </nz-dropdown-menu>
+                  </nz-space>
                 </td>
               </tr>
             </tbody>

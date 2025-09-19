@@ -215,6 +215,8 @@
   }
 
   .file-actions {
+    text-align: left;
+
     .ant-btn-link {
       color: $primary-color;
       padding: 4px 8px;
@@ -228,7 +230,7 @@
       }
 
       .anticon {
-        margin-right: 4px;
+        margin-right: 0; // icon-only buttons, no text spacing
       }
     }
   }
